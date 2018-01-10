@@ -1,1 +1,1 @@
-# SG-BlackPants-Server-API
+# SG-BlackPants-Android
