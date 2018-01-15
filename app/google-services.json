@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "886063988303",
+    "firebase_url": "https://univscanner-prototype.firebaseio.com",
+    "project_id": "univscanner-prototype",
+    "storage_bucket": "univscanner-prototype.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:886063988303:android:b4b0c1c4f8cefd45",
+        "android_client_info": {
+          "package_name": "smilegate.blackpants.univscanner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "886063988303-m3787a3hj113eefonuk7c913sn2rq4vt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "smilegate.blackpants.univscanner",
+            "certificate_hash": "8f5592148b03305fe8d66815a5da0588fe513f6b"
+          }
+        },
+        {
+          "client_id": "886063988303-c8rnc3cccauish5kegq0an5jin0g5rci.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWF4OjuNIx35UqJSuvmp2oLpRMT2N15Es"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "886063988303-c8rnc3cccauish5kegq0an5jin0g5rci.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
