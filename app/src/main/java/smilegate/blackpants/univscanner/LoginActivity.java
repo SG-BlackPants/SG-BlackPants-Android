@@ -24,9 +24,17 @@ import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.pixplicity.easyprefs.library.Prefs;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import smilegate.blackpants.univscanner.data.model.Users;
+import smilegate.blackpants.univscanner.data.remote.UserApiService;
+import smilegate.blackpants.univscanner.data.remote.UserApiUtils;
 
 /**
  * Created by user on 2018-01-15.
@@ -39,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     // [END declare_auth]
     private GoogleSignInClient mGoogleSignInClient;
+    private UserApiService mUserApiService;
 
     @BindView(R.id.btn_google_login)
     SignInButton googleLoginBtn;
@@ -63,6 +72,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         mAuth = FirebaseAuth.getInstance();
+
+        mUserApiService = UserApiUtils.getAPIService();
     }
 
     // [START signin]
@@ -84,6 +95,9 @@ public class LoginActivity extends AppCompatActivity {
                 firebaseAuthWithGoogle(account);
                 // 자동로그인 on
                 Prefs.putBoolean("isLogin", true);
+                //new ConnectServer().execute();
+                //sendPost("타이틀:제발되라", "body:될거라");
+                getPost();
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
                 finish();
@@ -141,4 +155,64 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
+
+  /*  public static class ConnectServer extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            final String url = "https://androidtutorials.herokuapp.com/";
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(url)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            UsersApi userApi = retrofit.create(UsersApi.class);
+
+            Call<List<User>> response = userApi.getUsersGet();
+
+            try {
+                for(User user : response.execute().body())
+                    Log.e("ResponseData",user.getName()+" "+user.getNickName());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+*/
+    public void sendPost(String title, String body) {
+        mUserApiService.savePost(title, body, 1).enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+
+                if(response.isSuccessful()) {
+                    Log.e("ResponseData",response.body().toString());
+                    Log.i(TAG, "post submitted to API." + response.body().toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
+                Log.e(TAG, "Unable to submit post to API.");
+            }
+        });
+    }
+
+    public void getPost() {
+        mUserApiService.getPost().enqueue(new Callback<List<Users>>() {
+            @Override
+            public void onResponse(Call<List<Users>> call, Response<List<Users>> response) {
+                for(Users res : response.body())
+                    Log.e("ResponseData",res.getTitle()+" "+res.getBody());
+            }
+
+            @Override
+            public void onFailure(Call<List<Users>> call, Throwable t) {
+                Log.e(TAG, "Unable to get from API.");
+            }
+        });
+    }
+
 }
