@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         if(googleIdToken != null) {
             // idToken이 있을 경우
             AuthCredential credential = GoogleAuthProvider.getCredential(googleIdToken,null);
-
+            Log.d("credential", credential.getProvider().toString()+"");
             // Prompt the user to re-provide their sign-in credentials
             mUser.reauthenticate(credential)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -124,10 +124,14 @@ public class MainActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
                                                 Log.d(TAG, "User account deleted.");
+                                                // 자동로그인 off
+                                                Prefs.putBoolean("isLogin", false);
+                                                Intent intent  = new Intent(MainActivity.this, LoginActivity.class);
+                                                startActivity(intent);
+                                                finish();
                                             }
                                         }
                                     });
-
                         }
                     });
         } else {
