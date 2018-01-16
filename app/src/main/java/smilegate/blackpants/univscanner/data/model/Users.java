@@ -6,53 +6,42 @@ package smilegate.blackpants.univscanner.data.model;
 
 public class Users {
 
-    private String title;
+    private String _id;
 
-    private String body;
+    private String name;
 
-    private Integer userId;
+    private String university;
 
-    private Integer id;
-
-    public String getTitle() {
-        return title;
+    public String get_id() {
+        return _id;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
-    public String getBody() {
-        return body;
+    public String getName() {
+        return name;
     }
 
-    public void setBody(String body) {
-        this.body = body;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public String getUniversity() {
+        return university;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
+    public void setUniversity(String university) {
+        this.university = university;
     }
 
     @Override
     public String toString() {
-        return "Post{" +
-                "title='" + title + '\'' +
-                ", body='" + body + '\'' +
-                ", userId=" + userId +
-                ", id=" + id +
+        return "Users{" +
+                "_id='" + _id + '\'' +
+                ", name='" + name + '\'' +
+                ", university=" + university +
                 '}';
     }
 }

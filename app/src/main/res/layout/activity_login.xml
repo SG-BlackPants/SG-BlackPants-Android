@@ -21,6 +21,7 @@
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/btn_google_login"
+        android:text="@string/btn_login_google"
         android:layout_width="206dp"
         android:layout_height="46dp"
         app:layout_constraintBottom_toTopOf="@+id/button2"

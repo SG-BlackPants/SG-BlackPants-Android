@@ -7,7 +7,7 @@ package smilegate.blackpants.univscanner.data.remote;
 public class UserApiUtils {
     private UserApiUtils() {}
 
-    public static final String BASE_URL = "http://jsonplaceholder.typicode.com/";
+    public static final String BASE_URL = "http://52.78.22.122:3000/";
 
     public static UserApiService getAPIService() {
 

@@ -24,8 +24,6 @@ import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.pixplicity.easyprefs.library.Prefs;
 
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -97,7 +95,8 @@ public class LoginActivity extends AppCompatActivity {
                 Prefs.putBoolean("isLogin", true);
                 //new ConnectServer().execute();
                 //sendPost("타이틀:제발되라", "body:될거라");
-                getPost();
+                //getPost();
+                sendPost("abc@example.com","홍길동","스마일대학교");
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
                 finish();
@@ -182,7 +181,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 */
-    public void sendPost(String title, String body) {
+    /*public void sendPost(String title, String body) {
         mUserApiService.savePost(title, body, 1).enqueue(new Callback<Users>() {
             @Override
             public void onResponse(Call<Users> call, Response<Users> response) {
@@ -199,8 +198,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
-    public void getPost() {
+*/
+   /* public void getPost() {
         mUserApiService.getPost().enqueue(new Callback<List<Users>>() {
             @Override
             public void onResponse(Call<List<Users>> call, Response<List<Users>> response) {
@@ -211,6 +210,23 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<Users>> call, Throwable t) {
                 Log.e(TAG, "Unable to get from API.");
+            }
+        });
+    }*/
+
+    public void sendPost(String _id, String name, String university) {
+        mUserApiService.saveUser(_id, name, university).enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                if(response.isSuccessful()) {
+                    Log.e("ResponseData",response.body().toString());
+                    Log.i(TAG, "post submitted to API." + response.body().toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
+                Log.e(TAG, "Unable to submit post to API.");
             }
         });
     }

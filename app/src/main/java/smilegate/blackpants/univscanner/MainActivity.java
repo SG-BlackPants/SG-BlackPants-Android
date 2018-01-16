@@ -22,6 +22,11 @@ import com.pixplicity.easyprefs.library.Prefs;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import smilegate.blackpants.univscanner.data.model.Users;
+import smilegate.blackpants.univscanner.data.remote.UserApiService;
 
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.btn_logout)
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseUser mUser;
     private GoogleSignInClient mGoogleSignInClient;
     private static final String TAG = "MainActivity";
+    private UserApiService mUserApiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +114,8 @@ public class MainActivity extends AppCompatActivity {
         // Get auth credentials from the user for re-authentication. The example below shows
         // email and password credentials but there are multiple possible providers,
         // such as GoogleAuthProvider or FacebookAuthProvider.
-        String googleIdToken = Prefs.getString("idToken", null);;
+        String googleIdToken = Prefs.getString("idToken", null);
+        Log.d("저장된 토큰", googleIdToken+"");
         if(googleIdToken != null) {
             // idToken이 있을 경우
             AuthCredential credential = GoogleAuthProvider.getCredential(googleIdToken,null);
@@ -125,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
                                             if (task.isSuccessful()) {
                                                 Log.d(TAG, "User account deleted.");
                                                 // 자동로그인 off
+                                                delete("abc@example.com");
                                                 Prefs.putBoolean("isLogin", false);
                                                 Intent intent  = new Intent(MainActivity.this, LoginActivity.class);
                                                 startActivity(intent);
@@ -135,8 +143,24 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
         } else {
-            Toast.makeText(MainActivity.this, "Accout delete failed.",
+            Toast.makeText(MainActivity.this, "Account delete failed.",
                     Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void delete(String _id) {
+        mUserApiService.deleteUser(_id).enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                if(response.isSuccessful()) {
+                    Log.e("ResponseData","삭제완료");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
+                Log.e(TAG, "삭제실패");
+            }
+        });
     }
 }
