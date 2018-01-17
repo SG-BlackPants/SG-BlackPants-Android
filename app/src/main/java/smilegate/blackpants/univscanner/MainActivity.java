@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                                             if (task.isSuccessful()) {
                                                 Log.d(TAG, "User account deleted.");
                                                 // 자동로그인 off
-                                                delete("abc@example.com");
+                                                //delete("abc@example.com");
                                                 Prefs.putBoolean("isLogin", false);
                                                 Intent intent  = new Intent(MainActivity.this, LoginActivity.class);
                                                 startActivity(intent);
@@ -163,4 +163,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }

@@ -2,4 +2,6 @@
     <string name="app_name">UnivScanner</string>
     <string name="btn_login_google">구글로 로그인</string>
     <string name="btn_login_facebook">페이스북으로 로그인</string>
+    <string name="facebook_app_id">195191891059901</string>
+    <string name="fb_login_protocol_scheme">fb195191891059901</string>
 </resources>
