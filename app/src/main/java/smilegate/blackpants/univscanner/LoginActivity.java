@@ -35,10 +35,7 @@ import com.pixplicity.easyprefs.library.Prefs;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import smilegate.blackpants.univscanner.data.model.Users;
+import dmax.dialog.SpotsDialog;
 import smilegate.blackpants.univscanner.data.remote.UserApiService;
 import smilegate.blackpants.univscanner.data.remote.UserApiUtils;
 
@@ -49,12 +46,13 @@ import smilegate.blackpants.univscanner.data.remote.UserApiUtils;
 public class LoginActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "LoginActivity";
-    // [START declare_auth]
+
     private FirebaseAuth mAuth;
-    // [END declare_auth]
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
     private UserApiService mUserApiService;
+    private FirebaseAuthStateListener mAuthListener;
+    private android.app.AlertDialog dialog;
 
     @BindView(R.id.btn_google_login)
     SignInButton googleLoginBtn;
@@ -70,27 +68,23 @@ public class LoginActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_google_login)
     public void googleLogin(SignInButton button) {
-        Toast.makeText(this, "complete!", Toast.LENGTH_SHORT).show();
-        signIn();
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     @OnClick(R.id.btn_facebook_login)
     public void facebookLogin(LoginButton button) {
-        Toast.makeText(this, "complete!", Toast.LENGTH_SHORT).show();
-        //signIn();
     }
 
     @OnClick(R.id.btn_email_login)
     public void emailLogin(Button button) {
         Intent intent = new Intent(this, EmailLoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
 
     @OnClick(R.id.btn_create_account)
     public void createAccount(Button button) {
         Intent intent = new Intent(this, CreateAccountActivity.class);
-
         startActivity(intent);
     }
 
@@ -99,8 +93,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        dialog = new SpotsDialog(this, R.style.loginLodingTheme);
+        ;
 
-        // Configure Google Sign In
+        // 구글 로그인 설정
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -110,7 +106,10 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         mUserApiService = UserApiUtils.getAPIService();
+        mAuthListener = new FirebaseAuthStateListener();
+
         mCallbackManager = CallbackManager.Factory.create();
+
         facebookLoginBtn.setReadPermissions("email", "public_profile");
         facebookLoginBtn.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -122,27 +121,65 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onCancel() {
                 Log.d(TAG, "facebook:onCancel");
-                // [START_EXCLUDE]
-                //updateUI(null);
-                // [END_EXCLUDE]
             }
 
             @Override
             public void onError(FacebookException error) {
                 Log.d(TAG, "facebook:onError", error);
-                // [START_EXCLUDE]
-                //updateUI(null);
-                // [END_EXCLUDE]
             }
         });
-
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // 페이스북 로그인 시
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+
+        // 구글 로그인 시
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if (result.isSuccess()) {
+                // 로그인 성공 시 파이어베이스로 인증
+                GoogleSignInAccount account = result.getSignInAccount();
+                firebaseAuthWithGoogle(account);
+            } else {
+                // 구글 로그인 실패
+                Log.d(TAG, "googlelogin : success");
+            }
+        }
+    }
+
+    // 파이어베이스 구글로 인증
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(TAG, "firebaseAuthWithGoogle :" + acct.getId());
+        dialog.show();
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // 로그인 인증 성공
+                            Log.d(TAG, "signInWithCredential : success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Prefs.putString("loginRoute", "google");
+                        } else {
+                            // 로그인 인증 실패
+                            Log.w(TAG, "signInWithCredential : failure", task.getException());
+                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                        dialog.dismiss();
+                    }
+                });
+    }
+
+
+    // 파이어베이스 페이스북으로 인증
     private void handleFacebookAccessToken(AccessToken token) {
-        Log.d(TAG, "handleFacebookAccessToken:" + token);
-        // [START_EXCLUDE silent]
-        //showProgressDialog();
-        // [END_EXCLUDE]
+        dialog.show();
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
@@ -150,126 +187,69 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
+                            // 로그인 인증 성공
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            user.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<GetTokenResult> task) {
-                                    if (task.isSuccessful()) {
-                                        String idToken = task.getResult().getToken();
-                                        Log.i("토큰", idToken);
-                                        Prefs.putString("idToken", idToken);
-                                        Log.i("토큰", "토큰 얻기 성공 및 저장");
-                                        Prefs.putBoolean("isLogin", true);
-                                        //new ConnectServer().execute();
-                                        //sendPost("타이틀:제발되라", "body:될거라");
-                                        //getPost();
-                                        //sendPost("abc@example.com","홍길동","스마일대학교");
-                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    } else {
-                                        Log.i("토큰", "토큰 얻기 실패");
-                                    }
-                                }
-                            });
-                            //updateUI(user);
+                            Prefs.putString("loginRoute", "facebook");
                         } else {
-                            // If sign in fails, display a message to the user.
+                            // 로그인 인증 실패
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
                         }
-
-                        // [START_EXCLUDE]
-                        //hideProgressDialog();
-                        // [END_EXCLUDE]
+                        dialog.dismiss();
                     }
                 });
-    }
-
-    // [START signin]
-    private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-    // [END sign
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        mCallbackManager.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if (result.isSuccess()) {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = result.getSignInAccount();
-                firebaseAuthWithGoogle(account);
-                // 자동로그인 on
-            } else {
-                // Google Sign In failed, update UI appropriately
-                // ...
-            }
-        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        // 유저 로그인 상태변화 listener 장착
+        mAuth.addAuthStateListener(mAuthListener);
+        Log.d(TAG, "AuthStateListener : add");
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-        // [START_EXCLUDE silent]
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+    @Override
+    public void onStop() {
+        super.onStop();
+        // 유저 로그인 상태변화 listener 해제
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+            Log.d(TAG, "AuthStateListener : remove");
+        }
+    }
+
+
+    class FirebaseAuthStateListener implements FirebaseAuth.AuthStateListener {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                // 유저가 로그인 했을 때
+                user.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(LoginActivity.this, "아이디 생성 완료",
-                                    Toast.LENGTH_SHORT).show();
-                            String firebaseResult = user.getDisplayName() + "/" + user.getEmail() + "/" + user.getPhoneNumber() + "/" + user.getProviderId() + "/" + user.getUid();
-                            Log.i("파이어베이스 인증정보", firebaseResult);
-                            user.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<GetTokenResult> task) {
-                                    if (task.isSuccessful()) {
-                                        String idToken = task.getResult().getToken();
-                                        Log.i("토큰", idToken);
-                                        Prefs.putString("idToken", idToken);
-                                        Log.i("토큰", "토큰 얻기 성공 및 저장");
-                                        Prefs.putBoolean("isLogin", true);
-                                        //new ConnectServer().execute();
-                                        //sendPost("타이틀:제발되라", "body:될거라");
-                                        //getPost();
-                                        //sendPost("abc@example.com","홍길동","스마일대학교");
-                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    } else {
-                                        Log.i("토큰", "토큰 얻기 실패");
-                                    }
-                                }
-                            });
-                            //updateUI(user);
+                            String idToken = task.getResult().getToken();
+                            Prefs.putString("idToken", idToken);
+                            Log.i("token", "token : success");
+                            Prefs.putBoolean("isLogin", true);
+                            //new ConnectServer().execute();
+                            //sendPost("타이틀:제발되라", "body:될거라");
+                            //getPost();
+                            //sendPost("abc@example.com","홍길동","스마일대학교");
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
                         } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
-                        }                        // ...
+                            Log.i("token", "token : fail");
+                        }
                     }
                 });
+            }
+        }
     }
 
   /*  public static class ConnectServer extends AsyncTask<Void, Void, Void> {
@@ -331,12 +311,12 @@ public class LoginActivity extends AppCompatActivity {
         });
     }*/
 
-    public void sendPost(String _id, String name, String university) {
+    /*public void sendPost(String _id, String name, String university) {
         mUserApiService.saveUser(_id, name, university).enqueue(new Callback<Users>() {
             @Override
             public void onResponse(Call<Users> call, Response<Users> response) {
-                if(response.isSuccessful()) {
-                    Log.e("ResponseData",response.body().toString());
+                if (response.isSuccessful()) {
+                    Log.e("ResponseData", response.body().toString());
                     Log.i(TAG, "post submitted to API." + response.body().toString());
                 }
             }
@@ -346,6 +326,6 @@ public class LoginActivity extends AppCompatActivity {
                 Log.e(TAG, "Unable to submit post to API.");
             }
         });
-    }
+    }*/
 
 }

@@ -14,6 +14,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
@@ -65,6 +68,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            FirebaseAuth.getInstance().signOut();
                             Intent intent = new Intent(CreateAccountActivity.this, LoginActivity.class);
                             intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
@@ -73,8 +77,21 @@ public class CreateAccountActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(CreateAccountActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            try {
+                                throw task.getException();
+                            } catch(FirebaseAuthWeakPasswordException e) {
+                                Toast.makeText(CreateAccountActivity.this, "비밀번호는 6자리 이상 입력해 주세요.",
+                                        Toast.LENGTH_SHORT).show();
+                            } catch(FirebaseAuthInvalidCredentialsException e) {
+                                Toast.makeText(CreateAccountActivity.this, "올바른 이메일을 입력하여 주세요.",
+                                        Toast.LENGTH_SHORT).show();
+                            } catch(FirebaseAuthUserCollisionException e) {
+                                Toast.makeText(CreateAccountActivity.this, "이미 존재하는 이메일입니다.",
+                                        Toast.LENGTH_SHORT).show();
+                            } catch(Exception e) {
+                                Log.e(TAG, e.getMessage());
+                            }
+
                             //updateUI(null);
                         }
 

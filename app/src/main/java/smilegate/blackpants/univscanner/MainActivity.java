@@ -8,12 +8,15 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -51,76 +54,76 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private UserApiService mUserApiService;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        // [START config_signin]
-        // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-        // [END config_signin]
+
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
-        // [END initialize_auth]
     }
 
     private void signOut() {
-        // Firebase sign out
+
+        String loginRoute = Prefs.getString("loginRoute", null);
+
         mAuth.signOut();
 
-        // Google sign out
-        mGoogleSignInClient.signOut().addOnCompleteListener(this,
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        //updateUI(null);
-                        // 자동로그인 off
-                        Prefs.putBoolean("isLogin", false);
-                        Intent intent  = new Intent(MainActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
+        switch (loginRoute) {
+            case "google":
+                // Google sign out
+                mGoogleSignInClient.signOut().addOnCompleteListener(this,
+                        new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                //updateUI(null);
+                                goLoginActivity();
+                            }
+                        });
+                break;
+            case "facebook":
+                LoginManager.getInstance().logOut();
+                goLoginActivity();
+                break;
+            case "email":
+                goLoginActivity();
+                break;
+            default:
+                break;
+        }
     }
 
-    /*private void revokeAccess() {
-        // Firebase sign out
-        mAuth.signOut();
-
-        // Google revoke access
-        mGoogleSignInClient.revokeAccess().addOnCompleteListener(this,
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        //updateUI(null);
-                        // 자동로그인 off
-                        Prefs.putBoolean("isLogin", false);
-
-                    }
-                });
-    }
-*/
     private void deleteAccount() {
         mUser = FirebaseAuth.getInstance().getCurrentUser();
+        AuthCredential credential;
 
-        // Get auth credentials from the user for re-authentication. The example below shows
-        // email and password credentials but there are multiple possible providers,
-        // such as GoogleAuthProvider or FacebookAuthProvider.
-        String googleIdToken = Prefs.getString("idToken", null);
-        Log.d("저장된 토큰", googleIdToken+"");
-        if(googleIdToken != null) {
-            // idToken이 있을 경우
-            AuthCredential credential = GoogleAuthProvider.getCredential(googleIdToken,null);
-            Log.d("credential", credential.getProvider().toString()+"");
-            // Prompt the user to re-provide their sign-in credentials
+        String loginRoute = Prefs.getString("loginRoute", null);
+        String idToken = Prefs.getString("idToken", null);
+
+        if(idToken != null) {
+            switch (loginRoute) {
+                case "google":
+                    credential = GoogleAuthProvider.getCredential(idToken, null);
+                    break;
+                case "facebook":
+                    credential = FacebookAuthProvider.getCredential(idToken);
+                    break;
+                case "email":
+                    credential = EmailAuthProvider.getCredential(mUser.getEmail(), Prefs.getString("password",null));
+                    break;
+                default:
+                    return;
+            }
+
             mUser.reauthenticate(credential)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -133,10 +136,7 @@ public class MainActivity extends AppCompatActivity {
                                                 Log.d(TAG, "User account deleted.");
                                                 // 자동로그인 off
                                                 //delete("abc@example.com");
-                                                Prefs.putBoolean("isLogin", false);
-                                                Intent intent  = new Intent(MainActivity.this, LoginActivity.class);
-                                                startActivity(intent);
-                                                finish();
+                                                signOut();
                                             }
                                         }
                                     });
@@ -164,5 +164,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
+    public void goLoginActivity() {
+        Prefs.putBoolean("isLogin", false);
+        Prefs.putString("loginRoute", null);
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }

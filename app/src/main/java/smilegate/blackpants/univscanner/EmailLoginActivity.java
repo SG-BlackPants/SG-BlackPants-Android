@@ -21,6 +21,7 @@ import com.pixplicity.easyprefs.library.Prefs;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import dmax.dialog.SpotsDialog;
 
 /**
  * Created by user on 2018-01-17.
@@ -29,7 +30,7 @@ import butterknife.OnClick;
 public class EmailLoginActivity extends AppCompatActivity{
     private static final String TAG = "EmailLoginActivity";
     private FirebaseAuth mAuth;
-
+    private android.app.AlertDialog dialog;
     @BindView(R.id.autoText_login_email)
     AutoCompleteTextView inputEmailText;
 
@@ -52,26 +53,31 @@ public class EmailLoginActivity extends AppCompatActivity{
         setContentView(R.layout.activity_email_login);
         ButterKnife.bind(this);
         mAuth = FirebaseAuth.getInstance();
+        dialog = new SpotsDialog(this,R.style.loginLodingTheme);;
     }
 
-    public void emailLogin(String email, String password) {
+    public void emailLogin(final String email, final String password) {
+
+        dialog.show();
+
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
+                            // 로그인 인증 성공
+                            Log.d(TAG, "signInWithEmail : success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             user.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<GetTokenResult> task) {
                                     if (task.isSuccessful()) {
                                         String idToken = task.getResult().getToken();
-                                        Log.i("토큰", idToken);
+                                        Log.i("token", "token : success");
                                         Prefs.putString("idToken", idToken);
-                                        Log.i("토큰", "토큰 얻기 성공 및 저장");
                                         Prefs.putBoolean("isLogin", true);
+                                        Prefs.putString("loginRoute", "email");
+                                        Prefs.putString("password", password);
                                         //new ConnectServer().execute();
                                         //sendPost("타이틀:제발되라", "body:될거라");
                                         //getPost();
@@ -80,21 +86,21 @@ public class EmailLoginActivity extends AppCompatActivity{
                                         startActivity(intent);
                                         finish();
                                     } else {
-                                        Log.i("토큰", "토큰 얻기 실패");
+                                        Log.i("token", "token : fail");
                                     }
+
+                                    dialog.dismiss();
                                 }
                             });
-                            //updateUI(user);
                         } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            // 로그인 인증 실패
+                            Log.w(TAG, "signInWithEmail : failure", task.getException());
                             Toast.makeText(EmailLoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
+                            dialog.dismiss();
                         }
-                        // ...
+
                     }
                 });
     }
-
 }
