@@ -1,45 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="smilegate.blackpants.univscanner.MainActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="164dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="104dp"
-        android:text="로그인 완료"
-        android:textAlignment="center"
-        android:textSize="30dp"
-        app:layout_constraintBottom_toTopOf="@+id/btn_logout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/btn_logout"
-        android:layout_width="149dp"
-        android:layout_height="45dp"
-        android:layout_marginBottom="8dp"
-        android:text="로그아웃"
-        app:layout_constraintBottom_toTopOf="@+id/btn_revoke"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <!-- top toolbar -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/conLayout1"
+            app:layout_constraintTop_toTopOf="@+id/conLayout2">
+            <include layout="@layout/layout_top_tabs"/>
+        </RelativeLayout>
 
-    <Button
-        android:id="@+id/btn_revoke"
-        android:layout_width="146dp"
-        android:layout_height="49dp"
-        android:layout_marginBottom="248dp"
-        android:text="회원탈퇴"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/btn_logout"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/btn_logout" />
+        <!-- Middle section (body) -->
+        <RelativeLayout
+            android:id="@+id/conLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/conLayout1">
 
-</android.support.constraint.ConstraintLayout>
+            <include layout="@layout/layout_center_viewpager" />
+
+        </RelativeLayout>
+
+        <!-- bottom navigation -->
+        <include layout="@layout/layout_bottom_navigation_view" />
+
+
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
