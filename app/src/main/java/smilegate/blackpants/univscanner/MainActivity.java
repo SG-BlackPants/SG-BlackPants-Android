@@ -2,6 +2,7 @@ package smilegate.blackpants.univscanner;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +18,7 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import smilegate.blackpants.univscanner.data.remote.UserApiService;
+import smilegate.blackpants.univscanner.search.SearchFragment;
 import smilegate.blackpants.univscanner.utils.BottomNavigationViewHelper;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,12 +50,16 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         setupBottomNavigationView();
+        //Manually displaying the first fragment - one time only
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame_layout, SearchFragment.newInstance());
+        transaction.commit();
     }
 
     public void setupBottomNavigationView() {
         Log.d(TAG, "setupBottomNavigationView : setting up BottomNavigationView");
         BottomNavigationViewHelper.setupBottomNavigationViewEx(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx, this);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);

@@ -1,4 +1,4 @@
-package smilegate.blackpants.univscanner;
+package smilegate.blackpants.univscanner.profile;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -12,25 +12,26 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import smilegate.blackpants.univscanner.R;
 import smilegate.blackpants.univscanner.utils.BottomNavigationViewHelper;
 
 /**
- * Created by user on 2018-01-19.
+ * Created by user on 2018-01-22.
  */
 
-public class NotificationActivity extends AppCompatActivity{
-    private static final String TAG = "NotificationActivity";
-    private static final int ACTIVITY_NUM = 1;
+public class ProfileActivity extends AppCompatActivity {
+    private static final String TAG = "ProfileActivity";
+    private static final int ACTIVITY_NUM = 2;
 
-    private Context mContext = NotificationActivity.this;
+    private Context mContext = ProfileActivity.this;
 
     @BindView(R.id.bottomNavViewBar)
-    BottomNavigationViewEx bottomNavigationViewEx;
+    public BottomNavigationViewEx bottomNavigationViewEx;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
 
         setupBottomNavigationView();

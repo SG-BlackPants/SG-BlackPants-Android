@@ -10,29 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- top toolbar -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/conLayout1"
-            app:layout_constraintTop_toTopOf="@+id/conLayout2">
-            <include layout="@layout/layout_top_tabs"/>
-        </RelativeLayout>
-
-        <!-- Middle section (body) -->
-        <RelativeLayout
-            android:id="@+id/conLayout2"
+        <FrameLayout
+            android:id="@+id/frame_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/conLayout1">
-
-            <include layout="@layout/layout_center_viewpager" />
-
-        </RelativeLayout>
+            android:animateLayoutChanges="false">
+        </FrameLayout>
 
         <!-- bottom navigation -->
         <include layout="@layout/layout_bottom_navigation_view" />
-
 
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

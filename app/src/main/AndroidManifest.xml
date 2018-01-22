@@ -23,8 +23,7 @@
         <activity android:name=".CreateAccountActivity" />
         <activity android:name=".EmailLoginActivity" />
         <activity android:name=".NotificationActivity"/>
-        <activity android:name=".ProfileActivity"/>
-
+        <activity android:name=".profile.ProfileActivity"/>
         <meta-data android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id"/>
 
