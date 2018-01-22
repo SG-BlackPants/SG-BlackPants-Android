@@ -12,7 +12,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/reLayout1" >
-            <include layout="@layout/layout_top_searchbar"/>
+            <include
+                android:id="@+id/layout_search_toolbar"
+                layout="@layout/layout_top_searchbar"/>
         </RelativeLayout>
 
         <RelativeLayout
