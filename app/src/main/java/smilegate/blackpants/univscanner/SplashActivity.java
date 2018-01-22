@@ -26,14 +26,14 @@ public class SplashActivity extends AppCompatActivity {
 
         boolean isLogin = Prefs.getBoolean("isLogin", false);
         Intent intent;
-
-        if(isLogin) {
+        intent  = new Intent(this, MainActivity.class);
+      /*  if(isLogin) {
             // 로그인이 이미 되어있는 경우
             intent  = new Intent(this, MainActivity.class);
         } else {
             // 로그인이 안되어 있을 경우
             intent  = new Intent(this, LoginActivity.class);
-        }
+        }*/
         startActivity(intent);
         finish();
     }

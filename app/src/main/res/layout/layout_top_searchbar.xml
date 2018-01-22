@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/layout_search_toolbar">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -38,4 +42,5 @@
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
+</RelativeLayout>
 </merge>

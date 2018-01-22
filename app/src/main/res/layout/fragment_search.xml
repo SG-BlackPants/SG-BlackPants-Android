@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/rel_search_toolbar">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -13,7 +14,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/reLayout1" >
             <include
-                android:id="@+id/layout_search_toolbar"
+                android:id="@+id/inner_top_searchbar"
                 layout="@layout/layout_top_searchbar"/>
         </RelativeLayout>
 

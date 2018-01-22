@@ -22,14 +22,11 @@ public class SearchFragment extends Fragment{
     private static final int ACTIVITY_NUM = 0;
     private View view;
 
-    @BindView(R.id.layout_search_toolbar)
-    View includeLayoutSearch;
-
     @BindView(R.id.reLayout_search)
-    RelativeLayout relLayoutSearch;
+    RelativeLayout includeLayoutSearch;
 
-    @OnClick(R.id.layout_search_toolbar)
-    public void search(View appBarLayout) {
+    @OnClick(R.id.reLayout_search)
+    public void search(RelativeLayout layout) {
         Toast.makeText(getActivity(), "검색클릭!",
                 Toast.LENGTH_SHORT).show();
     }
@@ -47,9 +44,10 @@ public class SearchFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_search, null);
+        view = inflater.inflate(R.layout.fragment_search, null);
         ButterKnife.bind(this, view);
-        return inflater.inflate(R.layout.fragment_search, container, false);
+
+        return view;
     }
 
     @Override
