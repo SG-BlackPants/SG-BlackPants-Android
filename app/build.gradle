@@ -38,6 +38,8 @@ dependencies {
     compile 'com.github.d-max:spots-dialog:0.7@aar'
     compile 'com.github.ittianyu:BottomNavigationViewEx:1.2.4'
     compile "com.android.support:design:27"
+    implementation 'com.ncapdevi:frag-nav:2.4.0'
+    implementation "com.roughike:bottom-bar:2.3.1"
 }
 
 apply plugin: 'com.google.gms.google-services'

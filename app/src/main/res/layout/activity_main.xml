@@ -1,41 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="smilegate.blackpants.univscanner.MainActivity">
+    tools:context=".MainActivity">
 
-    <RelativeLayout
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottomBar"/>
 
-<!--        <FrameLayout
-            android:id="@+id/frame_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:animateLayoutChanges="false">
-        </FrameLayout>-->
-        <smilegate.blackpants.univscanner.utils.CustumViewPager
-            android:id="@+id/viewpager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_above="@+id/bottomNavViewBar"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-<!--        <include
-            android:id="@+id/bottom_navigation_view"
-            layout="@layout/layout_bottom_navigation_view" />-->
-        <com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/bottomNavViewBar"
-            android:background="@drawable/white_grey_border_top"
-            android:layout_alignParentBottom="true"
-            app:menu="@menu/bottom_navigation_menu">
-        </com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx>
+    <com.roughike.bottombar.BottomBar
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        app:bb_activeTabAlpha="1"
+        app:bb_activeTabColor="@color/colorAccent"
+        app:bb_inActiveTabAlpha="0.4"
+        app:bb_inActiveTabColor="@color/grey"
+        app:bb_tabXmlResource="@xml/menu_bottombar"/>
 
-        <!-- bottom navigation -->
-
-    </RelativeLayout>
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <tab
+        icon="@drawable/ic_home"
+        id="@+id/bb_menu_home"
+        title="홈"
+        />
+    <tab
+        icon="@drawable/ic_notification"
+        id="@+id/bb_menu_notification"
+        title="알림"
+        />
+    <tab
+        icon="@drawable/ic_account"
+        id="@+id/bb_menu_profile"
+        title="내 정보"
+        />
+</tabs>
