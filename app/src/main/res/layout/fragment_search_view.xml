@@ -11,20 +11,18 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/reLayout1" >
+            android:id="@+id/reLayout2" >
             <include
-                android:id="@+id/inner_top_searchbar"
-                layout="@layout/layout_top_searchbar"/>
+                layout="@layout/layout_top_searchview"/>
         </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/reLayout1">
-            <TextView
+            android:layout_below="@+id/reLayout2">
+            <ListView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="인기 키워드, 최근 검색 키워드 자리"/>
+                android:layout_height="match_parent" />
         </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>

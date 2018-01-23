@@ -10,15 +10,32 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
+<!--        <FrameLayout
             android:id="@+id/frame_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:animateLayoutChanges="false">
-        </FrameLayout>
+        </FrameLayout>-->
+        <smilegate.blackpants.univscanner.utils.CustumViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_above="@+id/bottomNavViewBar"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+<!--        <include
+            android:id="@+id/bottom_navigation_view"
+            layout="@layout/layout_bottom_navigation_view" />-->
+        <com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/bottomNavViewBar"
+            android:background="@drawable/white_grey_border_top"
+            android:layout_alignParentBottom="true"
+            app:menu="@menu/bottom_navigation_menu">
+        </com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx>
 
         <!-- bottom navigation -->
-        <include layout="@layout/layout_bottom_navigation_view" />
 
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

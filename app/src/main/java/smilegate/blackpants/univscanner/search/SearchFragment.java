@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,16 +18,21 @@ import smilegate.blackpants.univscanner.R;
 
 public class SearchFragment extends Fragment{
     private static final String TAG = "SearchFragment";
-    private static final int ACTIVITY_NUM = 0;
+    private static final int FRAGMENT_NUM = 0;
     private View view;
 
     @BindView(R.id.reLayout_search)
     RelativeLayout includeLayoutSearch;
 
     @OnClick(R.id.reLayout_search)
+
     public void search(RelativeLayout layout) {
-        Toast.makeText(getActivity(), "검색클릭!",
-                Toast.LENGTH_SHORT).show();
+/*        SearchViewFragment searchViewFragment = new SearchViewFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame_layout, searchViewFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();*/
     }
 
     public static SearchFragment newInstance() {
@@ -54,7 +58,5 @@ public class SearchFragment extends Fragment{
     public void onDestroyView() {
         super.onDestroyView();
     }
-
-
 
 }

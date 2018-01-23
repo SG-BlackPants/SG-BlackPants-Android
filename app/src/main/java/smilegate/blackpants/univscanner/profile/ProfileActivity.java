@@ -4,16 +4,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import smilegate.blackpants.univscanner.R;
-import smilegate.blackpants.univscanner.utils.BottomNavigationViewHelper;
 
 /**
  * Created by user on 2018-01-22.
@@ -34,15 +30,15 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
 
-        setupBottomNavigationView();
+        //setupBottomNavigationView();
     }
 
-    public void setupBottomNavigationView() {
+    /*public void setupBottomNavigationView() {
         Log.d(TAG, "setupBottomNavigationView : setting up BottomNavigationView");
         BottomNavigationViewHelper.setupBottomNavigationViewEx(bottomNavigationViewEx);
         BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx, this);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
-    }
+    }*/
 }
