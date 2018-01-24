@@ -18,7 +18,6 @@ public class SearchViewFragment extends BaseFragment {
     private static final String TAG = "SearchViewFragment";
     private View view;
 
-
     public static SearchViewFragment newInstance(int instance) {
         Bundle args = new Bundle();
         args.putInt(ARGS_INSTANCE, instance);
@@ -36,15 +35,8 @@ public class SearchViewFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (view == null) {
             view = inflater.inflate(R.layout.fragment_search_view, container, false);
-            //btn = cachedView.findViewById(R.id.button);
             ButterKnife.bind(this, view);
         }
         return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ButterKnife.bind(this, view).unbind();
     }
 }

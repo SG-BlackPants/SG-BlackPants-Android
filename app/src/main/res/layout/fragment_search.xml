@@ -3,72 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <include
+        android:id="@+id/top_searchbar"
+        layout="@layout/layout_top_searchbar"/>
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <!-- top toolbar -->
-        <!--<RelativeLayout
+        android:layout_height="match_parent"
+        android:layout_below="@+id/top_searchbar">
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/reLayout1" >
-            <include
-                layout="@layout/layout_top_searchbar"/>
-        </RelativeLayout>-->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/layout_search_toolbar">
-
-            <android.support.design.widget.AppBarLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/white_grey_border_bottom">
-
-                <android.support.v7.widget.Toolbar
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/searchToolBar">
-
-                    <RelativeLayout
-                        android:id="@+id/reLayout_search"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginEnd="20dp"
-                            android:layout_centerVertical="true"
-                            android:src="@drawable/ic_search"
-                            android:id="@+id/img_search"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_toRightOf="@+id/img_search"
-                            android:text="키워드 검색"
-                            android:textSize="20sp"/>
-
-                    </RelativeLayout>
-
-                </android.support.v7.widget.Toolbar>
-
-            </android.support.design.widget.AppBarLayout>
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/layout_search_toolbar">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="인기 키워드, 최근 검색 키워드 자리"/>
-        </RelativeLayout>
+            android:text="인기 키워드, 최근 검색 키워드 자리"/>
     </RelativeLayout>
 </RelativeLayout>
