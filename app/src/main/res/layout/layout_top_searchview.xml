@@ -1,45 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
-    <RelativeLayout
-        android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center_vertical"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:elevation="3dp"
+    android:id="@+id/top_searchview">
+
+    <ImageButton
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_back_arrow"
+        android:background="@android:color/transparent"
+        android:id="@+id/btn_searchview_back"/>
+
+    <AutoCompleteTextView
+        android:id="@+id/autoText_search"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/layout_search_toolbar">
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/btn_searchview_back"
+        android:imeOptions="actionNext"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:background="@android:color/transparent"
+        android:hint="검색"/>
 
-        <android.support.design.widget.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/white_grey_border_bottom">
-
-            <android.support.v7.widget.Toolbar
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/searchToolBar">
-
-                <RelativeLayout
-                    android:id="@+id/reLayout_search"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="20dp"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_back_arrow"
-                        android:id="@+id/img_search"/>
-
-                    <android.support.v7.widget.SearchView
-                        android:id="@+id/searchView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:queryHint="Search"
-                        android:layout_toRightOf="@+id/img_search"/>
-
-                </RelativeLayout>
-
-            </android.support.v7.widget.Toolbar>
-
-        </android.support.design.widget.AppBarLayout>
-    </RelativeLayout>
-</merge>
+    <!-- <TextView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_centerVertical="true"
+         android:layout_toRightOf="@+id/img_search"
+         android:text="키워드 검색"
+         android:textSize="20sp"/>-->
+</RelativeLayout>

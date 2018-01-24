@@ -21,6 +21,7 @@ import smilegate.blackpants.univscanner.utils.BaseFragment;
 public class SearchFragment extends BaseFragment {
     private static final String TAG = "SearchFragment";
     private View view;
+    private List
 
     @BindView(R.id.top_searchbar)
     RelativeLayout includeLayoutSearch;
@@ -58,5 +59,12 @@ public class SearchFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
     }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
 
 }

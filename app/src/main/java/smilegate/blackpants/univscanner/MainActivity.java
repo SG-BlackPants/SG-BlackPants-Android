@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     private final int INDEX_NOTIFICATION = FragNavController.TAB2;
     private final int INDEX_PROFILE = FragNavController.TAB3;
 
-    private FragNavController mNavController;
+    public static FragNavController mNavController;
 
 /*    @BindView(R.id.bottomNavViewBar)
     BottomNavigationViewEx bottomNavigationViewEx;

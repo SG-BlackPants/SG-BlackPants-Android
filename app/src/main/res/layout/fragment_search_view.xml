@@ -4,25 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <!-- top toolbar -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/reLayout2" >
-            <include
-                layout="@layout/layout_top_searchview"/>
-        </RelativeLayout>
+    <include
+        android:id="@+id/top_searchview"
+        layout="@layout/layout_top_searchview"/>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/reLayout2">
-            <ListView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </RelativeLayout>
-    </RelativeLayout>
+    <ListView
+        android:id="@+id/list_search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/top_searchview"
+        android:layout_alignParentLeft="true"/>
+
 </RelativeLayout>
