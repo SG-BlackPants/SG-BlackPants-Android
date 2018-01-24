@@ -21,7 +21,6 @@ import smilegate.blackpants.univscanner.utils.BaseFragment;
 public class SearchFragment extends BaseFragment {
     private static final String TAG = "SearchFragment";
     private View view;
-    private List
 
     @BindView(R.id.top_searchbar)
     RelativeLayout includeLayoutSearch;

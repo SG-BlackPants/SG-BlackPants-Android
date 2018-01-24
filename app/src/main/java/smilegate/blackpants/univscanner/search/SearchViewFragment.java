@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -22,6 +23,7 @@ import butterknife.OnClick;
 import smilegate.blackpants.univscanner.R;
 import smilegate.blackpants.univscanner.data.model.Keywords;
 import smilegate.blackpants.univscanner.utils.BaseFragment;
+import smilegate.blackpants.univscanner.utils.KeywordListAdapter;
 
 import static smilegate.blackpants.univscanner.MainActivity.mNavController;
 
@@ -33,7 +35,8 @@ public class SearchViewFragment extends BaseFragment {
     private static final String TAG = "SearchViewFragment";
     private View mView;
     private List<Keywords> mKeywordsList;
-
+    private KeywordListAdapter mAdapter;
+    int count;
     @BindView(R.id.autoText_search)
     AutoCompleteTextView searchAutoText;
 
@@ -47,7 +50,7 @@ public class SearchViewFragment extends BaseFragment {
     }
 
     @BindView(R.id.list_search)
-    ListView searchList;
+    ListView searchListView;
 
     public static SearchViewFragment newInstance(int instance) {
         Bundle args = new Bundle();
@@ -67,6 +70,7 @@ public class SearchViewFragment extends BaseFragment {
             mView = inflater.inflate(R.layout.fragment_search_view, container, false);
             ButterKnife.bind(this, mView);
             initTextListener();
+            count=0;
         }
         return mView;
     }
@@ -90,11 +94,12 @@ public class SearchViewFragment extends BaseFragment {
             @Override
             public void afterTextChanged(Editable s) {
                 String text = searchAutoText.getText().toString().toLowerCase(Locale.getDefault());
+                Log.d(TAG, "afterTextChanged : " + text);
+                count++;
                 searchForMatch(text);
+
             }
         });
-
-
     }
 
     public void searchForMatch(String keyword) {
@@ -102,16 +107,29 @@ public class SearchViewFragment extends BaseFragment {
         mKeywordsList.clear();
 
         if(keyword.length()==0) {
-
+            count=0;
         } else {
-
             //여기서 서버와 연동
+            for(int i=0;i<count;i++){
+                mKeywordsList.add(new Keywords("키워드"+count));
+            }
             updateKewordsList();
         }
     }
 
     public void updateKewordsList() {
+        Log.d(TAG, "updateKeywordList : updating kewords list");
 
+        mAdapter = new KeywordListAdapter(getContext(), R.layout.layout_keyword_listitem, mKeywordsList);
+
+        searchListView.setAdapter(mAdapter);
+
+        searchListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "onItemClick : selected : " + mKeywordsList.get(position).toString());
+            }
+        });
     }
 
 }

@@ -7,6 +7,10 @@ package smilegate.blackpants.univscanner.data.model;
 public class Keywords {
     private String name;
 
+    public Keywords(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }

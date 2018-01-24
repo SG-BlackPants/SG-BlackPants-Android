@@ -40,6 +40,7 @@ dependencies {
     compile "com.android.support:design:27"
     implementation 'com.ncapdevi:frag-nav:2.4.0'
     implementation "com.roughike:bottom-bar:2.3.1"
+    compile 'de.hdodenhof:circleimageview:2.2.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

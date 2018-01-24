@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import smilegate.blackpants.univscanner.R;
 import smilegate.blackpants.univscanner.data.model.Keywords;
 
 /**
@@ -26,9 +27,9 @@ public class KeywordListAdapter extends ArrayAdapter<Keywords>{
 
     public KeywordListAdapter(Context context, int resource, List<Keywords> objects) {
         super(context, resource, objects);
-        mContext = context;
-        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mLayoutResource = resource;
+        this.mContext = context;
+        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.mLayoutResource = resource;
         this.mKeywords = objects;
     }
     @Override
@@ -36,19 +37,17 @@ public class KeywordListAdapter extends ArrayAdapter<Keywords>{
         ViewHolder viewHolder;
 
         if (convertView == null) {
-            //convertView = View.inflate(mLayoutResource, parent, false);
+            convertView = mInflater.inflate(mLayoutResource, parent, false);
             viewHolder = new ViewHolder();
 
+            viewHolder.name = convertView.findViewById(R.id.text_keywordName);
 
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        //String location = filteredItems.get(position);
-        //if (!location.isEmpty() || viewHolder != null) {
-        //    viewHolder.tvTitle.setText(location);
-       // }
+        viewHolder.name.setText(getItem(position).getName());
         return convertView;
     }
 
