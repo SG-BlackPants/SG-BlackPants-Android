@@ -11,8 +11,8 @@
         title="알림"
         />
     <tab
-        icon="@drawable/ic_account"
+        icon="@drawable/ic_profile"
         id="@+id/bb_menu_profile"
-        title="내 정보"
+        title="프로필"
         />
 </tabs>
