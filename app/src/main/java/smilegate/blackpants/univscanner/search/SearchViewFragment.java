@@ -128,6 +128,9 @@ public class SearchViewFragment extends BaseFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG, "onItemClick : selected : " + mKeywordsList.get(position).toString());
+                if (mFragmentNavigation != null) {
+                    mFragmentNavigation.pushFragment(SearchResultFragment.newInstance(0));
+                }
             }
         });
     }

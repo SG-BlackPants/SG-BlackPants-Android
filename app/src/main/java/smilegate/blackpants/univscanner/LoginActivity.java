@@ -154,6 +154,7 @@ public class LoginActivity extends AppCompatActivity {
     // 파이어베이스 구글로 인증
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle :" + acct.getId());
+        Log.d(TAG, "Google JWT : " + acct.getIdToken());
         dialog.show();
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -180,6 +181,7 @@ public class LoginActivity extends AppCompatActivity {
     // 파이어베이스 페이스북으로 인증
     private void handleFacebookAccessToken(AccessToken token) {
         dialog.show();
+        //Log.d(TAG, "facebook token :" + token.get);
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
@@ -234,7 +236,8 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             String idToken = task.getResult().getToken();
                             Prefs.putString("idToken", idToken);
-                            Log.i("token", "token : success");
+                            Log.i("token", "token : success : " + idToken);
+
                             Prefs.putBoolean("isLogin", true);
                             //new ConnectServer().execute();
                             //sendPost("타이틀:제발되라", "body:될거라");
