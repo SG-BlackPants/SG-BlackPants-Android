@@ -73,7 +73,7 @@ public class EmailLoginActivity extends AppCompatActivity{
                                 public void onComplete(@NonNull Task<GetTokenResult> task) {
                                     if (task.isSuccessful()) {
                                         String idToken = task.getResult().getToken();
-                                        Log.i("token", "token : success");
+                                        Log.i("token", "token : success : "+idToken);
                                         Prefs.putString("idToken", idToken);
                                         Prefs.putBoolean("isLogin", true);
                                         Prefs.putString("loginRoute", "email");

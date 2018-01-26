@@ -13,6 +13,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="인기 키워드, 최근 검색 키워드 자리"/>
+            android:text="인기 키워드, 최근 검색 키워드 자리"
+            android:id="@+id/textView5" />
     </RelativeLayout>
 </RelativeLayout>

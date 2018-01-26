@@ -9,6 +9,8 @@
         icon="@drawable/ic_notification"
         id="@+id/bb_menu_notification"
         title="알림"
+        badgeBackgroundColor="#FF0000"
+        badgeHidesWhenActive="false"
         />
     <tab
         icon="@drawable/ic_profile"

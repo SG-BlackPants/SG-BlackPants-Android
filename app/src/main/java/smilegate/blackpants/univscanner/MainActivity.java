@@ -7,9 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ncapdevi.fragnav.FragNavController;
@@ -17,11 +15,13 @@ import com.ncapdevi.fragnav.FragNavSwitchController;
 import com.ncapdevi.fragnav.FragNavTransactionOptions;
 import com.ncapdevi.fragnav.tabhistory.FragNavTabHistoryController;
 import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.BottomBarTab;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import smilegate.blackpants.univscanner.data.model.MyBottomBarTab;
 import smilegate.blackpants.univscanner.data.remote.UserApiService;
 import smilegate.blackpants.univscanner.notification.NotificationFragment;
 import smilegate.blackpants.univscanner.profile.ProfileFragment;
@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     private UserApiService mUserApiService;
     private Context mContext = MainActivity.this;
     private MenuItem mPrevMenuItem;
+    private MyBottomBarTab mMyBottomBarTab;
+    private BottomBarTab mBottomBarTab;
 
     private final int INDEX_HOME = FragNavController.TAB1;
     private final int INDEX_NOTIFICATION = FragNavController.TAB2;
@@ -59,16 +61,6 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        mAuth = FirebaseAuth.getInstance();
 
         boolean initial = savedInstanceState == null;
         if (initial) {
@@ -111,6 +103,9 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
             }
         });
 
+        mBottomBarTab = bottomBar.getTabWithId(R.id.bb_menu_notification);
+        mBottomBarTab.setBadgeCount(1);
+        mMyBottomBarTab = new MyBottomBarTab(mBottomBarTab);
 
        // setupBottomNavigationView();
         /*viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -192,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
             case INDEX_HOME:
                 return SearchFragment.newInstance(0);
             case INDEX_NOTIFICATION:
-                return NotificationFragment.newInstance(0);
+                return NotificationFragment.newInstance(0, mMyBottomBarTab);
             case INDEX_PROFILE:
                 return ProfileFragment.newInstance(0);
         }

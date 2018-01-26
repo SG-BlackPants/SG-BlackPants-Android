@@ -234,9 +234,9 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<GetTokenResult> task) {
                         if (task.isSuccessful()) {
-                            String idToken = task.getResult().getToken();
+                            /*String idToken = task.getResult().getToken();
                             Prefs.putString("idToken", idToken);
-                            Log.i("token", "token : success : " + idToken);
+                            Log.i("token", "token : success : " + idToken);*/
 
                             Prefs.putBoolean("isLogin", true);
                             //new ConnectServer().execute();
