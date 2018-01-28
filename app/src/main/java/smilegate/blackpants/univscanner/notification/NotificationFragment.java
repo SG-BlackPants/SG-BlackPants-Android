@@ -12,6 +12,7 @@ import butterknife.ButterKnife;
 import smilegate.blackpants.univscanner.R;
 import smilegate.blackpants.univscanner.data.model.MyBottomBarTab;
 import smilegate.blackpants.univscanner.utils.BaseFragment;
+import smilegate.blackpants.univscanner.utils.MyFirebaseMessagingService;
 
 /**
  * Created by user on 2018-01-22.
@@ -41,6 +42,7 @@ public class NotificationFragment extends BaseFragment {
             MyBottomBarTab myBottomBarTab = (MyBottomBarTab) getArguments().getSerializable("badge");
             mBottomBarTab = myBottomBarTab.getBottomBarTab();
             mBottomBarTab.removeBadge();
+            MyFirebaseMessagingService.setBadge(getContext(),0);
         }
         return view;
     }
