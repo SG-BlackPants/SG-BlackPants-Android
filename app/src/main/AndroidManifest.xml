@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:theme="@style/MainTheme" android:name=".MainActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity android:theme="@style/MainTheme" android:name=".LoginActivity" />
         <activity android:name=".CreateAccountActivity" />
         <activity android:name=".EmailLoginActivity" />
         <meta-data android:name="com.facebook.sdk.ApplicationId"

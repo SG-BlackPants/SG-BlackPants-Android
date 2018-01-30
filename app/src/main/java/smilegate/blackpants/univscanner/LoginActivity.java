@@ -4,23 +4,24 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -31,6 +32,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.pixplicity.easyprefs.library.Prefs;
+
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,25 +58,29 @@ public class LoginActivity extends AppCompatActivity {
     private android.app.AlertDialog dialog;
 
     @BindView(R.id.btn_google_login)
-    SignInButton googleLoginBtn;
+    Button googleLoginBtn;
 
     @BindView(R.id.btn_facebook_login)
-    LoginButton facebookLoginBtn;
+    Button facebookLoginBtn;
 
     @BindView(R.id.btn_email_login)
     Button emailLoginBtn;
 
-    @BindView(R.id.btn_create_account)
-    Button createAccountBtn;
+    @BindView(R.id.text_create_account)
+    TextView createAccountBtn;
+
+    @BindView(R.id.text_information)
+    TextView informationTxt;
 
     @OnClick(R.id.btn_google_login)
-    public void googleLogin(SignInButton button) {
+    public void googleLogin(Button button) {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     @OnClick(R.id.btn_facebook_login)
-    public void facebookLogin(LoginButton button) {
+    public void facebookLogin(Button button) {
+        LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("email", "public_profile"));
     }
 
     @OnClick(R.id.btn_email_login)
@@ -82,8 +89,8 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    @OnClick(R.id.btn_create_account)
-    public void createAccount(Button button) {
+    @OnClick(R.id.text_create_account)
+    public void createAccount(TextView textView) {
         Intent intent = new Intent(this, CreateAccountActivity.class);
         startActivity(intent);
     }
@@ -94,7 +101,14 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         dialog = new SpotsDialog(this, R.style.loginLodingTheme);
-        ;
+
+        String infoStr = "계속 진행하시면 유니브스캐너의 <(>서비스 약관<)>과 <(>개인정보처리방침<)>에<br> 동의하시게 됩니다.";
+        String colorCodeStart = "<font color='#ff7473'>";
+        String colorCodeEnd = "</font>";
+        infoStr =  infoStr.replace("<(>",colorCodeStart); // <(> and <)> are different replace them with your color code String, First one with start tag
+        infoStr=  infoStr.replace("<)>",colorCodeEnd); // then end tag
+
+        informationTxt.setText((Html.fromHtml(infoStr)));
 
         // 구글 로그인 설정
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -110,24 +124,24 @@ public class LoginActivity extends AppCompatActivity {
 
         mCallbackManager = CallbackManager.Factory.create();
 
-        facebookLoginBtn.setReadPermissions("email", "public_profile");
-        facebookLoginBtn.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Log.d(TAG, "facebook:onSuccess:" + loginResult);
-                handleFacebookAccessToken(loginResult.getAccessToken());
-            }
+        LoginManager.getInstance().registerCallback(mCallbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                        handleFacebookAccessToken(loginResult.getAccessToken());
+                    }
 
-            @Override
-            public void onCancel() {
-                Log.d(TAG, "facebook:onCancel");
-            }
+                    @Override
+                    public void onCancel() {
+                        Log.d(TAG, "facebook:onCancel");
+                }
 
-            @Override
-            public void onError(FacebookException error) {
-                Log.d(TAG, "facebook:onError", error);
-            }
-        });
+        @Override
+        public void onError(FacebookException error) {
+            Log.d(TAG, "facebook:onError", error);
+        }
+                });
     }
 
     @Override
@@ -234,9 +248,9 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<GetTokenResult> task) {
                         if (task.isSuccessful()) {
-                            /*String idToken = task.getResult().getToken();
+                            String idToken = task.getResult().getToken();
                             Prefs.putString("idToken", idToken);
-                            Log.i("token", "token : success : " + idToken);*/
+                            Log.i("token", "token : success : " + idToken);
 
                             Prefs.putBoolean("isLogin", true);
                             //new ConnectServer().execute();
