@@ -5,9 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -17,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.pixplicity.easyprefs.library.Prefs;
+import com.rengwuxian.materialedittext.MaterialEditText;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,20 +31,29 @@ public class EmailLoginActivity extends AppCompatActivity{
     private static final String TAG = "EmailLoginActivity";
     private FirebaseAuth mAuth;
     private android.app.AlertDialog dialog;
-    @BindView(R.id.autoText_login_email)
-    AutoCompleteTextView inputEmailText;
+
+    @BindView(R.id.editText_login_email)
+    MaterialEditText inputEmailText;
 
     @BindView(R.id.editText_login_password)
-    EditText passwordText;
+    MaterialEditText passwordText;
 
     @BindView(R.id.btn_login)
     Button loginBtn;
+
+    @BindView(R.id.btn_email_login_back)
+    ImageButton emailLoginBackBtn;
 
     @OnClick(R.id.btn_login)
     public void login(Button button) {
         String email = inputEmailText.getText().toString().trim();
         String password = passwordText.getText().toString().trim();
         emailLogin(email, password);
+    }
+
+    @OnClick(R.id.btn_email_login_back)
+    public void emailLoginBackBtn(ImageButton imageButton) {
+        finish();
     }
 
     @Override

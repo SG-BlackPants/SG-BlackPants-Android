@@ -36,9 +36,9 @@ public class SearchResultFragment extends BaseFragment {
     private List<SearchResults> mSearchResultsList;
 
     @BindView(R.id.btn_searchresult_back)
-    ImageButton searchViewBackBtn;
+    ImageButton searchResultBackBtn;
     @OnClick(R.id.btn_searchresult_back)
-    public void searchViewBack(ImageButton imageButton) {
+    public void searchResultBack(ImageButton imageButton) {
         if (!mNavController.popFragment()) {
             getActivity().onBackPressed();
         }
