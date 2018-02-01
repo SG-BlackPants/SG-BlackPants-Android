@@ -1,27 +1,25 @@
 package smilegate.blackpants.univscanner;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.ListView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
-import com.google.firebase.auth.FirebaseUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
+import smilegate.blackpants.univscanner.data.model.University;
+import smilegate.blackpants.univscanner.data.remote.UniversityApiService;
+import smilegate.blackpants.univscanner.utils.UniversityListAdapter;
 
 /**
  * Created by user on 2018-01-17.
@@ -30,8 +28,17 @@ import butterknife.OnClick;
 public class CreateAccountActivity extends AppCompatActivity {
     private static final String TAG = "CreatAccountActivity";
     private FirebaseAuth mAuth;
+    private List<University> mUniversityList;
+    private UniversityListAdapter mAdapter;
+    private UniversityApiService mUniversityApiService;
 
-    @BindView(R.id.autoText_school)
+    @BindView(R.id.autoText_univ)
+    AutoCompleteTextView inputUnivText;
+
+    @BindView(R.id.list_univ)
+    ListView univListView;
+
+    /*@BindView(R.id.autoText_school)
     AutoCompleteTextView inputSchoolText;
 
     @BindView(R.id.autoText_email)
@@ -49,17 +56,71 @@ public class CreateAccountActivity extends AppCompatActivity {
         String password = passwordText.getText().toString().trim();
         Log.i("입력값",email+", "+password);
         createUser(email, password);
-    }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
         ButterKnife.bind(this);
-        mAuth = FirebaseAuth.getInstance();
+        initTextListener();
+        //mAuth = FirebaseAuth.getInstance();
     }
 
-    public void createUser(String email, String password) {
+    public void initTextListener() {
+        Log.d(TAG, "initTextListener : initializing");
+
+        mUniversityList = new ArrayList<>();
+
+        inputUnivText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String text = inputUnivText.getText().toString();
+                Log.d(TAG, "afterTextChanged : " + text);
+                searchForMatch(text);
+            }
+        });
+    }
+
+    public void searchForMatch(String univName) {
+        Log.d(TAG, "searchForMatch : searcing for a match: " + univName);
+        mUniversityList.clear();
+
+        if(univName.length()==0) {
+
+        } else {
+            //여기서 서버와 연동
+            updateUniversityList();
+        }
+    }
+
+    public void updateUniversityList() {
+        Log.d(TAG, "updateKeywordList : updating kewords list");
+
+        mAdapter = new UniversityListAdapter(this, R.layout.layout_univ_listitem, mUniversityList);
+
+        univListView.setAdapter(mAdapter);
+
+        univListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "onItemClick : selected : " + mUniversityList.get(position).toString());
+            }
+        });
+    }
+
+
+   /* public void createUser(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -98,5 +159,5 @@ public class CreateAccountActivity extends AppCompatActivity {
                         // ...
                     }
                 });
-    }
+    }*/
 }
