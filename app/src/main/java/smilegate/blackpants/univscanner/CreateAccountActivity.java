@@ -17,8 +17,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import smilegate.blackpants.univscanner.data.model.University;
 import smilegate.blackpants.univscanner.data.remote.UniversityApiService;
+import smilegate.blackpants.univscanner.data.remote.UniversityApiUtils;
 import smilegate.blackpants.univscanner.utils.UniversityListAdapter;
 
 /**
@@ -63,7 +67,9 @@ public class CreateAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
         ButterKnife.bind(this);
+        mUniversityApiService = UniversityApiUtils.getAPIService();
         initTextListener();
+        getUniversityList();
         //mAuth = FirebaseAuth.getInstance();
     }
 
@@ -85,9 +91,9 @@ public class CreateAccountActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                String text = inputUnivText.getText().toString();
+           /*     String text = inputUnivText.getText().toString();
                 Log.d(TAG, "afterTextChanged : " + text);
-                searchForMatch(text);
+                searchForMatch(text);*/
             }
         });
     }
@@ -96,7 +102,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         Log.d(TAG, "searchForMatch : searcing for a match: " + univName);
         mUniversityList.clear();
 
-        if(univName.length()==0) {
+        if (univName.length() == 0) {
 
         } else {
             //여기서 서버와 연동
@@ -119,6 +125,22 @@ public class CreateAccountActivity extends AppCompatActivity {
         });
     }
 
+    public void getUniversityList() {
+        mUniversityApiService.getUniversity().enqueue(new Callback<University>() {
+            @Override
+            public void onResponse(Call<University> call, Response<University> response) {
+                for(University.Content content : response.body().getDataSearch().getContent()) {
+                    Log.d(TAG, "getUniversityList : " + content.getCampusName());
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<University> call, Throwable t) {
+
+            }
+        });
+    }
 
    /* public void createUser(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)

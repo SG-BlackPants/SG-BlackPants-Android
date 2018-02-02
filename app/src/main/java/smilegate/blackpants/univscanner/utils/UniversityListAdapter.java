@@ -47,7 +47,7 @@ public class UniversityListAdapter extends ArrayAdapter<University>{
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.name.setText(getItem(position).getName());
+        //viewHolder.name.setText(getItem(position).getDataSearch().getContent();
         return convertView;
     }
 
