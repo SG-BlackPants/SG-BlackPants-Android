@@ -1,15 +1,21 @@
 package smilegate.blackpants.univscanner;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.FragNavSwitchController;
 import com.ncapdevi.fragnav.FragNavTransactionOptions;
@@ -33,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     private static final int ACTIVITY_NUM = 0;
 
     private FirebaseAuth mAuth;
+    private FirebaseAuthStateListener mAuthListener;
     private FirebaseUser mUser;
     private GoogleSignInClient mGoogleSignInClient;
     private UserApiService mUserApiService;
@@ -61,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
+        setUpFirebaseAuth();
         boolean initial = savedInstanceState == null;
         if (initial) {
             bottomBar.selectTabAtPosition(INDEX_HOME);
@@ -139,6 +146,75 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         transaction.commit();*/
 
 
+    }
+
+    public void checkCurrentUser(FirebaseUser user) {
+        Log.d(TAG, "checkCurrentUser : checking if user is logged in");
+
+        if(user == null) {
+            Intent intent = new Intent(mContext, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }
+
+    public void setUpFirebaseAuth() {
+        Log.d(TAG, "setupFirebaseAuth : setting up firebae auth");
+
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuthStateListener();
+    }
+
+    class FirebaseAuthStateListener implements FirebaseAuth.AuthStateListener {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            checkCurrentUser(user);
+
+            if (user != null) {
+                Log.d(TAG, "onAuthStateChanged : singed_in" + user.getUid());
+                user.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        if (task.isSuccessful()) {
+                            String idToken = task.getResult().getToken();
+                            //Prefs.putString("idToken", idToken);
+                            Log.d("token", "token : success : " + idToken);
+
+                            //Prefs.putBoolean("isLogin", true);
+                            //new ConnectServer().execute();
+                            //sendPost("타이틀:제발되라", "body:될거라");
+                            //getPost();
+                            //sendPost("abc@example.com","홍길동","스마일대학교");
+                        } else {
+                            Log.d("token", "token : fail");
+                        }
+                    }
+                });
+            } else {
+                Log.d(TAG, "onAuthStateChanged : singed_out");
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+        checkCurrentUser(mAuth.getCurrentUser());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
     @Override

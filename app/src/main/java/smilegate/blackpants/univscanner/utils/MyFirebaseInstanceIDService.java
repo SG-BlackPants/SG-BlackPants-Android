@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.pixplicity.easyprefs.library.Prefs;
 
 /**
  * Created by user on 2018-01-26.
@@ -42,5 +43,6 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
      */
     private void sendRegistrationToServer(String token) {
         // TODO: Implement this method to send token to your app server.
+        Prefs.putString("registrationToken",token);
     }
 }

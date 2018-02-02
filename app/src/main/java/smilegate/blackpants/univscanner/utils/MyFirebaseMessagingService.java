@@ -1,23 +1,15 @@
 package smilegate.blackpants.univscanner.utils;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.List;
-
-import smilegate.blackpants.univscanner.MainActivity;
-import smilegate.blackpants.univscanner.R;
 
 /**
  * Created by user on 2018-01-26.
@@ -30,9 +22,30 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
-        String bodyStrFromServer = remoteMessage.getNotification().getBody();
+        //String bodyStrFromServer = remoteMessage.getNotification().getBody();
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), "M_CH_ID");
+        if(remoteMessage.getNotification() != null) {
+            Log.d(TAG, "Notification Title : " + remoteMessage.getNotification().getTitle());
+            Log.d(TAG, "Notification Message : " + remoteMessage.getNotification().getBody());
+
+            KeywordNotificationManager.getInstance(getApplicationContext()).displayNotification(remoteMessage.getNotification().getTitle(),remoteMessage.getNotification().getBody());
+
+        }
+
+        if(remoteMessage.getData().size() > 0) {
+            String keyword = remoteMessage.getData().get("keyword");
+            String community = remoteMessage.getData().get("community");
+            Log.d(TAG, "Message data payload (keyword) : " + remoteMessage.getData().get("keyword"));
+            Log.d(TAG, "Message data payload (university) : " + remoteMessage.getData().get("university"));
+            Log.d(TAG, "Message data payload (community) : " + remoteMessage.getData().get("community"));
+            Log.d(TAG, "Message data payload (boardAddr) : " + remoteMessage.getData().get("boardAddr"));
+
+            KeywordNotificationManager.getInstance(getApplicationContext()).displayNotification("키워드 알림","등록하신 "+keyword+"에 대한 게시글이 "+community+"에서 새로 올라왔습니다.");
+
+        }
+
+
+ /*       NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), "M_CH_ID");
 
         notificationBuilder.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_VIBRATE)
@@ -62,8 +75,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 // mId allows you to update the notification later on.
-        mNotificationManager.notify(0, notificationBuilder.build());
-
+        mNotificationManager.notify(0, notificationBuilder.build());*/
 
     }
 
