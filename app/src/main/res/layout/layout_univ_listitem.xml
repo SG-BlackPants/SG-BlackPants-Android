@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
-    android:background="@drawable/textbox">
+    >
 
     <TextView
         android:layout_width="wrap_content"
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
-        android:textColor="@color/redpink"
+        android:textColor="@color/main_color"
         android:text="선택"
         android:textSize="15dp"
         android:id="@+id/text_univ_choicebtn"/>

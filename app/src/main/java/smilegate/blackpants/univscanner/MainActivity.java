@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -27,7 +28,12 @@ import com.roughike.bottombar.OnTabSelectListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import smilegate.blackpants.univscanner.data.model.MyBottomBarTab;
+import smilegate.blackpants.univscanner.data.model.University;
+import smilegate.blackpants.univscanner.data.remote.UniversityApiService;
 import smilegate.blackpants.univscanner.data.remote.UserApiService;
 import smilegate.blackpants.univscanner.notification.NotificationFragment;
 import smilegate.blackpants.univscanner.profile.ProfileFragment;
@@ -53,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     private final int INDEX_PROFILE = FragNavController.TAB3;
 
     public static FragNavController mNavController;
-
+    private UniversityApiService mUniversityApiService;
 /*    @BindView(R.id.bottomNavViewBar)
     BottomNavigationViewEx bottomNavigationViewEx;
 
@@ -145,8 +151,40 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         transaction.replace(R.id.frame_layout, SearchFragment.newInstance());
         transaction.commit();*/
 
-
+       /* mService = SQApiUtils.getSOService();
+        loadAnswers();*/
+       /* mUniversityApiService = UniversityApiUtils.getAPIService();
+        getUniversityList();*/
     }
+
+    public void getUniversityList() {
+        mUniversityApiService.getUniversity().enqueue(new Callback<University>() {
+            @Override
+            public void onResponse(Call<University> call, Response<University> response) {
+                /*for(University.Content content : response.body().getDataSearch().getContent()) {
+                    Log.d(TAG, "getUniversityList : " + content.getCampusName());
+                }*/
+                if(response.isSuccessful()) {
+                    Log.d(TAG, "getUniversityList : success");
+                }else {
+                    int statusCode  = response.code();
+                    // handle request errors depending on status code
+                    Log.d(TAG, "getUniversityList : fail : " + statusCode);
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<University> call, Throwable t) {
+                Log.d(TAG, "getUniversityList : fail : onFailure");
+            }
+        });
+    }
+
+    public void showErrorMessage() {
+        Toast.makeText(this, "Error loading posts", Toast.LENGTH_SHORT).show();
+    }
+
 
     public void checkCurrentUser(FirebaseUser user) {
         Log.d(TAG, "checkCurrentUser : checking if user is logged in");
@@ -171,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
             FirebaseUser user = firebaseAuth.getCurrentUser();
-            checkCurrentUser(user);
+            //checkCurrentUser(user);
 
             if (user != null) {
                 Log.d(TAG, "onAuthStateChanged : singed_in" + user.getUid());
@@ -206,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
-        checkCurrentUser(mAuth.getCurrentUser());
+        //checkCurrentUser(mAuth.getCurrentUser());
     }
 
     @Override

@@ -10,7 +10,7 @@ import smilegate.blackpants.univscanner.data.model.University;
 
 public interface UniversityApiService {
 
-    @GET("/getOpenApi?apiKey=48bc56d5d3c0ce3568aeb43ed3133924&svcType=api&svcCode=SCHOOL&contentType=json&gubun=univ_list&thisPage=1&perPage=448")
+    @GET("/getOpenApi?apiKey=48bc56d5d3c0ce3568aeb43ed3133924&svcType=api&svcCode=SCHOOL&contentType=json&gubun=univ_list&thisPage=1&perPage=5")
     Call<University> getUniversity();
 
 }

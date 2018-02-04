@@ -10,22 +10,21 @@ import android.widget.TextView;
 import java.util.List;
 
 import smilegate.blackpants.univscanner.R;
-import smilegate.blackpants.univscanner.data.model.University;
 
 /**
  * Created by user on 2018-01-24.
  */
 
-public class UniversityListAdapter extends ArrayAdapter<University>{
+public class UniversityListAdapter extends ArrayAdapter<String>{
 
     private static final String TAG = "UniversityListAdapter";
 
     private LayoutInflater mInflater;
-    private List<University> mUniversity = null;
+    private List<String> mUniversity = null;
     private int mLayoutResource;
     private Context mContext;
 
-    public UniversityListAdapter(Context context, int resource, List<University> objects) {
+    public UniversityListAdapter(Context context, int resource, List<String> objects) {
         super(context, resource, objects);
         this.mContext = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -47,7 +46,7 @@ public class UniversityListAdapter extends ArrayAdapter<University>{
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        //viewHolder.name.setText(getItem(position).getDataSearch().getContent();
+        viewHolder.name.setText(getItem(position));
         return convertView;
     }
 

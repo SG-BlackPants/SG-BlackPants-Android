@@ -18,9 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:theme="@style/MainTheme" android:name=".MainActivity" />
+        <activity android:theme="@style/MainTheme" android:name=".MainActivity"/>
         <activity android:theme="@style/MainTheme" android:name=".LoginActivity" />
-        <activity android:name=".CreateAccountActivity" />
+        <activity android:name=".CreateEmailAccountActivity" />
         <activity android:name=".EmailLoginActivity" />
         <meta-data android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id"/>

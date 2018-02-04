@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/top_create_account"
+        layout="@layout/layout_top_create_account" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+        <TextView
+            android:id="@+id/text_univ"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="학교 입력"
+            android:textColor="@color/dark_grey"
+            android:textSize="15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.045"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <AutoCompleteTextView
+            android:id="@+id/autoText_univ"
+            android:layout_width="380dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/textbox"
+            android:hint="학교명"
+            android:imeOptions="actionNext"
+            android:maxLines="1"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textSize="15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.465"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_univ" />
+
+        <FrameLayout
+            android:id="@+id/frameLayout_middle_emailinfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/autoText_univ">
+
+            <include
+                android:id="@+id/univ_list"
+                layout="@layout/layout_univ_list" />
+
+            <include
+                android:id="@+id/create_emailinfo"
+                layout="@layout/layout_create_emailinfo" />
+
+        </FrameLayout>
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
+
+
+</LinearLayout><!--
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="87dp"
+        android:layout_height="26dp"
+        android:layout_marginStart="28dp"
+        android:text="이메일"
+        app:layout_constraintBottom_toTopOf="@+id/autoText_email"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoText_email"
+        android:hint="abc@email.com"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="28dp"
+        app:layout_constraintBottom_toTopOf="@+id/textView4"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:text="비밀번호"
+        app:layout_constraintBottom_toTopOf="@+id/editText_password"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/editText_password"
+        android:hint="*********"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:layout_marginStart="28dp"
+        android:ems="10"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toTopOf="@+id/btn_create_account_complete"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_create_account_complete"
+        android:layout_width="230dp"
+        android:layout_height="53dp"
+        android:layout_marginBottom="192dp"
+        android:layout_marginStart="28dp"
+        android:text="회원가입"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+-->
+

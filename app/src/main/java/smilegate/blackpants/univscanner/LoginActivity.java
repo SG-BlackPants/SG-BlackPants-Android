@@ -56,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     private UserApiService mUserApiService;
     private FirebaseAuthStateListener mAuthListener;
     private android.app.AlertDialog dialog;
+    private boolean mIsFirstLogin;
 
     @BindView(R.id.btn_google_login)
     Button googleLoginBtn;
@@ -91,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @OnClick(R.id.text_create_account)
     public void createAccount(TextView textView) {
-        Intent intent = new Intent(this, CreateAccountActivity.class);
+        Intent intent = new Intent(this, CreateEmailAccountActivity.class);
         startActivity(intent);
     }
 
@@ -101,6 +102,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         dialog = new SpotsDialog(this, R.style.loginLodingTheme);
+        mIsFirstLogin = false;
 
         String infoStr = "계속 진행하시면 유니브스캐너의 <(>서비스 약관<)>과 <(>개인정보처리방침<)>에<br> 동의하시게 됩니다.";
         String colorCodeStart = "<font color='#ff7473'>";
@@ -156,6 +158,7 @@ public class LoginActivity extends AppCompatActivity {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
                 // 로그인 성공 시 파이어베이스로 인증
+
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
@@ -170,13 +173,18 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "firebaseAuthWithGoogle :" + acct.getId());
         Log.d(TAG, "Google JWT : " + acct.getIdToken());
         dialog.show();
+
+
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // 로그인 인증 성공
+                            mIsFirstLogin = task.getResult().getAdditionalUserInfo().isNewUser();
+                            Log.d(TAG, "Google Login : mIsFirstLogin : "+ mIsFirstLogin);
                             Log.d(TAG, "signInWithCredential : success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             Prefs.putString("loginRoute", "google");
@@ -204,6 +212,8 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // 로그인 인증 성공
+                            mIsFirstLogin = task.getResult().getAdditionalUserInfo().isNewUser();
+                            Log.d(TAG, "Facebook Login : mIsFirstLogin : "+ mIsFirstLogin);
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             Prefs.putString("loginRoute", "facebook");
@@ -248,6 +258,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<GetTokenResult> task) {
                         if (task.isSuccessful()) {
+
                             String idToken = task.getResult().getToken();
                             Prefs.putString("idToken", idToken);
                             Log.i("token", "token : success : " + idToken);
@@ -257,6 +268,7 @@ public class LoginActivity extends AppCompatActivity {
                             //sendPost("타이틀:제발되라", "body:될거라");
                             //getPost();
                             //sendPost("abc@example.com","홍길동","스마일대학교");
+
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
