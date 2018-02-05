@@ -11,11 +11,10 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.Filter;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -31,6 +30,12 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +59,7 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
     private List<String> mUniversityList;
     private UniversityListAdapter mAdapter;
     private UniversityApiService mUniversityApiService;
+    private int mFilterCount;
 
     @BindView(R.id.list_univ)
     ListView univListView;
@@ -96,7 +102,7 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
         String password = passwordText.getText().toString().trim();
         Log.i("입력값", email + ", " + password);
         createUser(email, password);*/
-        if(validateForm()) {
+        if (validateForm()) {
             loginInfoStatusTxt.setText("모두 일치");
         }
     }
@@ -108,8 +114,20 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         //mUniversityApiService = UniversityApiUtils.getAPIService();
         initTextListener();
+        saveToList();
         changeMiddleView("init");
+        mAdapter = new UniversityListAdapter(this, R.layout.layout_univ_listitem, mUniversityList);
 
+        univListView.setTextFilterEnabled(true);
+        univListView.setAdapter(mAdapter);
+        univListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "onItemClick : selected : " + mUniversityList.get(position).toString());
+                inputUnivText.setText(mUniversityList.get(position).toString());
+                changeMiddleView("emailInfo");
+            }
+        });
         //getUniversityList();
         //mAuth = FirebaseAuth.getInstance();
         /*mService = SQApiUtils.getSOService();
@@ -137,7 +155,24 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
                 changeMiddleView("univList");
                 String text = inputUnivText.getText().toString();
                 Log.d(TAG, "afterTextChanged : " + text);
-                searchForMatch(text);
+                if (text.length() == 0) {
+                    changeMiddleView("init");
+                } else {
+                    if (mAdapter != null) {
+                        mAdapter.getFilter().filter(s, new Filter.FilterListener() {
+                            @Override
+                            public void onFilterComplete(int count) {
+                                mFilterCount = count;
+                                setListViewHeightBasedOnChildren(univListView, mFilterCount);
+                            }
+                        });
+
+                    } else {
+                        Log.d("filter", "no filter availible");
+                    }
+                }
+
+                //searchForMatch(text);
             }
         });
     }
@@ -149,33 +184,26 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
         if (univName.length() == 0) {
             changeMiddleView("init");
         } else {
-            for (int i = 0; i < 13; i++) {
+          /*  for (int i = 0; i < 13; i++) {
                 mUniversityList.add(univName);
-            }
+            }*/
 
             //여기서 서버와 연동
-            updateUniversityList();
+            //updateUniversityList();
         }
     }
 
     public void updateUniversityList() {
         Log.d(TAG, "updateUniversityList : updating university list");
 
-        mAdapter = new UniversityListAdapter(this, R.layout.layout_univ_listitem, mUniversityList);
+       /* mAdapter = new UniversityListAdapter(this, R.layout.layout_univ_listitem, mUniversityList);
         setListViewHeightBasedOnChildren(univListView);
-        univListView.setAdapter(mAdapter);
+        univListView.setAdapter(mAdapter);*/
 
-        univListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "onItemClick : selected : " + mUniversityList.get(position).toString());
-                inputUnivText.setText(mUniversityList.get(position).toString());
-                changeMiddleView("emailInfo");
-            }
-        });
+
     }
 
-    public static void setListViewHeightBasedOnChildren(ListView listView) {
+    public static void setListViewHeightBasedOnChildren(ListView listView, int count) {
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null) {
             // pre-condition
@@ -185,12 +213,16 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
         int totalHeight = 0;
         int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.AT_MOST);
 
-        for (int i = 0; i < listAdapter.getCount(); i++) {
+/*        for (int i = 0; i < count; i++) {
             View listItem = listAdapter.getView(i, null, listView);
             listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
             totalHeight += listItem.getMeasuredHeight();
+        }*/
+        if (count > 0) {
+            View listItem = listAdapter.getView(0, null, listView);
+            listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+            totalHeight = listItem.getMeasuredHeight() * count;
         }
-
         ViewGroup.LayoutParams params = listView.getLayoutParams();
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
@@ -240,11 +272,7 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
         String passwordAgain = passwordAgainText.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
-            Animation shake = AnimationUtils.loadAnimation(this,R.anim.edittext_shake);
-            inputEmailText.startAnimation(shake);
-            inputEmailText.setError("!!!");
             loginInfoStatusTxt.setText("이메일을 입력하세요.");
-            inputEmailText.requestFocus();
             valid = false;
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             inputEmailText.setError(null);
@@ -328,5 +356,40 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
                         // ...
                     }
                 });
+    }
+
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = this.getAssets().open("university_list.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
+    public void saveToList() {
+        try {
+            JSONObject obj = new JSONObject(loadJSONFromAsset());
+            JSONArray content = obj.getJSONObject("dataSearch").getJSONArray("content");
+            mUniversityList = new ArrayList<String>();
+            for (int i = 0; i < content.length(); i++) {
+                JSONObject univInfo = content.getJSONObject(i);
+                String schoolName = univInfo.getString("schoolName");
+                String campusName = univInfo.getString("campusName");
+                String result = schoolName + " " + campusName;
+                Log.d(TAG, i + " : " + result);
+                mUniversityList.add(result);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

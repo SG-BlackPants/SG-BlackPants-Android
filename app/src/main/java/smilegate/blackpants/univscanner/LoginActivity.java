@@ -34,6 +34,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.pixplicity.easyprefs.library.Prefs;
 
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuthStateListener mAuthListener;
     private android.app.AlertDialog dialog;
     private boolean mIsFirstLogin;
+    private List<String> mUniversityList;
 
     @BindView(R.id.btn_google_login)
     Button googleLoginBtn;
