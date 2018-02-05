@@ -11,6 +11,9 @@
     <color name="redpink">#ff7473</color>
     <color name="red_dark">#B71C1C</color>
     <color name="red">#D50000</color>
+    <color name="yellow">#ffc952</color>
+    <color name="skyblue">#47b8e0</color>
 
     <color name="main_color">@color/redpink</color>
+    <color name="sub_color1">@color/skyblue</color>
 </resources>

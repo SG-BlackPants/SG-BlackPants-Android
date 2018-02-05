@@ -24,7 +24,16 @@
     <style name="loginLodingTheme" parent="android:Theme.DeviceDefault.Dialog">
         <item name="DialogTitleAppearance">@android:style/TextAppearance.Small</item>
         <item name="DialogTitleText">로그인 처리중입니다.\n잠시만 기다려주세요.</item>
-        <item name="DialogSpotColor">@color/colorPrimary</item>
+        <item name="DialogSpotColor">@color/sub_color1</item>
+        <item name="DialogSpotCount">5</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:background">@android:color/white</item>
+    </style>
+
+    <style name="createLodingTheme" parent="android:Theme.DeviceDefault.Dialog">
+        <item name="DialogTitleAppearance">@android:style/TextAppearance.Small</item>
+        <item name="DialogTitleText">회원가입 처리중입니다.\n잠시만 기다려주세요.</item>
+        <item name="DialogSpotColor">@color/sub_color1</item>
         <item name="DialogSpotCount">5</item>
         <item name="android:textColor">@android:color/black</item>
         <item name="android:background">@android:color/white</item>

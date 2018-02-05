@@ -93,7 +93,7 @@ public class ProfileFragment extends BaseFragment {
     }
 
     public void signOut() {
-        String loginRoute = Prefs.getString("loginRoute", null);
+        String loginRoute = Prefs.getString("loginRoute", "email");
 
         mAuth.signOut();
         switch (loginRoute) {
@@ -166,7 +166,6 @@ public class ProfileFragment extends BaseFragment {
     }
 
     public void goLoginActivity() {
-        Prefs.putBoolean("isLogin", false);
         Prefs.putString("loginRoute", null);
         Intent intent = new Intent(getContext(), LoginActivity.class);
         startActivity(intent);

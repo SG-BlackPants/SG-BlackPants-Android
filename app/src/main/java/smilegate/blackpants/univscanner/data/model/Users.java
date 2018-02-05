@@ -6,18 +6,30 @@ package smilegate.blackpants.univscanner.data.model;
 
 public class Users {
 
-    private String _id;
+    private String email;
 
     private String name;
 
     private String university;
 
-    public String get_id() {
-        return _id;
+    private String registrationToken;
+
+    private String loginToken;
+
+    public Users(String email, String name, String university, String registrationToken, String loginToken) {
+        this.email = email;
+        this.name = name;
+        this.university = university;
+        this.registrationToken = registrationToken;
+        this.loginToken = loginToken;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String _id) {
+        this.email = email;
     }
 
     public String getName() {
@@ -36,12 +48,30 @@ public class Users {
         this.university = university;
     }
 
+    public String getRegistrationToken() {
+        return registrationToken;
+    }
+
+    public void setRegistrationToken(String registrationToken) {
+        this.registrationToken = registrationToken;
+    }
+
+    public String getLoginToken() {
+        return loginToken;
+    }
+
+    public void setLoginToken(String loginToken) {
+        this.loginToken = loginToken;
+    }
+
     @Override
     public String toString() {
         return "Users{" +
-                "_id='" + _id + '\'' +
+                "email='" + email + '\'' +
                 ", name='" + name + '\'' +
                 ", university=" + university +
+                ", registrationToken=" + registrationToken +
+                ", loginToken=" + loginToken +
                 '}';
     }
 }

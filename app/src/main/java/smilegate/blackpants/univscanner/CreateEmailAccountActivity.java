@@ -19,7 +19,6 @@ import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -29,6 +28,9 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.pixplicity.easyprefs.library.Prefs;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,11 +44,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import smilegate.blackpants.univscanner.data.model.University;
-import smilegate.blackpants.univscanner.data.remote.UniversityApiService;
+import butterknife.OnItemClick;
+import dmax.dialog.SpotsDialog;
+import smilegate.blackpants.univscanner.data.model.Users;
 import smilegate.blackpants.univscanner.utils.UniversityListAdapter;
 
 /**
@@ -58,8 +58,8 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private List<String> mUniversityList;
     private UniversityListAdapter mAdapter;
-    private UniversityApiService mUniversityApiService;
     private int mFilterCount;
+    private android.app.AlertDialog mDialog;
 
     @BindView(R.id.list_univ)
     ListView univListView;
@@ -84,6 +84,9 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
     @BindView(R.id.autoText_email)
     AutoCompleteTextView inputEmailText;
 
+    @BindView(R.id.autoText_name)
+    AutoCompleteTextView inputNameText;
+
     @BindView(R.id.autoText_password)
     AutoCompleteTextView passwordText;
 
@@ -98,13 +101,21 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_emailcreate)
     public void createAccount(Button button) {
-        /*String email = inputEmailText.getText().toString().trim();
-        String password = passwordText.getText().toString().trim();
-        Log.i("입력값", email + ", " + password);
-        createUser(email, password);*/
         if (validateForm()) {
-            loginInfoStatusTxt.setText("모두 일치");
+            createUser(inputUnivText.getText().toString().trim(), inputNameText.getText().toString().trim(), inputEmailText.getText().toString().trim(), passwordText.toString().trim());
         }
+    }
+
+    @OnItemClick(R.id.list_univ)
+    public void univListItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.d(TAG, "onItemClick : selected : " + mUniversityList.get(position).toString());
+        String codeStart = "<b><font color='#000'>";
+        String codeEnd = "</font></b>";
+        String item = mUniversityList.get(position).toString();
+        item = item.replace(codeStart, ""); // <(> and <)> are different replace them with your color code String, First one with start tag
+        item = item.replace(codeEnd, ""); // then end tag
+        inputUnivText.setText(item);
+        changeMiddleView("emailInfo");
     }
 
     @Override
@@ -117,21 +128,11 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
         saveToList();
         changeMiddleView("init");
         mAdapter = new UniversityListAdapter(this, R.layout.layout_univ_listitem, mUniversityList);
-
+        mDialog = new SpotsDialog(this, R.style.createLodingTheme);
         univListView.setTextFilterEnabled(true);
         univListView.setAdapter(mAdapter);
-        univListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "onItemClick : selected : " + mUniversityList.get(position).toString());
-                inputUnivText.setText(mUniversityList.get(position).toString());
-                changeMiddleView("emailInfo");
-            }
-        });
-        //getUniversityList();
-        //mAuth = FirebaseAuth.getInstance();
-        /*mService = SQApiUtils.getSOService();
-        loadAnswers();*/
+
+        mAuth = FirebaseAuth.getInstance();
     }
 
     public void initTextListener() {
@@ -166,92 +167,34 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
                                 setListViewHeightBasedOnChildren(univListView, mFilterCount);
                             }
                         });
-
                     } else {
                         Log.d("filter", "no filter availible");
                     }
                 }
-
                 //searchForMatch(text);
             }
         });
     }
 
-    public void searchForMatch(String univName) {
-        Log.d(TAG, "searchForMatch : searcing for a match: " + univName);
-        mUniversityList.clear();
-
-        if (univName.length() == 0) {
-            changeMiddleView("init");
-        } else {
-          /*  for (int i = 0; i < 13; i++) {
-                mUniversityList.add(univName);
-            }*/
-
-            //여기서 서버와 연동
-            //updateUniversityList();
-        }
-    }
-
-    public void updateUniversityList() {
-        Log.d(TAG, "updateUniversityList : updating university list");
-
-       /* mAdapter = new UniversityListAdapter(this, R.layout.layout_univ_listitem, mUniversityList);
-        setListViewHeightBasedOnChildren(univListView);
-        univListView.setAdapter(mAdapter);*/
-
-
-    }
-
     public static void setListViewHeightBasedOnChildren(ListView listView, int count) {
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null) {
-            // pre-condition
             return;
         }
 
         int totalHeight = 0;
         int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.AT_MOST);
 
-/*        for (int i = 0; i < count; i++) {
-            View listItem = listAdapter.getView(i, null, listView);
-            listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
-            totalHeight += listItem.getMeasuredHeight();
-        }*/
         if (count > 0) {
             View listItem = listAdapter.getView(0, null, listView);
             listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
             totalHeight = listItem.getMeasuredHeight() * count;
         }
+
         ViewGroup.LayoutParams params = listView.getLayoutParams();
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
         listView.requestLayout();
-    }
-
-
-    public void getUniversityList() {
-        mUniversityApiService.getUniversity().enqueue(new Callback<University>() {
-            @Override
-            public void onResponse(Call<University> call, Response<University> response) {
-                /*for(University.Content content : response.body().getDataSearch().getContent()) {
-                    Log.d(TAG, "getUniversityList : " + content.getCampusName());
-                }*/
-                if (response.isSuccessful()) {
-                    Log.d(TAG, "getUniversityList : " + response.body());
-                } else {
-                    int statusCode = response.code();
-                    // handle request errors depending on status code
-                    Log.d(TAG, "getUniversityList : fail : " + statusCode);
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<University> call, Throwable t) {
-
-            }
-        });
     }
 
     @Override
@@ -266,28 +209,28 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
         // 1. 이메일 유효성 검사 - empty, 이메일 format
         // 2. 비밀번호 6자리 이상인지 검사
         // 3. 비빌번호 입력과 확인이 같은지 검사.
-
+        // 4. 이름 empty 검사
         String email = inputEmailText.getText().toString();
         String password = passwordText.getText().toString();
         String passwordAgain = passwordAgainText.getText().toString();
+        String name = inputNameText.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
             loginInfoStatusTxt.setText("이메일을 입력하세요.");
             valid = false;
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            inputEmailText.setError(null);
             loginInfoStatusTxt.setText("올바른 이메일을 입력하세요.");
             valid = false;
+        } else if (TextUtils.isEmpty(name)) {
+            loginInfoStatusTxt.setText("이름을 입력하세요.");
+            valid = false;
         } else if (TextUtils.isEmpty(password)) {
-            passwordText.setError(null);
             loginInfoStatusTxt.setText("비밀번호를 입력하세요.");
             valid = false;
         } else if (password.length() < 6) {
-            passwordText.setError(null);
             loginInfoStatusTxt.setText("비밀번호를 6자리 이상 입력하세요.");
             valid = false;
         } else if (!password.equals(passwordAgain)) {
-            passwordAgainText.setError(null);
             loginInfoStatusTxt.setText("비밀번호가 일치하지 않습니다.");
             valid = false;
         } else {
@@ -314,10 +257,10 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
                 createEmailInfoLayout.setVisibility(View.VISIBLE);
                 break;
         }
-
     }
 
-    public void createUser(String email, String password) {
+    public void createUser(final String universityInfo, final String name, final String email, final String password) {
+        mDialog.show();
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -326,34 +269,35 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            FirebaseAuth.getInstance().signOut();
-                            Intent intent = new Intent(CreateEmailAccountActivity.this, LoginActivity.class);
-                            intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(intent);
-                            finish();
-                            //updateUI(user);
+                            if (user != null) {
+                                // 유저가 로그인 했을 때
+                                user.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                                        if (task.isSuccessful()) {
+                                            // 서버에 보내기
+                                            String loginToken = task.getResult().getToken();
+                                            sendToServer(universityInfo, name, email, loginToken);
+                                        }
+                                    }
+                                });
+                            }
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             try {
                                 throw task.getException();
                             } catch (FirebaseAuthWeakPasswordException e) {
-                                Toast.makeText(CreateEmailAccountActivity.this, "비밀번호는 6자리 이상 입력해 주세요.",
-                                        Toast.LENGTH_SHORT).show();
+                                loginInfoStatusTxt.setText("비밀번호를 6자리 이상 입력하세요.");
                             } catch (FirebaseAuthInvalidCredentialsException e) {
-                                Toast.makeText(CreateEmailAccountActivity.this, "올바른 이메일을 입력하여 주세요.",
-                                        Toast.LENGTH_SHORT).show();
+                                loginInfoStatusTxt.setText("올바른 이메일을 입력하세요.");
                             } catch (FirebaseAuthUserCollisionException e) {
-                                Toast.makeText(CreateEmailAccountActivity.this, "이미 존재하는 이메일입니다.",
-                                        Toast.LENGTH_SHORT).show();
+                                loginInfoStatusTxt.setText("이미 존재하는 이메일입니다.");
                             } catch (Exception e) {
                                 Log.e(TAG, e.getMessage());
                             }
-
-                            //updateUI(null);
+                            mDialog.dismiss();
                         }
-
-                        // ...
                     }
                 });
     }
@@ -391,5 +335,18 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendToServer(String universityInfo, String name, String email, String loginToken) {
+        //서버와 통신
+        String registrationToken = FirebaseInstanceId.getInstance().getToken();
+        mDialog.dismiss();
+        Users user = new Users(email, name, universityInfo, registrationToken, loginToken);
+        Log.d(TAG, user.toString());
+        Prefs.putString("loginRoute", "email");
+        Intent intent = new Intent(CreateEmailAccountActivity.this, MainActivity.class);
+        intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 }

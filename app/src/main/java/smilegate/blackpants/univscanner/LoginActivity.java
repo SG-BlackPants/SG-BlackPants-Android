@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     private CallbackManager mCallbackManager;
     private UserApiService mUserApiService;
     private FirebaseAuthStateListener mAuthListener;
-    private android.app.AlertDialog dialog;
+    private android.app.AlertDialog mDialog;
     private boolean mIsFirstLogin;
     private List<String> mUniversityList;
 
@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        dialog = new SpotsDialog(this, R.style.loginLodingTheme);
+        mDialog = new SpotsDialog(this, R.style.loginLodingTheme);
         mIsFirstLogin = false;
 
         String infoStr = "계속 진행하시면 유니브스캐너의 <(>서비스 약관<)>과 <(>개인정보처리방침<)>에<br> 동의하시게 됩니다.";
@@ -174,7 +174,7 @@ public class LoginActivity extends AppCompatActivity {
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle :" + acct.getId());
         Log.d(TAG, "Google JWT : " + acct.getIdToken());
-        dialog.show();
+        mDialog.show();
 
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -196,7 +196,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
-                        dialog.dismiss();
+                        mDialog.dismiss();
                     }
                 });
     }
@@ -204,7 +204,7 @@ public class LoginActivity extends AppCompatActivity {
 
     // 파이어베이스 페이스북으로 인증
     private void handleFacebookAccessToken(AccessToken token) {
-        dialog.show();
+        mDialog.show();
         //Log.d(TAG, "facebook token :" + token.get);
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
@@ -225,7 +225,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
-                        dialog.dismiss();
+                        mDialog.dismiss();
                     }
                 });
     }
@@ -260,20 +260,21 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<GetTokenResult> task) {
                         if (task.isSuccessful()) {
-
                             String idToken = task.getResult().getToken();
                             Prefs.putString("idToken", idToken);
                             Log.i("token", "token : success : " + idToken);
-
-                            Prefs.putBoolean("isLogin", true);
                             //new ConnectServer().execute();
                             //sendPost("타이틀:제발되라", "body:될거라");
                             //getPost();
                             //sendPost("abc@example.com","홍길동","스마일대학교");
-
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
+                            if(mIsFirstLogin) {
+                                Intent intent = new Intent(LoginActivity.this, CreateSocialAccountActivity.class);
+                                startActivity(intent);
+                            } else {
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
                         } else {
                             Log.i("token", "token : fail");
                         }
