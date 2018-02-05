@@ -1,6 +1,8 @@
 package smilegate.blackpants.univscanner.utils;
 
 import android.content.Context;
+import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +19,7 @@ import smilegate.blackpants.univscanner.R;
  * Created by user on 2018-01-24.
  */
 
-public class UniversityListAdapter extends ArrayAdapter<String>{
+public class UniversityListAdapter extends ArrayAdapter<String> {
 
     private static final String TAG = "UniversityListAdapter";
 
@@ -34,6 +36,7 @@ public class UniversityListAdapter extends ArrayAdapter<String>{
         this.mLayoutResource = resource;
         this.mUniversity = objects;
     }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
@@ -49,7 +52,7 @@ public class UniversityListAdapter extends ArrayAdapter<String>{
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.name.setText(getItem(position));
+        viewHolder.name.setText((Html.fromHtml(getItem(position))));
         return convertView;
     }
 
@@ -76,10 +79,10 @@ public class UniversityListAdapter extends ArrayAdapter<String>{
 
     private class AppFilter<T> extends Filter {
 
-        private ArrayList<T> sourceObjects;
+        private ArrayList<String> sourceObjects;
 
-        public AppFilter(List<T> objects) {
-            sourceObjects = new ArrayList<T>();
+        public AppFilter(List<String> objects) {
+            sourceObjects = new ArrayList<String>();
             synchronized (this) {
                 sourceObjects.addAll(objects);
             }
@@ -87,15 +90,26 @@ public class UniversityListAdapter extends ArrayAdapter<String>{
 
         @Override
         protected FilterResults performFiltering(CharSequence chars) {
-            String filterSeq = chars.toString().toLowerCase();
+            String filterSeq = chars.toString();
+            String infoStr, colorCodeStart, colorCodeEnd;
             FilterResults result = new FilterResults();
-            if (filterSeq != null && filterSeq.length() > 0) {
-                ArrayList<T> filter = new ArrayList<T>();
+            StringBuffer sb;
 
-                for (T object : sourceObjects) {
+            if (filterSeq != null && filterSeq.length() > 0) {
+                ArrayList<String> filter = new ArrayList<String>();
+
+                for (String object : sourceObjects) {
                     // the filtering itself:
-                    if (object.toString().toLowerCase().contains(filterSeq))
-                        filter.add(object);
+                    int position = object.toString().toLowerCase().indexOf(filterSeq);
+                    if (position > -1) {
+                        infoStr = object.toString();
+                        sb = new StringBuffer(infoStr);
+                        colorCodeStart = "<b><font color='#000'>";
+                        colorCodeEnd = "</font></b>";
+                        sb.insert(position, colorCodeStart).toString();
+                        infoStr = sb.insert(position+filterSeq.length()+colorCodeStart.length(), colorCodeEnd).toString();
+                        filter.add(infoStr);
+                    }
                 }
                 result.count = filter.size();
                 result.values = filter;
