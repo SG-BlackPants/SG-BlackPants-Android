@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate()");
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setUpFirebaseAuth();
@@ -117,10 +118,10 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         });
 
         mBottomBarTab = bottomBar.getTabWithId(R.id.bb_menu_notification);
-        mBottomBarTab.setBadgeCount(1);
+        //mBottomBarTab.setBadgeCount(1);
         mMyBottomBarTab = new MyBottomBarTab(mBottomBarTab);
 
-       // setupBottomNavigationView();
+        // setupBottomNavigationView();
         /*viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -164,10 +165,10 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
                 /*for(University.Content content : response.body().getDataSearch().getContent()) {
                     Log.d(TAG, "getUniversityList : " + content.getCampusName());
                 }*/
-                if(response.isSuccessful()) {
+                if (response.isSuccessful()) {
                     Log.d(TAG, "getUniversityList : success");
-                }else {
-                    int statusCode  = response.code();
+                } else {
+                    int statusCode = response.code();
                     // handle request errors depending on status code
                     Log.d(TAG, "getUniversityList : fail : " + statusCode);
                 }
@@ -189,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     public void checkCurrentUser(FirebaseUser user) {
         Log.d(TAG, "checkCurrentUser : checking if user is logged in");
 
-        if(user == null) {
+        if (user == null) {
             Intent intent = new Intent(mContext, LoginActivity.class);
             startActivity(intent);
             finish();
@@ -207,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     class FirebaseAuthStateListener implements FirebaseAuth.AuthStateListener {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-
+            Log.d(TAG,"onAuthStateChanged()");
             FirebaseUser user = firebaseAuth.getCurrentUser();
             //checkCurrentUser(user);
 
@@ -242,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
 
     @Override
     public void onStart() {
+        Log.d(TAG,"onStart()");
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
         //checkCurrentUser(mAuth.getCurrentUser());
@@ -249,8 +251,9 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
 
     @Override
     public void onStop() {
+        Log.d(TAG,"onStop()");
         super.onStop();
-        if(mAuthListener != null) {
+        if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }

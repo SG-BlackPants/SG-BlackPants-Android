@@ -52,7 +52,6 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
-        // sets all the text and image resources when the card view is bind in our adapter
         final SearchResults searchResults = mSearchResultsList.get(position);
         holder.name.setText(searchResults.getName());
 

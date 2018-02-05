@@ -266,9 +266,11 @@ public class CreateSocialAccountActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         // 서버에 보내기
                         String loginToken = task.getResult().getToken();
+                        String registrationToken = FirebaseInstanceId.getInstance().getToken();
                         mDialog.dismiss();
                         Intent intent = new Intent(CreateSocialAccountActivity.this, MainActivity.class);
-                        intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                         finish();
                     }

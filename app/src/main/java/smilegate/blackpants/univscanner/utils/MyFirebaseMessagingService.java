@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.pixplicity.easyprefs.library.Prefs;
 
 import java.util.List;
 
@@ -28,8 +29,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.d(TAG, "Notification Title : " + remoteMessage.getNotification().getTitle());
             Log.d(TAG, "Notification Message : " + remoteMessage.getNotification().getBody());
 
-            KeywordNotificationManager.getInstance(getApplicationContext()).displayNotification(remoteMessage.getNotification().getTitle(),remoteMessage.getNotification().getBody());
-
+            //KeywordNotificationManager.getInstance(getApplicationContext()).displayNotification(remoteMessage.getNotification().getTitle(),remoteMessage.getNotification().getBody());
+            new KeywordNotificationManager(getApplicationContext()).displayNotification(remoteMessage.getNotification().getTitle(),remoteMessage.getNotification().getBody());
         }
 
         if(remoteMessage.getData().size() > 0) {
@@ -40,10 +41,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.d(TAG, "Message data payload (community) : " + remoteMessage.getData().get("community"));
             Log.d(TAG, "Message data payload (boardAddr) : " + remoteMessage.getData().get("boardAddr"));
 
-            KeywordNotificationManager.getInstance(getApplicationContext()).displayNotification("키워드 알림","등록하신 "+keyword+"에 대한 게시글이 "+community+"에서 새로 올라왔습니다.");
-
+            //KeywordNotificationManager.getInstance(getApplicationContext()).displayNotification("키워드 알림","등록하신 "+keyword+"에 대한 게시글이 "+community+"에서 새로 올라왔습니다.");
+            new KeywordNotificationManager(getApplicationContext()).displayNotification("키워드 알림","등록하신 "+keyword+"에 대한 게시글이 "+community+"에서 새로 올라왔습니다.");
         }
-
+        setBadge();
 
  /*       NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), "M_CH_ID");
 
@@ -79,20 +80,29 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     }
 
-    public static void setBadge(Context context, int count) {
-        String launcherClassName = getLauncherClassName(context);
+    public void setBadge() {
+        String launcherClassName = getLauncherClassName(getApplicationContext());
+        int badgeCount;
+
         if (launcherClassName == null) {
             return;
         }
+
+        badgeCount = Prefs.getInt("badgeCount",0);
+        badgeCount++;
+
+
         Intent intent = new Intent("android.intent.action.BADGE_COUNT_UPDATE");
-        intent.putExtra("badge_count", count);
-        intent.putExtra("badge_count_package_name", context.getPackageName());
+        intent.putExtra("badge_count", badgeCount);
+        intent.putExtra("badge_count_package_name", getApplicationContext().getPackageName());
         intent.putExtra("badge_count_class_name", launcherClassName);
         Log.d(TAG,launcherClassName);
-        context.sendBroadcast(intent);
+
+        Prefs.putInt("badgeCount", badgeCount);
+        sendBroadcast(intent);
     }
 
-    public static String getLauncherClassName(Context context) {
+    public String getLauncherClassName(Context context) {
 
         PackageManager pm = context.getPackageManager();
 

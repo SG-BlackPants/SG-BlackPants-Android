@@ -31,6 +31,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.pixplicity.easyprefs.library.Prefs;
 
 import java.util.Arrays;
@@ -176,7 +177,6 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "Google JWT : " + acct.getIdToken());
         mDialog.show();
 
-
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
 
         mAuth.signInWithCredential(credential)
@@ -233,6 +233,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart()");
         // 유저 로그인 상태변화 listener 장착
         mAuth.addAuthStateListener(mAuthListener);
         Log.d(TAG, "AuthStateListener : add");
@@ -241,6 +242,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
+        Log.d(TAG, "onCreate()");
         // 유저 로그인 상태변화 listener 해제
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
@@ -267,11 +269,15 @@ public class LoginActivity extends AppCompatActivity {
                             //sendPost("타이틀:제발되라", "body:될거라");
                             //getPost();
                             //sendPost("abc@example.com","홍길동","스마일대학교");
+                            String registrationToken = FirebaseInstanceId.getInstance().getToken();
+                            Log.d(TAG,"registrationToken : "+registrationToken);
                             if(mIsFirstLogin) {
                                 Intent intent = new Intent(LoginActivity.this, CreateSocialAccountActivity.class);
                                 startActivity(intent);
                             } else {
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
                                 finish();
                             }

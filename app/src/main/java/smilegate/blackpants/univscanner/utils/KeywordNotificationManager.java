@@ -20,7 +20,8 @@ public class KeywordNotificationManager {
     private Context mContext;
     private static KeywordNotificationManager mInstance;
 
-    private KeywordNotificationManager(Context context) {
+    // 키워드 알림 싱글톤
+  /*  private KeywordNotificationManager(Context context) {
         mContext = context;
     }
 
@@ -30,6 +31,10 @@ public class KeywordNotificationManager {
         }
 
         return mInstance;
+    }*/
+
+    public KeywordNotificationManager(Context context) {
+        mContext = context;
     }
 
     public void displayNotification(String title, String body) {
@@ -57,7 +62,7 @@ public class KeywordNotificationManager {
         PendingIntent resultPendingIntent =
                 stackBuilder.getPendingIntent(
                         0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                        PendingIntent.FLAG_ONE_SHOT
                 );
         notificationBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager =

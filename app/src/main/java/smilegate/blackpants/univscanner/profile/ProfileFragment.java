@@ -1,6 +1,5 @@
 package smilegate.blackpants.univscanner.profile;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,7 +27,6 @@ import com.pixplicity.easyprefs.library.Prefs;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import smilegate.blackpants.univscanner.LoginActivity;
 import smilegate.blackpants.univscanner.R;
 import smilegate.blackpants.univscanner.data.remote.UserApiService;
 import smilegate.blackpants.univscanner.utils.BaseFragment;
@@ -166,9 +164,11 @@ public class ProfileFragment extends BaseFragment {
     }
 
     public void goLoginActivity() {
+
         Prefs.putString("loginRoute", null);
-        Intent intent = new Intent(getContext(), LoginActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(getContext(), LoginActivity.class);
+        //startActivity(intent);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         getActivity().finish();
     }
 
