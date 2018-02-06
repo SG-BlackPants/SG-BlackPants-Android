@@ -50,14 +50,13 @@ public class KeywordRankListAdapter extends ArrayAdapter<KeywordRank>{
         }
 
         viewHolder.name.setText(getItem(position).getName());
-        viewHolder.rank.setText(getItem(position).getRank());
+        viewHolder.rank.setText(String.valueOf(getItem(position).getRank()));
 
         return convertView;
     }
 
     public static class ViewHolder {
-        TextView name;
-        TextView rank;
+        TextView name, rank;
     }
 
 }

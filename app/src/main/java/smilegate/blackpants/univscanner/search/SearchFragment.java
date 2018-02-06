@@ -3,6 +3,7 @@ package smilegate.blackpants.univscanner.search;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,25 +96,26 @@ public class SearchFragment extends BaseFragment {
         mKeywordRankList.add(new KeywordRank(8,"평창올림픽"));
         mKeywordRankList.add(new KeywordRank(9,"개강일"));
         mKeywordRankList.add(new KeywordRank(10,"수강신청"));
-        mAdapter = new KeywordRankListAdapter(getContext(), R.layout.layout_rank_listitem, mKeywordRankList);
-        setListViewHeightBasedOnChildren(keywordRankListView,mKeywordRankList.size());
-        keywordRankListView.setAdapter(mAdapter);
 
+        mAdapter = new KeywordRankListAdapter(getContext(), R.layout.layout_rank_listitem, mKeywordRankList);
+        keywordRankListView.setAdapter(mAdapter);
+        setListViewHeightBasedOnChildren(keywordRankListView);
     }
 
-    public static void setListViewHeightBasedOnChildren(ListView listView, int count) {
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null) {
+            // pre-condition
             return;
         }
 
         int totalHeight = 0;
         int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.AT_MOST);
-
-        if (count > 0) {
-            View listItem = listAdapter.getView(0, null, listView);
+        Log.d(TAG, listAdapter.getCount()+"");
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
             listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
-            totalHeight = listItem.getMeasuredHeight() * count;
+            totalHeight += listItem.getMeasuredHeight();
         }
 
         ViewGroup.LayoutParams params = listView.getLayoutParams();
