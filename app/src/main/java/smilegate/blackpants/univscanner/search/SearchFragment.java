@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.aotasoft.taggroup.TagGroup;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -45,6 +47,10 @@ public class SearchFragment extends BaseFragment {
         if (view == null) {
             view = inflater.inflate(R.layout.fragment_search, container, false);
             ButterKnife.bind(this, view);
+            TagGroup mTagGroup = (TagGroup) view.findViewById(R.id.tag_group);
+            mTagGroup.setGravity(TagGroup.TagGravity.MIDDLE);
+            mTagGroup.setTags(new String[]{"도레미파솔", "김치찌개", "비트코인","수강신청 날짜","멀머날어ㅓ아머리너ㅣㅏ렁니러ㅣ"});
+
         }
         return view;
     }

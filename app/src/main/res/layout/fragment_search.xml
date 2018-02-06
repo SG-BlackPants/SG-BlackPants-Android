@@ -1,20 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
     <include
         android:id="@+id/top_searchbar"
-        layout="@layout/layout_top_searchbar"/>
-    <RelativeLayout
+        layout="@layout/layout_top_searchbar" />
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/top_searchbar"
-        android:background="@color/white">
-        <TextView
+        android:fillViewport="true">
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="인기 키워드, 최근 검색 키워드 자리"
-            android:id="@+id/textView5" />
-    </RelativeLayout>
-</RelativeLayout>
+            android:layout_height="match_parent">
+
+
+            <RelativeLayout
+                android:id="@+id/relLayout_recent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/text_recentKeyword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="18dp"
+                    android:text="최근 키워드"
+                    android:textColor="@color/black"
+                    android:textSize="15dp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/text_recentKeyword"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp">
+
+                    <com.aotasoft.taggroup.TagGroup
+                        android:id="@+id/tag_group"
+                        style="@style/TagGroup.Custom"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/view_search1"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_below="@+id/relLayout_recent" />
+
+            <RelativeLayout
+                android:id="@+id/relLayout_rank"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/view_search1"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/text_rank"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="18dp"
+                    android:text="실시간 키워드"
+                    android:textColor="@color/black"
+                    android:textSize="15dp" />
+
+
+                <ListView
+                    android:id="@+id/list_univ"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/text_rank"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="5dp"
+                    android:divider="@color/grey"
+                    android:dividerHeight="1dip"
+                    android:scrollbars="none" />
+
+                <TextView
+                    android:id="@+id/text_rank_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/list_univ"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="5dp"
+                    android:text="2018.02.06(화) 15:57"
+                    android:textColor="@color/grey"
+                    android:textSize="15dp" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
+</LinearLayout>
