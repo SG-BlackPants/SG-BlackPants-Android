@@ -12,6 +12,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import smilegate.blackpants.univscanner.R;
 import smilegate.blackpants.univscanner.data.model.SearchResults;
 
@@ -26,13 +28,18 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView name;
-        public ImageView image;
+        @BindView(R.id.text_post_name) TextView postName;
+        @BindView(R.id.text_post_time) TextView postTime;
+        @BindView(R.id.text_post_content) TextView postContent;
+        @BindView(R.id.text_post_source) TextView postSource;
+        @BindView(R.id.text_post_author) TextView postAuthor;
+        @BindView(R.id.text_post_url) TextView postUrl;
+        @BindView(R.id.text_post_image) ImageView postImage;
+
 
         public MyViewHolder(View view) {
             super(view);
-            name = (TextView) view.findViewById(R.id.text_post_name);
-            image = (ImageView) view.findViewById(R.id.text_post_image);
+            ButterKnife.bind(this, view);
         }
     }
 
@@ -53,13 +60,24 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
         final SearchResults searchResults = mSearchResultsList.get(position);
-        holder.name.setText(searchResults.getName());
+        holder.postName.setText(searchResults.getTitle());
+        holder.postTime.setText(searchResults.getCreatedDate());
+        holder.postContent.setText(searchResults.getContent());
+        holder.postSource.setText(searchResults.getCommunity()+" "+searchResults.getBoardAddr());
+        holder.postAuthor.setText(searchResults.getAuthor());
+        holder.postUrl.setText(searchResults.getUrl());
 
-        Picasso.with(mContext)
-                .load(searchResults.getImage())
-                .resize(1280, 720)
-                .centerCrop()
-                .into(holder.image);
+        if(searchResults.getImages().size()<1) {
+            holder.postImage.setVisibility(View.GONE);
+        } else {
+            Picasso.with(mContext)
+                    .load(searchResults.getImages().get(0))
+                    .resize(1280, 720)
+                    .centerCrop()
+                    .placeholder(R.drawable.app_logo2)
+                    .into(holder.postImage);
+
+        }
     }
 
     @Override
