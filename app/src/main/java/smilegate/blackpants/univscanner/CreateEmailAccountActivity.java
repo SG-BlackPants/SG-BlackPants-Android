@@ -46,7 +46,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 import dmax.dialog.SpotsDialog;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import smilegate.blackpants.univscanner.data.model.Users;
+import smilegate.blackpants.univscanner.data.remote.ApiUtils;
+import smilegate.blackpants.univscanner.data.remote.UserApiService;
 import smilegate.blackpants.univscanner.utils.UniversityListAdapter;
 
 /**
@@ -60,6 +65,7 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
     private UniversityListAdapter mAdapter;
     private int mFilterCount;
     private android.app.AlertDialog mDialog;
+    private UserApiService mUserApiService;
 
     @BindView(R.id.list_univ)
     ListView univListView;
@@ -131,7 +137,7 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
         mDialog = new SpotsDialog(this, R.style.createLodingTheme);
         univListView.setTextFilterEnabled(true);
         univListView.setAdapter(mAdapter);
-
+        mUserApiService = ApiUtils.getAPIService();
         mAuth = FirebaseAuth.getInstance();
     }
 
@@ -277,7 +283,7 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
                                         if (task.isSuccessful()) {
                                             // 서버에 보내기
                                             String loginToken = task.getResult().getToken();
-                                            sendToServer(universityInfo, name, email, loginToken);
+                                            sendToServer(loginToken, name, universityInfo);
                                         }
                                     }
                                 });
@@ -337,17 +343,33 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
         }
     }
 
-    public void sendToServer(String universityInfo, String name, String email, String loginToken) {
-        //서버와 통신
+    public void sendToServer(String loginToken, String name, String universityInfo) {
         String registrationToken = FirebaseInstanceId.getInstance().getToken();
-        mDialog.dismiss();
-        Users user = new Users(email, name, universityInfo, registrationToken, loginToken);
-        Log.d(TAG, user.toString());
-        Prefs.putString("loginRoute", "email");
-        Intent intent = new Intent(CreateEmailAccountActivity.this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
+        //서버와 통신
+        mUserApiService.setUsers(loginToken, registrationToken, name, universityInfo).enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                if (response.isSuccessful()) {
+                    Log.e("ResponseData", response.body().toString());
+                    Log.i(TAG, "post submitted to API." + response.body().toString());
+
+                    mDialog.dismiss();
+                    Prefs.putString("loginRoute", "email");
+                    Intent intent = new Intent(CreateEmailAccountActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
+                Log.e(TAG, "Unable to submit post to API.");
+                mDialog.dismiss();
+                finish();
+            }
+        });
     }
+
 }

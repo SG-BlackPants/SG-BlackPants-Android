@@ -42,11 +42,21 @@ public class SearchViewFragment extends BaseFragment {
 
     @BindView(R.id.btn_searchview_back)
     ImageButton searchViewBackBtn;
+
+    @BindView(R.id.btn_searchview_clear)
+    ImageButton searchViewClearBtn;
+
     @OnClick(R.id.btn_searchview_back)
     public void searchViewBack(ImageButton imageButton) {
         if (!mNavController.popFragment()) {
             getActivity().onBackPressed();
         }
+    }
+
+    @OnClick(R.id.btn_searchview_clear)
+    public void searchViewClear(ImageButton imageButton) {
+        searchAutoText.setText("");
+        searchViewClearBtn.setVisibility(View.GONE);
     }
 
     @BindView(R.id.list_search)
@@ -70,6 +80,7 @@ public class SearchViewFragment extends BaseFragment {
             mView = inflater.inflate(R.layout.fragment_search_view, container, false);
             ButterKnife.bind(this, mView);
             initTextListener();
+            searchViewClearBtn.setVisibility(View.GONE);
             count=0;
         }
         return mView;
@@ -108,7 +119,9 @@ public class SearchViewFragment extends BaseFragment {
 
         if(keyword.length()==0) {
             count=0;
+            searchViewClearBtn.setVisibility(View.GONE);
         } else {
+            searchViewClearBtn.setVisibility(View.VISIBLE);
             //여기서 서버와 연동
             for(int i=0;i<count;i++){
                 mKeywordsList.add(new Keywords("키워드"+count));

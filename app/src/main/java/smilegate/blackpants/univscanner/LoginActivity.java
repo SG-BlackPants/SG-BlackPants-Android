@@ -41,8 +41,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dmax.dialog.SpotsDialog;
+import smilegate.blackpants.univscanner.data.remote.ApiUtils;
 import smilegate.blackpants.univscanner.data.remote.UserApiService;
-import smilegate.blackpants.univscanner.data.remote.UserApiUtils;
 
 /**
  * Created by user on 2018-01-15.
@@ -124,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         mAuth = FirebaseAuth.getInstance();
 
-        mUserApiService = UserApiUtils.getAPIService();
+        mUserApiService = ApiUtils.getAPIService();
         mAuthListener = new FirebaseAuthStateListener();
 
         mCallbackManager = CallbackManager.Factory.create();
