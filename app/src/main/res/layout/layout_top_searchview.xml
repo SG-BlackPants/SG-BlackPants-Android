@@ -36,7 +36,7 @@
         android:layout_marginEnd="20dp"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/autoText_search"
-        android:src="@drawable/ic_back_arrow"
+        android:src="@drawable/ic_cancel"
         android:background="@android:color/transparent"
         android:id="@+id/btn_searchview_clear"/>
 </RelativeLayout>

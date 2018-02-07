@@ -1,27 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:paddingBottom="7dp"
+    android:paddingTop="7dp">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        app:civ_border_color="@color/black"
-        app:civ_border_width="0.5dp"
-        android:layout_marginLeft="20dp"
+    <FrameLayout
+        android:id="@+id/frameLayout_hashtag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_sharp"
-        android:id="@+id/ic_sharp"/>
+        android:layout_marginStart="18dp"
+        android:background="@drawable/circle_background"
+        android:padding="6dp">
 
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ic_sharp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/ic_hashtag"/>
+
+    </FrameLayout>
 
     <TextView
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_centerVertical="true"
-         android:layout_toRightOf="@+id/ic_sharp"
-         android:text="키워드"
-         android:layout_marginLeft="20dp"
-         android:textSize="15sp"
-         android:id="@+id/text_keywordName"/>
+        android:id="@+id/text_keywordName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@+id/frameLayout_hashtag"
+        android:text="키워드"
+        android:textSize="15sp"
+        android:textColor="@color/black"/>
 </RelativeLayout>
