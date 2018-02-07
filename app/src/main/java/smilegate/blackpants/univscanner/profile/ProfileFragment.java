@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -27,7 +26,12 @@ import com.pixplicity.easyprefs.library.Prefs;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import smilegate.blackpants.univscanner.R;
+import smilegate.blackpants.univscanner.data.model.Users;
+import smilegate.blackpants.univscanner.data.remote.ApiUtils;
 import smilegate.blackpants.univscanner.data.remote.UserApiService;
 import smilegate.blackpants.univscanner.utils.BaseFragment;
 
@@ -52,10 +56,12 @@ public class ProfileFragment extends BaseFragment {
     public void logout(Button button) {
         signOut();
     }
+
     @OnClick(R.id.btn_delete)
     public void revoke(Button button) {
         deleteAccount();
     }
+
     public static ProfileFragment newInstance(int instance) {
         Bundle args = new Bundle();
         args.putInt(ARGS_INSTANCE, instance);
@@ -76,7 +82,7 @@ public class ProfileFragment extends BaseFragment {
                     .build();
 
             mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gso);
-
+            mUserApiService = ApiUtils.getAPIService();
             mAuth = FirebaseAuth.getInstance();
 
             ButterKnife.bind(this, view);
@@ -118,13 +124,13 @@ public class ProfileFragment extends BaseFragment {
         }
     }
 
-    private void deleteAccount() {
+/*    private void deleteAccount() {
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         AuthCredential credential;
 
         String loginRoute = Prefs.getString("loginRoute", null);
         String idToken = Prefs.getString("idToken", null);
-
+        Log.d(TAG, "loginRoute : "+ loginRoute + " / idToken : " + idToken);
         if (idToken != null) {
             switch (loginRoute) {
                 case "google":
@@ -150,8 +156,10 @@ public class ProfileFragment extends BaseFragment {
                                             if (task.isSuccessful()) {
                                                 Log.d(TAG, "User account deleted.");
                                                 // 자동로그인 off
-                                                //delete("abc@example.com");
-                                                signOut();
+
+
+                                            } else {
+                                                Log.e(TAG, "firebase user delete fail");
                                             }
                                         }
                                     });
@@ -161,7 +169,64 @@ public class ProfileFragment extends BaseFragment {
             Toast.makeText(getContext(), "Account delete failed.",
                     Toast.LENGTH_SHORT).show();
         }
+    }*/
+
+    private void deleteAccount() {
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
+        AuthCredential credential;
+
+        String loginRoute = Prefs.getString("loginRoute", null);
+        String idToken = Prefs.getString("idToken", null);
+        Log.d(TAG, "loginRoute : " + loginRoute + " / idToken : " + idToken);
+        if (idToken != null) {
+            switch (loginRoute) {
+                case "google":
+                    credential = GoogleAuthProvider.getCredential(idToken, null);
+                    break;
+                case "facebook":
+                    credential = FacebookAuthProvider.getCredential(idToken);
+                    break;
+                case "email":
+                    credential = EmailAuthProvider.getCredential(mUser.getEmail(), Prefs.getString("password", null));
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        mUser.delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "User account deleted.");
+                            // 자동로그인 off
+                            mUserApiService.deleteUser(mUser.getUid()).enqueue(new Callback<Users>() {
+                                @Override
+                                public void onResponse(Call<Users> call, Response<Users> response) {
+                                    if (response.isSuccessful()) {
+                                        Log.e("ResponseData", response.body().toString());
+                                        Log.i(TAG, "post submitted to API." + response.body().toString());
+                                        //signOut();
+                                        goLoginActivity();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Users> call, Throwable t) {
+                                    Log.e(TAG, "Unable to submit post to API.");
+                                }
+                            });
+
+                        } else {
+                            Log.e(TAG, "firebase user delete fail");
+                        }
+                    }
+                });
     }
+
+
+
 
     public void goLoginActivity() {
 

@@ -21,6 +21,6 @@ public interface UserApiService {
                          @Field("university") String university);
 
     @DELETE("/users/{id}")
-    Call<Users> deleteUser(@Path("email") String email);
+    Call<Users> deleteUser(@Path("id") String uid);
 
 }
