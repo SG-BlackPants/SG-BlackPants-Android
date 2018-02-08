@@ -17,25 +17,26 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
+import com.google.gson.Gson;
 import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.FragNavSwitchController;
 import com.ncapdevi.fragnav.FragNavTransactionOptions;
 import com.ncapdevi.fragnav.tabhistory.FragNavTabHistoryController;
+import com.pixplicity.easyprefs.library.Prefs;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.BottomBarTab;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import smilegate.blackpants.univscanner.data.model.LoginInfo;
 import smilegate.blackpants.univscanner.data.model.MyBottomBarTab;
 import smilegate.blackpants.univscanner.data.model.University;
+import smilegate.blackpants.univscanner.data.remote.ApiUtils;
 import smilegate.blackpants.univscanner.data.remote.UniversityApiService;
 import smilegate.blackpants.univscanner.data.remote.UserApiService;
 import smilegate.blackpants.univscanner.notification.NotificationFragment;
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setUpFirebaseAuth();
+        mUserApiService = ApiUtils.getAPIService();
         boolean initial = savedInstanceState == null;
         if (initial) {
             bottomBar.selectTabAtPosition(INDEX_HOME);
@@ -213,8 +215,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             Log.d(TAG,"onAuthStateChanged()");
             FirebaseUser user = firebaseAuth.getCurrentUser();
-            //checkCurrentUser(user);
-            Set<String> userInfo = new HashSet<>();
+            getFromServer(user.getUid());
             if (user != null) {
                 Log.d(TAG, "onAuthStateChanged : singed_in" + user.getUid());
                 user.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
@@ -322,6 +323,24 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
                 break;
         }
         return true;
+    }
+
+    public void getFromServer(String uid) {
+        mUserApiService.getLoginInfo(uid).enqueue(new Callback<LoginInfo>() {
+            @Override
+            public void onResponse(Call<LoginInfo> call, Response<LoginInfo> response) {
+                Gson gson = new Gson();
+                LoginInfo loginInfo = new LoginInfo(response.body().getName(), response.body().getUniversity());
+                String json = gson.toJson(loginInfo);
+                Log.d(TAG,"Json : "+json);
+                Prefs.putString("userInfo",json);
+            }
+
+            @Override
+            public void onFailure(Call<LoginInfo> call, Throwable t) {
+                Log.d(TAG,"Failed : user login info(name, university)");
+            }
+        });
     }
 
 /*    public void setupBottomNavigationView() {

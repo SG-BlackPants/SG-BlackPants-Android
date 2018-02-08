@@ -307,8 +307,4 @@ public class CreateSocialAccountActivity extends AppCompatActivity {
 
 
     }
-
-    public void sendToServer(String loginToken, String name, String universityInfo) {
-
-    }
 }

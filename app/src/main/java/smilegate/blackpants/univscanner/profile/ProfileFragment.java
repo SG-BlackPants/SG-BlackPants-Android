@@ -22,6 +22,7 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.gson.Gson;
 import com.pixplicity.easyprefs.library.Prefs;
 
 import butterknife.BindView;
@@ -31,6 +32,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import smilegate.blackpants.univscanner.R;
+import smilegate.blackpants.univscanner.data.model.LoginInfo;
 import smilegate.blackpants.univscanner.data.model.Users;
 import smilegate.blackpants.univscanner.data.remote.ApiUtils;
 import smilegate.blackpants.univscanner.data.remote.UserApiService;
@@ -92,8 +94,13 @@ public class ProfileFragment extends BaseFragment {
             mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gso);
             mUserApiService = ApiUtils.getAPIService();
             mAuth = FirebaseAuth.getInstance();
-
             ButterKnife.bind(this, view);
+            Gson gson = new Gson();
+            String json = Prefs.getString("userInfo","");
+            LoginInfo loginInfo = gson.fromJson(json, LoginInfo.class);
+            profileNameTxt.setText(loginInfo.getName());
+            profileUniversityTxt.setText(loginInfo.getUniversity());
+            profileEmailTxt.setText(mAuth.getCurrentUser().getEmail());
         }
         return view;
     }
