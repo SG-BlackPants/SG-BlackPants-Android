@@ -108,13 +108,15 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
     @OnClick(R.id.btn_emailcreate)
     public void createAccount(Button button) {
         if (validateForm()) {
-            createUser(inputUnivText.getText().toString().trim(), inputNameText.getText().toString().trim(), inputEmailText.getText().toString().trim(), passwordText.toString().trim());
+            String university= inputUnivText.getText().toString().trim();
+            university = university.replace(" ", "-");
+            createUser(university, inputNameText.getText().toString().trim(), inputEmailText.getText().toString().trim(), passwordText.toString().trim());
         }
     }
 
     @OnItemClick(R.id.list_univ)
     public void univListItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.d(TAG, "onItemClick : selected : " + mUniversityList.get(position).toString());
+        Log.d(TAG, "onItemClick : selected : "  + mUniversityList.get(position).toString());
         String codeStart = "<b><font color='#000'>";
         String codeEnd = "</font></b>";
         String item = mUniversityList.get(position).toString();

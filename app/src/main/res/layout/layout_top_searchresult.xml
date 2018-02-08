@@ -31,6 +31,17 @@
             android:singleLine="true"
             android:text="키워드"
             android:textSize="20dp" />
+
+        <ImageButton
+            android:id="@+id/btn_register_keyword"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="10dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_notification" />
     </RelativeLayout>
 
     <include

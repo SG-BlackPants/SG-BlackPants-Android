@@ -1,16 +1,20 @@
 package smilegate.blackpants.univscanner.search;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +60,9 @@ public class SearchResultFragment extends BaseFragment {
     /*@BindView(R.id.drawer_filter)
     View drawerView;
 */
+    @BindView(R.id.btn_register_keyword)
+    ImageButton registerKeywordBtn;
+
     @BindView(R.id.nvView)
     View drawerView;
 
@@ -66,6 +73,39 @@ public class SearchResultFragment extends BaseFragment {
     public void filterClick(Button button) {
         drawerLayout.openDrawer(drawerView);
     }
+
+    @OnClick(R.id.btn_register_keyword)
+    public void registerKeywordClick(ImageButton imageButton) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        Log.d(TAG,"등록 키워드 클릭");
+
+        alertDialogBuilder.setTitle("키워드 등록");
+
+        alertDialogBuilder
+                .setMessage("해당 키워드를 등록하시겠습니까?")
+                .setCancelable(false)
+                .setPositiveButton("등록",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(
+                                    DialogInterface dialog, int id) {
+                                // 서버로 보내기
+                                Toast.makeText(getContext(), "등록", Toast.LENGTH_LONG).show();
+                                dialog.cancel();
+                            }
+                        })
+                .setNegativeButton("취소",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(
+                                    DialogInterface dialog, int id) {
+                                // 다이얼로그를 취소한다
+                                dialog.cancel();
+                            }
+                        });
+        AlertDialog dialog = alertDialogBuilder.create();
+        dialog.show();
+
+    }
+
 
     public static SearchResultFragment newInstance(int instance) {
         Bundle args = new Bundle();

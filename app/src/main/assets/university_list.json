@@ -717,6 +717,19 @@
                 "seq": "24"
             },
             {
+                "campusName": "국제캠퍼스",
+                "collegeinfourl": "null",
+                "schoolType": "일반대학",
+                "link": "http://www.khu.ac.kr",
+                "schoolGubun": "대학(4년제)",
+                "adres": "서울특별시 동대문구 경희대로 26 (회기동, 경희대학교)",
+                "schoolName": "경희대학교",
+                "region": "서울특별시",
+                "totalCount": "448",
+                "estType": "사립",
+                "seq": "24"
+            },
+            {
                 "campusName": "본교",
                 "collegeinfourl": "null",
                 "schoolType": "사이버대학(4년제)",

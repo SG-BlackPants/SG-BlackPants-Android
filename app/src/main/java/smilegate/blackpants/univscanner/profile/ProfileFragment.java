@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.RelativeLayout;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -40,25 +40,27 @@ import smilegate.blackpants.univscanner.utils.BaseFragment;
  */
 
 public class ProfileFragment extends BaseFragment {
-    private static final String TAG = "NotificationFragment";
+    private static final String TAG = "ProfileFragment";
     private View view;
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
     private GoogleSignInClient mGoogleSignInClient;
     private UserApiService mUserApiService;
 
-    @BindView(R.id.btn_signout)
-    Button logoutBtn;
-    @BindView(R.id.btn_delete)
-    Button revokeBtn;
+    @BindView(R.id.relLayout_logout)
+    RelativeLayout logoutBtn;
+    @BindView(R.id.relLayout_delete)
+    RelativeLayout deleteAccountBtn;
 
-    @OnClick(R.id.btn_signout)
-    public void logout(Button button) {
+    @OnClick(R.id.relLayout_logout)
+    public void logoutClick(RelativeLayout relativeLayout) {
+        Log.d(TAG,"로그아웃 클릭");
         signOut();
     }
 
-    @OnClick(R.id.btn_delete)
-    public void revoke(Button button) {
+    @OnClick(R.id.relLayout_delete)
+    public void deleteAccountClick(RelativeLayout relativeLayout) {
+        Log.d(TAG,"회원탈퇴 클릭");
         deleteAccount();
     }
 

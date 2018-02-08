@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginBottom="10dp">
 
     <LinearLayout
         android:id="@+id/LinLayout1"
@@ -14,8 +15,8 @@
         android:orientation="horizontal">
 
         <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:src="@drawable/ic_hashtag"
             app:civ_border_color="@color/middle_grey"
             app:civ_border_width="0.8dp" />
@@ -32,7 +33,7 @@
                 android:singleLine="true"
                 android:text="수강신청 날짜가 언제인가요?"
                 android:textColor="@android:color/black"
-                android:textSize="14dp"
+                android:textSize="17dp"
                 android:textStyle="bold" />
 
             <TextView
@@ -44,7 +45,7 @@
                 android:singleLine="true"
                 android:text="3시간 전"
                 android:textColor="@color/dark_grey"
-                android:textSize="8dp" />
+                android:textSize="13dp" />
         </RelativeLayout>
     </LinearLayout>
 
@@ -60,7 +61,7 @@
 4학년이 월요일날 하잖아요
 그러면 앞서서 4학년3학년들이 좋은과목 인원 수 다채우면 1,2학년들은 그냥 다른과목을 선택해야하나요? 아니면 학년별로 수강신청 제한이 있나요?"
         android:textColor="@color/dark_grey"
-        android:textSize="11dp" />
+        android:textSize="13dp" />
 
     <Button
         android:id="@+id/btn_detail"
@@ -69,7 +70,7 @@
         android:layout_marginStart="10dp"
         android:text="자세히보기"
         android:textColor="@color/dark_grey"
-        android:textSize="7dp" />
+        android:textSize="9dp" />
 
     <ImageView
         android:id="@+id/text_post_image"
@@ -94,7 +95,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/dark_grey"
-            android:textSize="11dp"
+            android:textSize="13dp"
             android:text="출처 : "/>
 
         <TextView
@@ -106,7 +107,7 @@
             android:singleLine="true"
             android:text="페이스북 대나무숲"
             android:textColor="@color/dark_grey"
-            android:textSize="11dp"  />
+            android:textSize="13dp"  />
     </LinearLayout>
 
 
@@ -121,7 +122,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/dark_grey"
-            android:textSize="11dp"
+            android:textSize="13dp"
             android:text="작성자 : "/>
 
         <TextView
@@ -146,7 +147,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/dark_grey"
-            android:textSize="11dp"
+            android:textSize="13dp"
             android:text="원본링크 : "/>
 
         <TextView
@@ -158,6 +159,6 @@
             android:singleLine="true"
             android:text="www.facebook.com"
             android:textColor="@color/dark_grey"
-            android:textSize="11dp"  />
+            android:textSize="13dp"  />
     </LinearLayout>
 </LinearLayout>

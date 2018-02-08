@@ -91,7 +91,9 @@ public class CreateSocialAccountActivity extends AppCompatActivity {
     @OnClick(R.id.btn_socialcreate)
     public void createAccount(Button button) {
         if (validateForm()) {
-            sendToServer(inputUnivText.getText().toString().trim(), inputNameText.getText().toString().trim());
+            String university= inputUnivText.getText().toString().trim();
+            university = university.replace(" ", "-");
+            sendToServer(university, inputNameText.getText().toString().trim());
         }
 
     }
