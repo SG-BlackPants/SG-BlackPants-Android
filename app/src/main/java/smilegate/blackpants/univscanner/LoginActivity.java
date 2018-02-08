@@ -265,10 +265,6 @@ public class LoginActivity extends AppCompatActivity {
                             String idToken = task.getResult().getToken();
                             Prefs.putString("idToken", idToken);
                             Log.i("token", "token : success : " + idToken);
-                            //new ConnectServer().execute();
-                            //sendPost("타이틀:제발되라", "body:될거라");
-                            //getPost();
-                            //sendPost("abc@example.com","홍길동","스마일대학교");
                             String registrationToken = FirebaseInstanceId.getInstance().getToken();
                             Log.d(TAG,"registrationToken : "+registrationToken);
                             if(mIsFirstLogin) {

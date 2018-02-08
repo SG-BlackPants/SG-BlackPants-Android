@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="7dp"
+    android:paddingTop="7dp">
+
+    <FrameLayout
+        android:id="@+id/frameLayout_hashtag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="10dp"
+        android:background="@drawable/circle_background"
+        android:padding="6dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ic_sharp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/ic_hashtag"/>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/text_regitered_keywordName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@+id/frameLayout_hashtag"
+        android:text="키워드"
+        android:textSize="15sp"
+        android:textColor="@color/black"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginEnd="10dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/text_regitered_keywordName"
+        android:src="@drawable/ic_cancel"
+        android:background="@android:color/transparent"
+        android:id="@+id/btn_delete_registeredkeyword"/>
+</RelativeLayout>
