@@ -215,8 +215,8 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             Log.d(TAG,"onAuthStateChanged()");
             FirebaseUser user = firebaseAuth.getCurrentUser();
-            getFromServer(user.getUid());
             if (user != null) {
+                getFromServer(user.getUid());
                 Log.d(TAG, "onAuthStateChanged : singed_in" + user.getUid());
                 user.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                     @Override

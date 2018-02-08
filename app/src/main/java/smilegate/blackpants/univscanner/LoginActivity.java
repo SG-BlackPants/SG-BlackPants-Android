@@ -166,7 +166,7 @@ public class LoginActivity extends AppCompatActivity {
                 firebaseAuthWithGoogle(account);
             } else {
                 // 구글 로그인 실패
-                Log.d(TAG, "googlelogin : success");
+                Log.d(TAG, "googlelogin : fail");
             }
         }
     }

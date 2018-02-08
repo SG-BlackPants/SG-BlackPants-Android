@@ -60,6 +60,16 @@ public class ProfileFragment extends BaseFragment {
     TextView profileEmailTxt;
     @BindView(R.id.text_profile_university)
     TextView profileUniversityTxt;
+    @BindView(R.id.relLayout_registeredKeywordView)
+    RelativeLayout regKeywordViewBtn;
+
+    @OnClick(R.id.relLayout_registeredKeywordView)
+    public void keywordViewClick(RelativeLayout relativeLayout) {
+        if (mFragmentNavigation != null) {
+            mFragmentNavigation.pushFragment(ProfileRegisteredKeywordFragment.newInstance(0));
+        }
+    }
+
     @OnClick(R.id.relLayout_logout)
     public void logoutClick(RelativeLayout relativeLayout) {
         Log.d(TAG,"로그아웃 클릭");
@@ -108,7 +118,6 @@ public class ProfileFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.bind(this, view).unbind();
     }
 
     public void signOut() {

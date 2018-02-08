@@ -72,7 +72,7 @@
         android:layout_height="55dp">
 
         <TextView
-            android:id="@+id/text_delete"
+            android:id="@+id/text_registeredkeyword_delete"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
@@ -98,10 +98,12 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/relLayout_registeredKeywordView"
         android:layout_width="match_parent"
         android:layout_height="60dp">
 
         <TextView
+            android:id="@+id/text_registeredkeyword_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
