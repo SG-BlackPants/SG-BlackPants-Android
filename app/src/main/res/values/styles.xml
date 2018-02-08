@@ -50,4 +50,12 @@
         <item name="atg_textColor">@color/dark_grey</item>
         <item name="atg_pressedBackgroundColor">@color/light_grey</item>
     </style>
+
+    <style name="TempTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#673AB7</item>
+        <item name="colorPrimaryDark">#512DA8</item>
+        <item name="colorAccent">#FF4081</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
 </resources>

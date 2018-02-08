@@ -1,63 +1,42 @@
 package smilegate.blackpants.univscanner.data.model;
 
+import java.util.List;
+
 /**
  * Created by user on 2018-01-25.
  */
 
 public class SearchResults {
 
-    private String name;
-    private String image;
-
-    public SearchResults(String name, String image) {
-        this.name = name;
-        this.image = image;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-   /*    private String _id;
+    private String id;
+    private String title;
+    private String createdDate;
+    private String content;
     private String community;
     private String boardAddr;
-    private String title;
     private String author;
-    private String content;
+    private String url;
     private List<String> images;
-    private String createdDate;
 
-    public SearchResults(String _id, String community, String boardAddr, String title, String author, String content, List<String> images, String createdDate) {
-        this._id = _id;
+
+    public SearchResults(String id, String title, String createdDate, String content, String community, String boardAddr,  String author, String url, List<String> images) {
+        this.id = id;
         this.community = community;
         this.boardAddr = boardAddr;
         this.title = title;
         this.author = author;
         this.content = content;
         this.images = images;
+        this.url = url;
         this.createdDate = createdDate;
     }
 
-
-
     public String get_id() {
-        return _id;
+        return id;
     }
 
     public void set_id(String _id) {
-        this._id = _id;
+        this.id = id;
     }
 
     public String getCommunity() {
@@ -114,9 +93,15 @@ public class SearchResults {
 
     public void setCreatedDate(String createdDate) {
         this.createdDate = createdDate;
-    }*/
+    }
 
 
+    public String getUrl() {
+        return url;
+    }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
 }

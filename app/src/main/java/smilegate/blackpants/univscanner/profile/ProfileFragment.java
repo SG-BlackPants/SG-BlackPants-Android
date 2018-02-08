@@ -200,24 +200,7 @@ public class ProfileFragment extends BaseFragment {
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "User account deleted.");
-                            // 자동로그인 off
-                            mUserApiService.deleteUser(mUser.getUid()).enqueue(new Callback<Users>() {
-                                @Override
-                                public void onResponse(Call<Users> call, Response<Users> response) {
-                                    if (response.isSuccessful()) {
-                                        Log.e("ResponseData", response.body().toString());
-                                        Log.i(TAG, "post submitted to API." + response.body().toString());
-                                        //signOut();
-                                        goLoginActivity();
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<Users> call, Throwable t) {
-                                    Log.e(TAG, "Unable to submit post to API.");
-                                }
-                            });
-
+                           sendToServer();
                         } else {
                             Log.e(TAG, "firebase user delete fail");
                         }
@@ -225,7 +208,24 @@ public class ProfileFragment extends BaseFragment {
                 });
     }
 
+    public void sendToServer() {
+        mUserApiService.deleteUser(mUser.getUid()).enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                if (response.isSuccessful()) {
+                    Log.e("ResponseData", response.body().toString());
+                    Log.i(TAG, "post submitted to API." + response.body().toString());
+                    //signOut();
+                    goLoginActivity();
+                }
+            }
 
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
+                Log.e(TAG, "Unable to submit post to API.");
+            }
+        });
+    }
 
 
     public void goLoginActivity() {
