@@ -26,6 +26,9 @@ import com.roughike.bottombar.BottomBarTab;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
@@ -211,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
             Log.d(TAG,"onAuthStateChanged()");
             FirebaseUser user = firebaseAuth.getCurrentUser();
             //checkCurrentUser(user);
-
+            Set<String> userInfo = new HashSet<>();
             if (user != null) {
                 Log.d(TAG, "onAuthStateChanged : singed_in" + user.getUid());
                 user.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {

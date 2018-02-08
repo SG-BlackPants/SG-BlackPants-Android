@@ -39,6 +39,15 @@
         <item name="android:background">@android:color/white</item>
     </style>
 
+    <style name="dataLodingTheme" parent="android:Theme.DeviceDefault.Dialog">
+        <item name="DialogTitleAppearance">@android:style/TextAppearance.Small</item>
+        <item name="DialogTitleText">입력하신 정보를 처리중입니다.\n잠시만 기다려주세요.</item>
+        <item name="DialogSpotColor">@color/sub_color1</item>
+        <item name="DialogSpotCount">5</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:background">@android:color/white</item>
+    </style>
+
     <style name="TagGroup.Custom" parent="TagGroup">
         <item name="atg_borderStrokeWidth">0.7dp</item>
         <item name="atg_textSize">15sp</item>

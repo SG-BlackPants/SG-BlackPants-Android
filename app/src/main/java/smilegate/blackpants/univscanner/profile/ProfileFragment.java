@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -51,7 +52,12 @@ public class ProfileFragment extends BaseFragment {
     RelativeLayout logoutBtn;
     @BindView(R.id.relLayout_delete)
     RelativeLayout deleteAccountBtn;
-
+    @BindView(R.id.text_profile_name)
+    TextView profileNameTxt;
+    @BindView(R.id.text_profile_email)
+    TextView profileEmailTxt;
+    @BindView(R.id.text_profile_university)
+    TextView profileUniversityTxt;
     @OnClick(R.id.relLayout_logout)
     public void logoutClick(RelativeLayout relativeLayout) {
         Log.d(TAG,"로그아웃 클릭");

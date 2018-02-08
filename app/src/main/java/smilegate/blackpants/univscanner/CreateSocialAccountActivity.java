@@ -120,7 +120,7 @@ public class CreateSocialAccountActivity extends AppCompatActivity {
         saveToList();
         changeMiddleView("init");
         mAdapter = new UniversityListAdapter(this, R.layout.layout_univ_listitem, mUniversityList);
-        mDialog = new SpotsDialog(this, R.style.createLodingTheme);
+        mDialog = new SpotsDialog(this, R.style.dataLodingTheme);
         univListView.setTextFilterEnabled(true);
         univListView.setAdapter(mAdapter);
         mUserApiService = ApiUtils.getAPIService();
@@ -264,6 +264,7 @@ public class CreateSocialAccountActivity extends AppCompatActivity {
 
 
     public void sendToServer(final String universityInfo,final String name) {
+        mDialog.show();
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
             // 유저가 로그인 했을 때
