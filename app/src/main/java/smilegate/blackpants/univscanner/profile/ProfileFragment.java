@@ -21,6 +21,7 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.gson.Gson;
 import com.pixplicity.easyprefs.library.Prefs;
@@ -197,39 +198,49 @@ public class ProfileFragment extends BaseFragment {
 
     private void deleteAccount() {
         mUser = FirebaseAuth.getInstance().getCurrentUser();
-        AuthCredential credential;
 
-        String loginRoute = Prefs.getString("loginRoute", null);
-        String idToken = Prefs.getString("idToken", null);
-        Log.d(TAG, "loginRoute : " + loginRoute + " / idToken : " + idToken);
-        if (idToken != null) {
-            switch (loginRoute) {
-                case "google":
-                    credential = GoogleAuthProvider.getCredential(idToken, null);
-                    break;
-                case "facebook":
-                    credential = FacebookAuthProvider.getCredential(idToken);
-                    break;
-                case "email":
-                    credential = EmailAuthProvider.getCredential(mUser.getEmail(), Prefs.getString("password", null));
-                    break;
-                default:
-                    return;
-            }
-        }
+        if (mUser != null) {
+            // 유저가 로그인 했을 때
+            mUser.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                @Override
+                public void onComplete(@NonNull Task<GetTokenResult> task) {
+                    if (task.isSuccessful()) {
+                        // 서버에 보내기
+                        AuthCredential credential;
 
-        mUser.delete()
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "User account deleted.");
-                           sendToServer();
-                        } else {
-                            Log.e(TAG, "firebase user delete fail");
+                        String loginRoute = Prefs.getString("loginRoute", null);
+                        String idToken = task.getResult().getToken();
+                        Log.d(TAG, "loginRoute : " + loginRoute + " / idToken : " + idToken);
+                        switch (loginRoute) {
+                            case "google":
+                                credential = GoogleAuthProvider.getCredential(idToken, null);
+                                break;
+                            case "facebook":
+                                credential = FacebookAuthProvider.getCredential(idToken);
+                                break;
+                            case "email":
+                                credential = EmailAuthProvider.getCredential(mUser.getEmail(), Prefs.getString("password", null));
+                                break;
+                            default:
+                                return;
                         }
+
+                        mUser.delete()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d(TAG, "User account deleted.");
+                                            sendToServer();
+                                        } else {
+                                            Log.e(TAG, "firebase user delete fail");
+                                        }
+                                    }
+                                });
                     }
-                });
+                }
+            });
+        }
     }
 
     public void sendToServer() {

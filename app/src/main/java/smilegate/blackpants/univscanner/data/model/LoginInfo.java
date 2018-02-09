@@ -17,9 +17,14 @@ public class LoginInfo {
     @Expose
     private String university;
 
-    public LoginInfo(String name, String university) {
+    @SerializedName("isRegistered")
+    @Expose
+    private boolean isRegistered;
+
+    public LoginInfo(String name, String university, boolean isRegistered) {
         this.name = name;
         this.university = university;
+        this.isRegistered = isRegistered;
     }
 
     public String getName() {
@@ -37,4 +42,13 @@ public class LoginInfo {
     public void setUniversity(String university) {
         this.university = university;
     }
+
+    public boolean isRegistered() {
+        return isRegistered;
+    }
+
+    public void setRegistered(boolean registered) {
+        isRegistered = registered;
+    }
+
 }

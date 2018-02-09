@@ -10,7 +10,7 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottomBar"/>
+        android:layout_above="@+id/bottomBar" />
 
     <com.roughike.bottombar.BottomBar
         android:id="@+id/bottomBar"
@@ -22,6 +22,6 @@
         app:bb_activeTabColor="@color/main_color"
         app:bb_inActiveTabAlpha="0.6"
         app:bb_inActiveTabColor="@color/dark_blue"
-        app:bb_tabXmlResource="@xml/menu_bottombar"/>
+        app:bb_tabXmlResource="@xml/menu_bottombar" />
 
 </RelativeLayout>

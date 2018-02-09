@@ -1,6 +1,7 @@
 package smilegate.blackpants.univscanner;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -12,11 +13,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GetTokenResult;
 import com.google.gson.Gson;
 import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.FragNavSwitchController;
@@ -35,9 +33,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import smilegate.blackpants.univscanner.data.model.LoginInfo;
 import smilegate.blackpants.univscanner.data.model.MyBottomBarTab;
-import smilegate.blackpants.univscanner.data.model.University;
 import smilegate.blackpants.univscanner.data.remote.ApiUtils;
-import smilegate.blackpants.univscanner.data.remote.UniversityApiService;
 import smilegate.blackpants.univscanner.data.remote.UserApiService;
 import smilegate.blackpants.univscanner.notification.NotificationFragment;
 import smilegate.blackpants.univscanner.profile.ProfileFragment;
@@ -57,18 +53,12 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     private MenuItem mPrevMenuItem;
     private MyBottomBarTab mMyBottomBarTab;
     private BottomBarTab mBottomBarTab;
+    private boolean isUnivAuth;
 
     private final int INDEX_HOME = FragNavController.TAB1;
     private final int INDEX_NOTIFICATION = FragNavController.TAB2;
     private final int INDEX_PROFILE = FragNavController.TAB3;
-
     public static FragNavController mNavController;
-    private UniversityApiService mUniversityApiService;
-/*    @BindView(R.id.bottomNavViewBar)
-    BottomNavigationViewEx bottomNavigationViewEx;
-
-    @BindView(R.id.viewpager)
-    ViewPager viewPager;*/
 
     @BindView(R.id.bottomBar)
     BottomBar bottomBar;
@@ -79,6 +69,12 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         Log.d(TAG, "onCreate()");
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        new Prefs.Builder()
+                .setContext(this)
+                .setMode(ContextWrapper.MODE_PRIVATE)
+                .setPrefsName(getPackageName())
+                .setUseDefaultSharedPreference(true)
+                .build();
         setUpFirebaseAuth();
         mUserApiService = ApiUtils.getAPIService();
         boolean initial = savedInstanceState == null;
@@ -126,50 +122,15 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         //mBottomBarTab.setBadgeCount(1);
         mMyBottomBarTab = new MyBottomBarTab(mBottomBarTab);
 
-        // setupBottomNavigationView();
-        /*viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                if (mPrevMenuItem != null) {
-                    mPrevMenuItem.setChecked(false);
-                }
-                else
-                {
-                    bottomNavigationViewEx.getMenu().getItem(0).setChecked(false);
-                }
-                Log.d("page",""+position);
-                bottomNavigationViewEx.getMenu().getItem(position).setChecked(true);
-                mPrevMenuItem = bottomNavigationViewEx.getMenu().getItem(position);
-            }
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-        setupViewPager(viewPager);*/
-        //Manually displaying the first fragment - one time only
-        /*FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_layout, SearchFragment.newInstance());
-        transaction.commit();*/
-
-       /* mService = SQApiUtils.getSOService();
-        loadAnswers();*/
-       /* mUniversityApiService = UniversityApiUtils.getAPIService();
-        getUniversityList();*/
     }
 
-    public void getUniversityList() {
+    /*public void getUniversityList() {
         mUniversityApiService.getUniversity().enqueue(new Callback<University>() {
             @Override
             public void onResponse(Call<University> call, Response<University> response) {
-                /*for(University.Content content : response.body().getDataSearch().getContent()) {
+                *//*for(University.Content content : response.body().getDataSearch().getContent()) {
                     Log.d(TAG, "getUniversityList : " + content.getCampusName());
-                }*/
+                }*//*
                 if (response.isSuccessful()) {
                     Log.d(TAG, "getUniversityList : success");
                 } else {
@@ -185,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
                 Log.d(TAG, "getUniversityList : fail : onFailure");
             }
         });
-    }
+    }*/
 
     public void showErrorMessage() {
         Toast.makeText(this, "Error loading posts", Toast.LENGTH_SHORT).show();
@@ -213,29 +174,11 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     class FirebaseAuthStateListener implements FirebaseAuth.AuthStateListener {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-            Log.d(TAG,"onAuthStateChanged()");
+            Log.d(TAG, "onAuthStateChanged()");
             FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user != null) {
                 getFromServer(user.getUid());
                 Log.d(TAG, "onAuthStateChanged : singed_in" + user.getUid());
-                user.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<GetTokenResult> task) {
-                        if (task.isSuccessful()) {
-                            String idToken = task.getResult().getToken();
-                            //Prefs.putString("idToken", idToken);
-                            Log.d("token", "token : success : " + idToken);
-
-                            //Prefs.putBoolean("isLogin", true);
-                            //new ConnectServer().execute();
-                            //sendPost("타이틀:제발되라", "body:될거라");
-                            //getPost();
-                            //sendPost("abc@example.com","홍길동","스마일대학교");
-                        } else {
-                            Log.d("token", "token : fail");
-                        }
-                    }
-                });
             } else {
                 Log.d(TAG, "onAuthStateChanged : singed_out");
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
@@ -247,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
 
     @Override
     public void onStart() {
-        Log.d(TAG,"onStart()");
+        Log.d(TAG, "onStart()");
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
         //checkCurrentUser(mAuth.getCurrentUser());
@@ -255,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
 
     @Override
     public void onStop() {
-        Log.d(TAG,"onStop()");
+        Log.d(TAG, "onStop()");
         super.onStop();
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
@@ -325,43 +268,36 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         return true;
     }
 
-    public void getFromServer(String uid) {
+    public void getFromServer(final String uid) {
         mUserApiService.getLoginInfo(uid).enqueue(new Callback<LoginInfo>() {
             @Override
             public void onResponse(Call<LoginInfo> call, Response<LoginInfo> response) {
                 Gson gson = new Gson();
-                LoginInfo loginInfo = new LoginInfo(response.body().getName(), response.body().getUniversity());
-                String json = gson.toJson(loginInfo);
-                Log.d(TAG,"Json : "+json);
-                Prefs.putString("userInfo",json);
+                isUnivAuth = Prefs.getBoolean("isUnivAuth",false);
+                if (response.body() != null) {
+                    LoginInfo loginInfo = new LoginInfo(response.body().getName(), response.body().getUniversity(), response.body().isRegistered());
+                    isUnivAuth = loginInfo.isRegistered();
+                    //isUnivAuth = Prefs.getBoolean("isUnivAuth",false);
+                    String json = gson.toJson(loginInfo);
+                    Log.d(TAG, "Json : " + json);
+                    Prefs.putString("userInfo", json);
+                    if (!isUnivAuth) {
+                        Intent intent = new Intent(MainActivity.this, UniversityAuthActivity.class);
+                        intent.putExtra("uid", uid);
+                        intent.putExtra("university", loginInfo.getUniversity());
+                        startActivity(intent);
+                        finish();
+                    }
+                } else {
+                    Log.d(TAG, "Failed : response.body() is null");
+                }
+
             }
 
             @Override
             public void onFailure(Call<LoginInfo> call, Throwable t) {
-                Log.d(TAG,"Failed : user login info(name, university)");
+
             }
         });
     }
-
-/*    public void setupBottomNavigationView() {
-        Log.d(TAG, "setupBottomNavigationView : setting up BottomNavigationView");
-        BottomNavigationViewHelper.setupBottomNavigationViewEx(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx, this, viewPager);
-        Menu menu = bottomNavigationViewEx.getMenu();
-        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
-        menuItem.setChecked(true);
-    }
-
-    private void setupViewPager(ViewPager viewPager) {
-        ViewPageAdapter adapter = new ViewPageAdapter(getSupportFragmentManager());
-        Fragment searchFragment = SearchFragment.newInstance();
-        Fragment notificationFragment = NotificationFragment.newInstance();
-        Fragment profileFragment = ProfileFragment.newInstance();
-
-        adapter.addFragment(searchFragment);
-        adapter.addFragment(notificationFragment);
-        adapter.addFragment(profileFragment);
-        viewPager.setAdapter(adapter);
-    }*/
-
 }

@@ -12,4 +12,9 @@ public class ApiUtils {
 
         return RetrofitClient.getClient(BASE_URL).create(UserApiService.class);
     }
+
+    public static FirebaseApiService getFireAPIService() {
+
+        return RetrofitClient.getClient(BASE_URL).create(FirebaseApiService.class);
+    }
 }
