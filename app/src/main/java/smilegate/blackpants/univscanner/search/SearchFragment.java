@@ -93,7 +93,7 @@ public class SearchFragment extends BaseFragment {
         mKeywordRankList.add(new KeywordRank(5,"강의교재"));
         mKeywordRankList.add(new KeywordRank(6,"평창올림픽"));
         mKeywordRankList.add(new KeywordRank(7,"지드래곤 대학원"));
-        mKeywordRankList.add(new KeywordRank(8,"평창올림픽"));
+        mKeywordRankList.add(new KeywordRank(8,"개막식"));
         mKeywordRankList.add(new KeywordRank(9,"개강일"));
         mKeywordRankList.add(new KeywordRank(10,"수강신청"));
 
