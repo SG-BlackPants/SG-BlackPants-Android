@@ -10,27 +10,28 @@ import android.widget.TextView;
 import java.util.List;
 
 import smilegate.blackpants.univscanner.R;
-import smilegate.blackpants.univscanner.data.model.KeywordRank;
 
 /**
  * Created by user on 2018-01-24.
  */
 
-public class KeywordRankListAdapter extends ArrayAdapter<KeywordRank>{
+public class KeywordRankListAdapter extends ArrayAdapter<String>{
 
     private static final String TAG = "KeywordRankListAdapter";
 
     private LayoutInflater mInflater;
-    private List<KeywordRank> mKeywordRank = null;
+    private List<String> mKeywordRank = null;
     private int mLayoutResource;
     private Context mContext;
+    private int mRank;
 
-    public KeywordRankListAdapter(Context context, int resource, List<KeywordRank> objects) {
+    public KeywordRankListAdapter(Context context, int resource, List<String> objects) {
         super(context, resource, objects);
         this.mContext = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.mLayoutResource = resource;
         this.mKeywordRank = objects;
+        mRank = 0;
     }
 
     @Override
@@ -49,9 +50,10 @@ public class KeywordRankListAdapter extends ArrayAdapter<KeywordRank>{
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.name.setText(getItem(position).getName());
-        viewHolder.rank.setText(String.valueOf(getItem(position).getRank()));
-
+        //mRank++;
+        viewHolder.name.setText(getItem(position));
+        //viewHolder.rank.setText(String.valueOf(getItem(position).getRank()));
+        viewHolder.rank.setText(String.valueOf(position+1));
         return convertView;
     }
 

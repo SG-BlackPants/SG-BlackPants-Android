@@ -97,6 +97,7 @@ public class UniversityAuthActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<SendEmail> call, Throwable t) {
                     Log.d(TAG,"이메일 인증발송 실패");
+                    Log.d(TAG,t.getMessage());
                     mIsSendRecently = false;
                 }
             });
@@ -115,7 +116,7 @@ public class UniversityAuthActivity extends AppCompatActivity {
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-        mFirebaseApiService = ApiUtils.getFireAPIService();
+        mFirebaseApiService = ApiUtils.getFirebaseApiService();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         mAuth = FirebaseAuth.getInstance();
         Intent intent = getIntent();

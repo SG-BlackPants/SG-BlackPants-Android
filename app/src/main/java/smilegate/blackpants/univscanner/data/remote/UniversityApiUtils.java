@@ -9,7 +9,7 @@ public class UniversityApiUtils {
 
     public static final String BASE_URL = "http://www.career.go.kr/cnet/openapi/";
 
-    public static UniversityApiService getAPIService() {
+    public static UniversityApiService getUserApiService() {
 
         return RetrofitClient.getClient(BASE_URL).create(UniversityApiService.class);
     }

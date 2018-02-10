@@ -103,7 +103,7 @@ public class ProfileFragment extends BaseFragment {
                     .build();
 
             mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gso);
-            mUserApiService = ApiUtils.getAPIService();
+            mUserApiService = ApiUtils.getUserApiService();
             mAuth = FirebaseAuth.getInstance();
             ButterKnife.bind(this, view);
             Gson gson = new Gson();

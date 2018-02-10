@@ -131,7 +131,7 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_emailaccount);
         ButterKnife.bind(this);
-        //mUniversityApiService = UniversityApiUtils.getAPIService();
+        //mUniversityApiService = UniversityApiUtils.getUserApiService();
         initTextListener();
         saveToList();
         changeMiddleView("init");
@@ -139,7 +139,7 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
         mDialog = new SpotsDialog(this, R.style.createLodingTheme);
         univListView.setTextFilterEnabled(true);
         univListView.setAdapter(mAdapter);
-        mUserApiService = ApiUtils.getAPIService();
+        mUserApiService = ApiUtils.getUserApiService();
         mAuth = FirebaseAuth.getInstance();
     }
 

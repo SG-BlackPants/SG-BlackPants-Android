@@ -123,7 +123,7 @@ public class CreateSocialAccountActivity extends AppCompatActivity {
         mDialog = new SpotsDialog(this, R.style.dataLodingTheme);
         univListView.setTextFilterEnabled(true);
         univListView.setAdapter(mAdapter);
-        mUserApiService = ApiUtils.getAPIService();
+        mUserApiService = ApiUtils.getUserApiService();
         mAuth = FirebaseAuth.getInstance();
     }
 

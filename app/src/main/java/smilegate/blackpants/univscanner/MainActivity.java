@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
                 .setUseDefaultSharedPreference(true)
                 .build();
         setUpFirebaseAuth();
-        mUserApiService = ApiUtils.getAPIService();
+        mUserApiService = ApiUtils.getUserApiService();
         boolean initial = savedInstanceState == null;
         if (initial) {
             bottomBar.selectTabAtPosition(INDEX_HOME);
@@ -124,31 +124,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
 
     }
 
-    /*public void getUniversityList() {
-        mUniversityApiService.getUniversity().enqueue(new Callback<University>() {
-            @Override
-            public void onResponse(Call<University> call, Response<University> response) {
-                *//*for(University.Content content : response.body().getDataSearch().getContent()) {
-                    Log.d(TAG, "getUniversityList : " + content.getCampusName());
-                }*//*
-                if (response.isSuccessful()) {
-                    Log.d(TAG, "getUniversityList : success");
-                } else {
-                    int statusCode = response.code();
-                    // handle request errors depending on status code
-                    Log.d(TAG, "getUniversityList : fail : " + statusCode);
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<University> call, Throwable t) {
-                Log.d(TAG, "getUniversityList : fail : onFailure");
-            }
-        });
-    }*/
-
-    public void showErrorMessage() {
+      public void showErrorMessage() {
         Toast.makeText(this, "Error loading posts", Toast.LENGTH_SHORT).show();
     }
 

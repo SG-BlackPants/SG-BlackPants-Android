@@ -1,10 +1,14 @@
 package smilegate.blackpants.univscanner;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -34,6 +38,8 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.pixplicity.easyprefs.library.Prefs;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -124,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         mAuth = FirebaseAuth.getInstance();
 
-        mUserApiService = ApiUtils.getAPIService();
+        mUserApiService = ApiUtils.getUserApiService();
         mAuthListener = new FirebaseAuthStateListener();
 
         mCallbackManager = CallbackManager.Factory.create();
@@ -147,6 +153,22 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, "facebook:onError", error);
         }
                 });
+
+
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "smilegate.blackpants.univscanner",
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+        } catch (NoSuchAlgorithmException e) {
+
+        }
     }
 
     @Override

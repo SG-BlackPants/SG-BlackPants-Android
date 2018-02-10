@@ -1,5 +1,7 @@
 package smilegate.blackpants.univscanner.data.remote;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;
@@ -18,6 +20,9 @@ public interface UserApiService {
 
     @GET("/users/{uid}")
     Call<LoginInfo> getLoginInfo(@Path("uid") String uId);
+
+    @GET("/users/{uid}/recently")
+    Call<List<String>> getRecentlyKeywords(@Path("uid") String uId);
 
     @POST("/users")
     @FormUrlEncoded
