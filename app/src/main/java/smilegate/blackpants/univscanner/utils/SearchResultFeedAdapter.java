@@ -1,7 +1,15 @@
 package smilegate.blackpants.univscanner.utils;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +33,15 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
 
     private Context mContext;
     private List<SearchResults> mSearchResultsList;
+    ContentDetailClickListener contentDetailClickListener;
+
+    public interface ContentDetailClickListener {
+        public void onButtonClickListner(SearchResults searchResults, String value);
+    }
+
+    public void setContentDetailClickListner(SearchResultFeedAdapter.ContentDetailClickListener listener) {
+        this.contentDetailClickListener = listener;
+    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -62,7 +79,13 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
         final SearchResults searchResults = mSearchResultsList.get(position);
         holder.postName.setText(searchResults.getTitle());
         holder.postTime.setText(searchResults.getCreatedDate());
-        holder.postContent.setText(searchResults.getContent());
+        SpannableString content = settingContentTextView(searchResults.getContent(), searchResults);
+        if(content!=null) {
+            holder.postContent.setText(content);
+            holder.postContent.setMovementMethod(LinkMovementMethod.getInstance());
+        } else {
+            holder.postContent.setText(searchResults.getContent());
+        }
         holder.postSource.setText(searchResults.getCommunity()+" "+searchResults.getBoardAddr());
         holder.postAuthor.setText(searchResults.getAuthor());
         holder.postUrl.setText(searchResults.getUrl());
@@ -88,6 +111,40 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
     @Override
     public long getItemId(int position) {
         return super.getItemId(position);
+    }
+
+    public SpannableString settingContentTextView(String content, final SearchResults searchResults) {
+        SpannableString spanString = new SpannableString(content);
+        //Matcher matcher = Pattern.compile("@([A-Za-z0-9_-]+)").matcher(spanString);
+        final String spanStr = content.substring(content.length()-6,content.length());
+
+        if(spanStr.equals("자세히 보기")) {
+            spanString.setSpan(new ForegroundColorSpan(Color.parseColor("#607D8B")), content.length()-6, content.length(), 0);
+            //final String tag = spanStr..group(0);
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View textView) {
+                    if (contentDetailClickListener != null) {
+                        contentDetailClickListener.onButtonClickListner(searchResults, spanStr);
+                        Log.e("click", "click " + spanStr);
+                    }
+                    //String searchText=tag.replace("@",""); //replace '@' with blank character to search on google.
+                    //Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.co.in/search?q=" + searchText));
+                    //startActivity(browserIntent);
+                }
+                @Override
+                public void updateDrawState(TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setUnderlineText(false);
+                    ds.setColor(Color.parseColor("#607D8B"));
+                }
+            };
+            spanString.setSpan(clickableSpan, content.length()-6, content.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            return spanString;
+        } else {
+            return null;
+        }
+
     }
 
 }

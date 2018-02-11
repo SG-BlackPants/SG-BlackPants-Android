@@ -2,51 +2,74 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_marginBottom="10dp">
+    android:background="@color/white"
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/LinLayout1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:weightSum="100"
+        android:background="@color/white"
         android:layout_marginBottom="5dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="5dp"
-        android:orientation="horizontal">
-
-        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/ic_hashtag"
-            app:civ_border_color="@color/middle_grey"
-            app:civ_border_width="0.8dp" />
-
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="15dp">
         <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="13">
 
-            <TextView
-                android:id="@+id/text_post_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:singleLine="true"
-                android:text="수강신청 날짜가 언제인가요?"
-                android:textColor="@android:color/black"
-                android:textSize="17dp"
-                android:textStyle="bold" />
+            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_hashtag"
+                app:civ_border_color="@color/middle_grey"
+                app:civ_border_width="0.8dp" />
 
-            <TextView
-                android:id="@+id/text_post_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/text_post_name"
-                android:layout_marginStart="5dp"
-                android:singleLine="true"
-                android:text="3시간 전"
-                android:textColor="@color/dark_grey"
-                android:textSize="13dp" />
         </RelativeLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="80"
+            android:orientation="vertical"
+            android:weightSum="100">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="50">
+                <TextView
+                    android:id="@+id/text_post_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="수강신청 날짜가 언제인가요?"
+                    android:textColor="@android:color/black"
+                    android:textSize="17dp"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="50">
+                <TextView
+                    android:id="@+id/text_post_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="3시간 전"
+                    android:textColor="@color/middle_darker_grey"
+                    android:textSize="13dp" />
+
+            </RelativeLayout>
+        </LinearLayout>
+
+
     </LinearLayout>
 
     <TextView
@@ -57,11 +80,12 @@
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
+        android:bufferType="spannable"
         android:text="수강신청 12일부터인데
 4학년이 월요일날 하잖아요
-그러면 앞서서 4학년3학년들이 좋은과목 인원 수 다채우면 1,2학년들은 그냥 다른과목을 선택해야하나요? 아니면 학년별로 수강신청 제한이 있나요?"
-        android:textColor="@color/dark_grey"
-        android:textSize="13dp" />
+그러면 앞서서 4학년3학년들이 좋은과목 인원 수 다채우면 1,2학년들은 그냥 다른과목을 선택해야하나요? 아니면 학년별로 수강신청 제한이 있나요? ..자세히 보기"
+        android:textColor="@color/black"
+        android:textSize="15dp" />
 
     <Button
         android:id="@+id/btn_detail"
@@ -134,13 +158,13 @@
             android:singleLine="true"
             android:text="익명"
             android:textColor="@color/dark_grey"
-            android:textSize="11dp"  />
+            android:textSize="13dp"  />
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="15dp"
         android:layout_marginStart="10dp">
 
         <TextView
@@ -160,5 +184,11 @@
             android:text="www.facebook.com"
             android:textColor="@color/dark_grey"
             android:textSize="13dp"  />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:background="@color/light_grey">
     </LinearLayout>
 </LinearLayout>
