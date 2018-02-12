@@ -18,6 +18,11 @@ public class ApiUtils {
         return RetrofitClient.getClient(BASE_URL).create(KeywordApiService.class);
     }
 
+    public static ArticleApiService getArticleApiService() {
+
+        return RetrofitClient.getClient(BASE_URL).create(ArticleApiService.class);
+    }
+
     public static FirebaseApiService getFirebaseApiService() {
 
         return RetrofitClient.getClient(BASE_URL).create(FirebaseApiService.class);

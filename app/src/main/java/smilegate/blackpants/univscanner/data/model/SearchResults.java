@@ -3,6 +3,9 @@ package smilegate.blackpants.univscanner.data.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +15,11 @@ import java.util.List;
 
 public class SearchResults implements Parcelable {
 
+    @SerializedName("community")
+    @Expose
     private String id;
+    @SerializedName("result")
+    @Expose
     private String title;
     private String createdDate;
     private String content;
@@ -155,7 +162,7 @@ public class SearchResults implements Parcelable {
      *
      * @param in parcel from which to re-create object
      */
-    private void readFromParcel(Parcel in) {
+    public void readFromParcel(Parcel in) {
 
         // We just need to read back each
         // field in the order that it was

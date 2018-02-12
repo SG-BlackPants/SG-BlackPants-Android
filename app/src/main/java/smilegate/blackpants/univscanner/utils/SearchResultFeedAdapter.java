@@ -90,9 +90,10 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
         holder.postAuthor.setText(searchResults.getAuthor());
         holder.postUrl.setText(searchResults.getUrl());
 
-        if(searchResults.getImages().size()<1) {
+        if(searchResults.getImages() == null) {
             holder.postImage.setVisibility(View.GONE);
         } else {
+            holder.postImage.setVisibility(View.VISIBLE);
             Picasso.with(mContext)
                     .load(searchResults.getImages().get(0))
                     .resize(1280, 720)

@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/btn_profileregisteredkeyword_back"
+        android:layout_toRightOf="@+id/btn_searchresult_detail_back"
         android:maxLines="1"
         android:singleLine="true"
         android:text="게시물"

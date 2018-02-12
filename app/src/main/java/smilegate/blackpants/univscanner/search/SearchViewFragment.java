@@ -122,10 +122,7 @@ public class SearchViewFragment extends BaseFragment {
             searchViewClearBtn.setVisibility(View.GONE);
         } else {
             searchViewClearBtn.setVisibility(View.VISIBLE);
-            //여기서 서버와 연동
-            for(int i=0;i<count;i++){
-                mKeywordsList.add(new Keywords("키워드"+count));
-            }
+             mKeywordsList.add(new Keywords(searchAutoText.getText().toString().trim()));
             updateKewordsList();
         }
     }
@@ -142,7 +139,7 @@ public class SearchViewFragment extends BaseFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG, "onItemClick : selected : " + mKeywordsList.get(position).toString());
                 if (mFragmentNavigation != null) {
-                    mFragmentNavigation.pushFragment(SearchResultFragment.newInstance(0));
+                    mFragmentNavigation.pushFragment(SearchResultFragment.newInstance(0, mKeywordsList.get(position).getName()));
                 }
             }
         });

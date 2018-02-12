@@ -2,14 +2,15 @@ package smilegate.blackpants.univscanner.search;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -49,6 +50,8 @@ public class SearchDetailFragment extends BaseFragment {
     ListView postImageListView;
     @BindView(R.id.btn_searchresult_detail_back)
     ImageButton searchResultDetailBackBtn;
+    @BindView(R.id.LinLayout_searchImage)
+    LinearLayout searchImageLayout;
 
     @OnClick(R.id.btn_searchresult_detail_back)
     public void searchResultBack(ImageButton imageButton) {
@@ -59,6 +62,7 @@ public class SearchDetailFragment extends BaseFragment {
 
     public static SearchDetailFragment newInstance(int instance, SearchResults searchResults) {
         Bundle args = new Bundle();
+        Log.d(TAG, "searchResults : "+searchResults.toString());
         args.putInt(ARGS_INSTANCE, instance);
         args.putParcelable("SearchResults", searchResults);
         SearchDetailFragment fragment = new SearchDetailFragment();
@@ -76,7 +80,11 @@ public class SearchDetailFragment extends BaseFragment {
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_searchresult_detail, container, false);
             ButterKnife.bind(this, mView);
-            mSearchResults = (SearchResults) savedInstanceState.getParcelable("SearchResults");
+            Bundle bundle = this.getArguments();
+            if(bundle!=null){
+                mSearchResults = bundle.getParcelable("SearchResults");
+            }
+
             initContent();
         }
         return mView;
@@ -93,13 +101,14 @@ public class SearchDetailFragment extends BaseFragment {
         postUrl.setText(mSearchResults.getUrl());
 
         if (mSearchResults.getImages().size() < 1) {
-            postImageListView.setVisibility(View.GONE);
+            searchImageLayout.setVisibility(View.GONE);
+            Log.d(TAG,"initContent() : size <1");
         } else {
-            mImageList = new ArrayList<String>();
+            mImageList = mSearchResults.getImages();
             mAdapter = new SearchResultImageListAdapter(getContext(), R.layout.layout_searchresult_detail_listitem, mImageList);
             postImageListView.setAdapter(mAdapter);
             SearchFragment.setListViewHeightBasedOnChildren(postImageListView);
-
+            Log.d(TAG,"initContent() : size >= 1");
         }
     }
 }
