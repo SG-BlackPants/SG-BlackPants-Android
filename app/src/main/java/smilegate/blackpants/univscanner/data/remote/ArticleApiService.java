@@ -1,7 +1,9 @@
 package smilegate.blackpants.univscanner.data.remote;
 
 import retrofit2.Call;
-import retrofit2.http.GET;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import smilegate.blackpants.univscanner.data.model.Article;
 
@@ -11,6 +13,7 @@ import smilegate.blackpants.univscanner.data.model.Article;
 
 public interface ArticleApiService {
 
-    @GET("/articles/{keyword}")
-    Call<Article> getArticles(@Path("keyword") String keyword);
+    @POST("/articles/{keyword}")
+    @FormUrlEncoded
+    Call<Article> getArticles(@Path("keyword") String keyword, @Field("userToken") String userToken);
 }

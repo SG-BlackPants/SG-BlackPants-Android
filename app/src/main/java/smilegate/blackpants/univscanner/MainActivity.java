@@ -12,9 +12,13 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.gson.Gson;
 import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.FragNavSwitchController;
@@ -76,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
                 .setUseDefaultSharedPreference(true)
                 .build();
         setUpFirebaseAuth();
+        //signOut();
         mUserApiService = ApiUtils.getUserApiService();
         boolean initial = savedInstanceState == null;
         if (initial) {
@@ -124,10 +129,9 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
 
     }
 
-      public void showErrorMessage() {
+    public void showErrorMessage() {
         Toast.makeText(this, "Error loading posts", Toast.LENGTH_SHORT).show();
     }
-
 
     public void checkCurrentUser(FirebaseUser user) {
         Log.d(TAG, "checkCurrentUser : checking if user is logged in");
@@ -151,10 +155,24 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             Log.d(TAG, "onAuthStateChanged()");
-            FirebaseUser user = firebaseAuth.getCurrentUser();
+            final FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user != null) {
-                getFromServer(user.getUid());
-                Log.d(TAG, "onAuthStateChanged : singed_in" + user.getUid());
+                user.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        if (task.isSuccessful()) {
+                            Prefs.putString("userToken",task.getResult().getToken());
+                            Log.d(TAG, "onAuthStateChanged : userToken  : " + Prefs.getString("userToken",null));
+                            getFromServer(user.getUid());
+                            Log.d(TAG, "onAuthStateChanged : singed_in" + user.getUid());
+                        } else {
+                            Log.d(TAG, "onAuthStateChanged : get token fail");
+                            getFromServer(user.getUid());
+                            Log.d(TAG, "onAuthStateChanged : singed_in" + user.getUid());
+                        }
+                    }
+                });
+
             } else {
                 Log.d(TAG, "onAuthStateChanged : singed_out");
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
@@ -249,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
             @Override
             public void onResponse(Call<LoginInfo> call, Response<LoginInfo> response) {
                 Gson gson = new Gson();
-                isUnivAuth = Prefs.getBoolean("isUnivAuth",false);
+                isUnivAuth = Prefs.getBoolean("isUnivAuth", false);
                 if (response.body() != null) {
                     LoginInfo loginInfo = new LoginInfo(response.body().getName(), response.body().getUniversity(), response.body().isRegistered());
                     isUnivAuth = loginInfo.isRegistered();
@@ -276,4 +294,45 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
             }
         });
     }
+
+    public void signOut() {
+        String loginRoute = Prefs.getString("loginRoute", "email");
+
+        mAuth.signOut();
+        switch (loginRoute) {
+            case "google":
+                // Google sign out
+                mGoogleSignInClient.signOut().addOnCompleteListener(this,
+                        new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                //updateUI(null);
+                                goLoginActivity();
+                            }
+                        });
+                break;
+            case "facebook":
+                LoginManager.getInstance().logOut();
+                goLoginActivity();
+                break;
+            case "email":
+                goLoginActivity();
+                break;
+            default:
+                break;
+        }
+
+
+    }
+
+
+    public void goLoginActivity() {
+
+        Prefs.putString("loginRoute", null);
+        //Intent intent = new Intent(getContext(), LoginActivity.class);
+        //startActivity(intent);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        this.finish();
+    }
+
 }

@@ -1,41 +1,62 @@
 package smilegate.blackpants.univscanner.data.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
+
 /**
  * Created by user on 2018-02-06.
  */
 
 public class KeywordRank {
 
-    private int rank;
+    @SerializedName("result")
+    @Expose
+    private String result;
+    @SerializedName("code")
+    @Expose
+    private String code;
+    @SerializedName("message")
+    @Expose
+    private List<String> message;
 
-    private String name;
-
-    public KeywordRank(int rank, String name) {
-        this.rank = rank;
-        this.name = name;
+    public KeywordRank(String result, String code, List<String> message) {
+        this.result = result;
+        this.code = code;
+        this.message = message;
     }
 
-    public int getRank() {
-        return rank;
+    public String getResult() {
+        return result;
     }
 
-    public void setRank(int rank) {
-        this.rank = rank;
+    public void setResult(String result) {
+        this.result = result;
     }
 
-    public String getName() {
-        return name;
+    public String getCode() {
+        return code;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public List<String> getMessage() {
+        return message;
+    }
+
+    public void setMessage(List<String> message) {
+        this.message = message;
     }
 
     @Override
     public String toString() {
         return "KeywordRank{" +
-                "rank='" + rank + '\'' +
-                ", name='" + name + '\'' +
+                "result='" + result + '\'' +
+                ", code='" + code + '\'' +
+                ", message=" + message +
                 '}';
     }
 }

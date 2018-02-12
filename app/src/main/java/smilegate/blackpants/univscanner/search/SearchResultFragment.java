@@ -16,6 +16,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.pixplicity.easyprefs.library.Prefs;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -150,6 +152,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
             searchResultRecyclerView.setAdapter(mAdapter);
             mAdapter.setContentDetailClickListner(this);
             getDataFromServer(mKeyword);
+
             //addData();
 
 
@@ -158,7 +161,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     }
 
     public void getDataFromServer(String keyword) {
-        mArticleApiService.getArticles(keyword).enqueue(new Callback<Article>() {
+        mArticleApiService.getArticles(keyword, Prefs.getString("userToken",null)).enqueue(new Callback<Article>() {
             @Override
             public void onResponse(Call<Article> call, Response<Article> response) {
                 if (response.body() != null) {
@@ -169,8 +172,6 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
                 } else {
                     Log.d(TAG, "Article info getDataFromServer : onResponse : fail");
                 }
-
-                //
             }
 
             @Override

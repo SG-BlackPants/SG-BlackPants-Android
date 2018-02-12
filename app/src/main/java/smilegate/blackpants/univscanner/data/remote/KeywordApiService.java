@@ -1,10 +1,9 @@
 package smilegate.blackpants.univscanner.data.remote;
 
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import smilegate.blackpants.univscanner.data.model.KeywordRank;
 
 /**
  * Created by Semin on 2018-02-10.
@@ -12,6 +11,6 @@ import retrofit2.http.Path;
 
 public interface KeywordApiService {
 
-    @GET("/keywords/popular/{university}")
-    Call<List<String>> getPopularKeywords(@Path("university") String university);
+    @GET("/keywords/rank/{university}")
+    Call<KeywordRank> getPopularKeywords(@Path("university") String university);
 }

@@ -37,6 +37,8 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
 
     public interface ContentDetailClickListener {
         public void onButtonClickListner(SearchResults searchResults, String value);
+
+        //public void onUrlClickListener(String url);
     }
 
     public void setContentDetailClickListner(SearchResultFeedAdapter.ContentDetailClickListener listener) {
@@ -45,13 +47,20 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.text_post_name) TextView postName;
-        @BindView(R.id.text_post_time) TextView postTime;
-        @BindView(R.id.text_post_content) TextView postContent;
-        @BindView(R.id.text_post_source) TextView postSource;
-        @BindView(R.id.text_post_author) TextView postAuthor;
-        @BindView(R.id.text_post_url) TextView postUrl;
-        @BindView(R.id.text_post_image) ImageView postImage;
+        @BindView(R.id.text_post_name)
+        TextView postName;
+        @BindView(R.id.text_post_time)
+        TextView postTime;
+        @BindView(R.id.text_post_content)
+        TextView postContent;
+        @BindView(R.id.text_post_source)
+        TextView postSource;
+        @BindView(R.id.text_post_author)
+        TextView postAuthor;
+        @BindView(R.id.text_post_url)
+        TextView postUrl;
+        @BindView(R.id.text_post_image)
+        ImageView postImage;
 
 
         public MyViewHolder(View view) {
@@ -79,18 +88,20 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
         final SearchResults searchResults = mSearchResultsList.get(position);
         holder.postName.setText(searchResults.getTitle());
         holder.postTime.setText(searchResults.getCreatedDate());
-        SpannableString content = settingContentTextView(searchResults.getContent(), searchResults);
-        if(content!=null) {
+        String transformedContent = settingViewDetails(searchResults.getContent(), searchResults.getImages());
+        SpannableString content = settingContentTextView(transformedContent, searchResults);
+        if (content != null) {
             holder.postContent.setText(content);
             holder.postContent.setMovementMethod(LinkMovementMethod.getInstance());
         } else {
             holder.postContent.setText(searchResults.getContent());
         }
-        holder.postSource.setText(searchResults.getCommunity()+" "+searchResults.getBoardAddr());
+        holder.postSource.setText(searchResults.getCommunity() + " " + searchResults.getBoardAddr());
         holder.postAuthor.setText(searchResults.getAuthor());
         holder.postUrl.setText(searchResults.getUrl());
 
-        if(searchResults.getImages() == null) {
+
+        if (searchResults.getImages() == null) {
             holder.postImage.setVisibility(View.GONE);
         } else {
             holder.postImage.setVisibility(View.VISIBLE);
@@ -117,10 +128,10 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
     public SpannableString settingContentTextView(String content, final SearchResults searchResults) {
         SpannableString spanString = new SpannableString(content);
         //Matcher matcher = Pattern.compile("@([A-Za-z0-9_-]+)").matcher(spanString);
-        final String spanStr = content.substring(content.length()-6,content.length());
+        final String spanStr = content.substring(content.length() - 6, content.length());
 
-        if(spanStr.equals("자세히 보기")) {
-            spanString.setSpan(new ForegroundColorSpan(Color.parseColor("#607D8B")), content.length()-6, content.length(), 0);
+        if (spanStr.equals("자세히 보기")) {
+            spanString.setSpan(new ForegroundColorSpan(Color.parseColor("#607D8B")), content.length() - 6, content.length(), 0);
             //final String tag = spanStr..group(0);
             ClickableSpan clickableSpan = new ClickableSpan() {
                 @Override
@@ -133,6 +144,7 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
                     //Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.co.in/search?q=" + searchText));
                     //startActivity(browserIntent);
                 }
+
                 @Override
                 public void updateDrawState(TextPaint ds) {
                     super.updateDrawState(ds);
@@ -140,12 +152,30 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
                     ds.setColor(Color.parseColor("#607D8B"));
                 }
             };
-            spanString.setSpan(clickableSpan, content.length()-6, content.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            spanString.setSpan(clickableSpan, content.length() - 6, content.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
             return spanString;
         } else {
             return null;
         }
 
+    }
+
+    public String settingViewDetails(String content, List<String> images) {
+        String result;
+
+        if (content.length() > 1000) {
+            result = content.substring(0, 1000) + "...  자세히 보기";
+        } else if (images != null) {
+            if (images.size() > 1) {
+                result = content + "... 자세히 보기";
+            } else {
+                result = content;
+            }
+        } else {
+            result = content;
+        }
+
+        return result;
     }
 
 }

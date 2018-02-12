@@ -27,22 +27,6 @@ public class SearchResults implements Parcelable {
     private String boardAddr;
     private String author;
     private String url;
-
-    @Override
-    public String toString() {
-        return "SearchResults{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", createdDate='" + createdDate + '\'' +
-                ", content='" + content + '\'' +
-                ", community='" + community + '\'' +
-                ", boardAddr='" + boardAddr + '\'' +
-                ", author='" + author + '\'' +
-                ", url='" + url + '\'' +
-                ", images=" + images +
-                '}';
-    }
-
     private List<String> images;
 
     public SearchResults(String id, String title, String createdDate, String content, String community, String boardAddr,  String author, String url, List<String> images) {
@@ -125,13 +109,27 @@ public class SearchResults implements Parcelable {
         this.createdDate = createdDate;
     }
 
-
     public String getUrl() {
         return url;
     }
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    @Override
+    public String toString() {
+        return "SearchResults{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", createdDate='" + createdDate + '\'' +
+                ", content='" + content + '\'' +
+                ", community='" + community + '\'' +
+                ", boardAddr='" + boardAddr + '\'' +
+                ", author='" + author + '\'' +
+                ", url='" + url + '\'' +
+                ", images=" + images +
+                '}';
     }
 
     @Override

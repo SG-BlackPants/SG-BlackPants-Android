@@ -26,6 +26,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import smilegate.blackpants.univscanner.R;
+import smilegate.blackpants.univscanner.data.model.KeywordRank;
 import smilegate.blackpants.univscanner.data.remote.ApiUtils;
 import smilegate.blackpants.univscanner.data.remote.KeywordApiService;
 import smilegate.blackpants.univscanner.data.remote.UserApiService;
@@ -131,13 +132,14 @@ public class SearchFragment extends BaseFragment {
 
     public void initkeywordRankList() {
         mKeywordRankList = new ArrayList<>();
-        mKeywordApiService.getPopularKeywords(mUniversity).enqueue(new Callback<List<String>>() {
+        mKeywordApiService.getPopularKeywords(mUniversity).enqueue(new Callback<KeywordRank>() {
             @Override
-            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                Log.d(TAG,"키워드 순위 서버통신 성공");
+            public void onResponse(Call<KeywordRank> call, Response<KeywordRank> response) {
 
                 if(response.body()!=null) {
-                    mKeywordRankList = response.body();
+                    //Log.d(TAG,"JSON OBJECT 보기 : "+response.body().toString());
+                    Log.d(TAG,"키워드 순위 서버통신 성공");
+                    mKeywordRankList = response.body().getMessage();
                     mAdapter = new KeywordRankListAdapter(getContext(), R.layout.layout_rank_listitem, mKeywordRankList);
                     keywordRankListView.setAdapter(mAdapter);
                     setListViewHeightBasedOnChildren(keywordRankListView);
@@ -147,7 +149,7 @@ public class SearchFragment extends BaseFragment {
             }
 
             @Override
-            public void onFailure(Call<List<String>> call, Throwable t) {
+            public void onFailure(Call<KeywordRank> call, Throwable t) {
                 Log.d(TAG,"키워드 순위 서버통신 실패 : "+t.getMessage());
             }
         });
