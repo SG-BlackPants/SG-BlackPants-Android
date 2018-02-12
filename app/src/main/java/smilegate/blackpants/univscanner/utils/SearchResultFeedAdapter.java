@@ -104,14 +104,17 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
         if (searchResults.getImages() == null) {
             holder.postImage.setVisibility(View.GONE);
         } else {
-            holder.postImage.setVisibility(View.VISIBLE);
-            Picasso.with(mContext)
-                    .load(searchResults.getImages().get(0))
-                    .resize(1280, 720)
-                    .centerCrop()
-                    .placeholder(R.drawable.app_logo2)
-                    .into(holder.postImage);
-
+            if(searchResults.getImages().size() > 0) {
+                holder.postImage.setVisibility(View.VISIBLE);
+                Picasso.with(mContext)
+                        .load(searchResults.getImages().get(0))
+                        .resize(1280, 720)
+                        .centerCrop()
+                        .placeholder(R.drawable.app_logo2)
+                        .into(holder.postImage);
+            } else {
+                holder.postImage.setVisibility(View.GONE);
+            }
         }
     }
 
