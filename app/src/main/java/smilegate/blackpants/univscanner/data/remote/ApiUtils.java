@@ -27,4 +27,9 @@ public class ApiUtils {
 
         return RetrofitClient.getClient(BASE_URL).create(FirebaseApiService.class);
     }
+
+    public static RedisApiService getRedisApiService() {
+
+        return RetrofitClient.getClient(BASE_URL).create(RedisApiService.class);
+    }
 }

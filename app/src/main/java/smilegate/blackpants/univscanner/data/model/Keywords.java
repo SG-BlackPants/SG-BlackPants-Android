@@ -5,6 +5,7 @@ package smilegate.blackpants.univscanner.data.model;
  */
 
 public class Keywords {
+
     private String name;
 
     public Keywords(String name) {
@@ -18,6 +19,8 @@ public class Keywords {
     public void setName(String name) {
         this.name = name;
     }
+
+    public void Keywords() {}
 
     @Override
     public String toString() {

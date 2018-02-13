@@ -1,5 +1,7 @@
 package smilegate.blackpants.univscanner.data.remote;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -15,5 +17,10 @@ public interface ArticleApiService {
 
     @POST("/articles/{keyword}")
     @FormUrlEncoded
-    Call<Article> getArticles(@Path("keyword") String keyword, @Field("userToken") String userToken);
+    Call<Article> getArticles(@Path("keyword") String keyword,
+                              @Field("userToken") String userToken,
+                              @Field("community") List<String> community,
+                              @Field("startDate") String startDate,
+                              @Field("endDate") String endDate,
+                              @Field("secondWord") String secondWord);
 }

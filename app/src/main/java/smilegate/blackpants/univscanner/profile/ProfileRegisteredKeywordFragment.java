@@ -141,6 +141,6 @@ public class ProfileRegisteredKeywordFragment extends BaseFragment implements Re
                         });
         AlertDialog dialog = alertDialogBuilder.create();
         dialog.show();
-
     }
+
 }

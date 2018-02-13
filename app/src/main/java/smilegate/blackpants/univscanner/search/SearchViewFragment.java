@@ -13,6 +13,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import com.google.gson.Gson;
+import com.pixplicity.easyprefs.library.Prefs;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -20,8 +23,13 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import smilegate.blackpants.univscanner.R;
-import smilegate.blackpants.univscanner.data.model.Keywords;
+import smilegate.blackpants.univscanner.data.model.LoginInfo;
+import smilegate.blackpants.univscanner.data.remote.ApiUtils;
+import smilegate.blackpants.univscanner.data.remote.RedisApiService;
 import smilegate.blackpants.univscanner.utils.BaseFragment;
 import smilegate.blackpants.univscanner.utils.KeywordListAdapter;
 
@@ -34,8 +42,11 @@ import static smilegate.blackpants.univscanner.MainActivity.mNavController;
 public class SearchViewFragment extends BaseFragment {
     private static final String TAG = "SearchViewFragment";
     private View mView;
-    private List<Keywords> mKeywordsList;
+    private List<String> mKeywordsList;
     private KeywordListAdapter mAdapter;
+    private RedisApiService mRedisApiService;
+    private LoginInfo mLoginInfo;
+
     int count;
     @BindView(R.id.autoText_search)
     AutoCompleteTextView searchAutoText;
@@ -79,6 +90,10 @@ public class SearchViewFragment extends BaseFragment {
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_search_view, container, false);
             ButterKnife.bind(this, mView);
+            mRedisApiService = ApiUtils.getRedisApiService();
+            Gson gson = new Gson();
+            String json = Prefs.getString("userInfo","");
+            mLoginInfo = gson.fromJson(json, LoginInfo.class);
             initTextListener();
             searchViewClearBtn.setVisibility(View.GONE);
             count=0;
@@ -122,8 +137,34 @@ public class SearchViewFragment extends BaseFragment {
             searchViewClearBtn.setVisibility(View.GONE);
         } else {
             searchViewClearBtn.setVisibility(View.VISIBLE);
-             mKeywordsList.add(new Keywords(searchAutoText.getText().toString().trim()));
-            updateKewordsList();
+            //서버통신
+            mRedisApiService.getAutocompleteKeywords(mLoginInfo.getUniversity(),keyword).enqueue(new Callback<List<String>>() {
+                @Override
+                public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                    if(response.body()!=null) {
+                        Log.d(TAG, "자동완성 키워드 서버통신 성공");
+                        mKeywordsList = response.body();
+                        if(mKeywordsList.size()>0) {
+                            Log.d(TAG, "1개 이상");
+                            updateKewordsList();
+                        } else {
+                            Log.d(TAG, "만족하는 결과 없음");
+                            mKeywordsList.add(searchAutoText.getText().toString().trim());
+                            updateKewordsList();
+                        }
+                    } else {
+                        Log.d(TAG, "자동완성 키워드 서버통신 실패 : onResponse : "+response.message());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<String>> call, Throwable t) {
+                    Log.d(TAG, "자동완성 키워드 서버통신 실패 : onFailure "+ t.getMessage());
+                }
+            });
+
+            //mKeywordsList.add(new Keywords(searchAutoText.getText().toString().trim()));
+
         }
     }
 
@@ -139,7 +180,7 @@ public class SearchViewFragment extends BaseFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG, "onItemClick : selected : " + mKeywordsList.get(position).toString());
                 if (mFragmentNavigation != null) {
-                    mFragmentNavigation.pushFragment(SearchResultFragment.newInstance(0, mKeywordsList.get(position).getName()));
+                    mFragmentNavigation.pushFragment(SearchResultFragment.newInstance(0, mKeywordsList.get(position)));
                 }
             }
         });

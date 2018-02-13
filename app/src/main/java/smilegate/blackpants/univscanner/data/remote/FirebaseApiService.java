@@ -7,6 +7,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import smilegate.blackpants.univscanner.data.model.EmailVerification;
+import smilegate.blackpants.univscanner.data.model.Notification;
 import smilegate.blackpants.univscanner.data.model.SendEmail;
 
 /**
@@ -22,5 +23,6 @@ public interface FirebaseApiService {
 
     @GET("/firebase/{uid}/email/check")
     Call<EmailVerification> getIsEmailVerified(@Path("uid") String uId);
+
 
 }

@@ -139,10 +139,13 @@ public class SearchFragment extends BaseFragment {
                 if(response.body()!=null) {
                     //Log.d(TAG,"JSON OBJECT 보기 : "+response.body().toString());
                     Log.d(TAG,"키워드 순위 서버통신 성공");
+
                     mKeywordRankList = response.body().getMessage();
-                    mAdapter = new KeywordRankListAdapter(getContext(), R.layout.layout_rank_listitem, mKeywordRankList);
-                    keywordRankListView.setAdapter(mAdapter);
-                    setListViewHeightBasedOnChildren(keywordRankListView);
+                    if(mKeywordRankList!=null) {
+                        mAdapter = new KeywordRankListAdapter(getContext(), R.layout.layout_rank_listitem, mKeywordRankList);
+                        keywordRankListView.setAdapter(mAdapter);
+                        setListViewHeightBasedOnChildren(keywordRankListView);
+                    }
                 } else {
                     Log.d(TAG,"키워드 순위 서버통신 실패 : "+response.message());
                 }

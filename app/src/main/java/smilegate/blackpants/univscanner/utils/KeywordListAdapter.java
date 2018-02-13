@@ -10,22 +10,21 @@ import android.widget.TextView;
 import java.util.List;
 
 import smilegate.blackpants.univscanner.R;
-import smilegate.blackpants.univscanner.data.model.Keywords;
 
 /**
  * Created by user on 2018-01-24.
  */
 
-public class KeywordListAdapter extends ArrayAdapter<Keywords>{
+public class KeywordListAdapter extends ArrayAdapter<String>{
 
     private static final String TAG = "KeywordListAdapter";
 
     private LayoutInflater mInflater;
-    private List<Keywords> mKeywords = null;
+    private List<String> mKeywords = null;
     private int mLayoutResource;
     private Context mContext;
 
-    public KeywordListAdapter(Context context, int resource, List<Keywords> objects) {
+    public KeywordListAdapter(Context context, int resource, List<String> objects) {
         super(context, resource, objects);
         this.mContext = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -47,7 +46,7 @@ public class KeywordListAdapter extends ArrayAdapter<Keywords>{
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.name.setText(getItem(position).getName());
+        viewHolder.name.setText(getItem(position));
         return convertView;
     }
 

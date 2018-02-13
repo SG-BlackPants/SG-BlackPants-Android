@@ -161,7 +161,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     }
 
     public void getDataFromServer(String keyword) {
-        mArticleApiService.getArticles(keyword, Prefs.getString("userToken",null)).enqueue(new Callback<Article>() {
+        mArticleApiService.getArticles(keyword, Prefs.getString("userToken",null), null, null, null, null).enqueue(new Callback<Article>() {
             @Override
             public void onResponse(Call<Article> call, Response<Article> response) {
                 if (response.body() != null) {

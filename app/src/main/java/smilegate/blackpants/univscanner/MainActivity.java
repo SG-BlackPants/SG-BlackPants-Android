@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
                 .setUseDefaultSharedPreference(true)
                 .build();
         setUpFirebaseAuth();
-        //signOut();
+
         mUserApiService = ApiUtils.getUserApiService();
         boolean initial = savedInstanceState == null;
         if (initial) {
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         mBottomBarTab = bottomBar.getTabWithId(R.id.bb_menu_notification);
         //mBottomBarTab.setBadgeCount(1);
         mMyBottomBarTab = new MyBottomBarTab(mBottomBarTab);
-
+        //signOut();
     }
 
     public void showErrorMessage() {
