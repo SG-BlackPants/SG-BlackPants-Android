@@ -48,6 +48,7 @@ dependencies {
     implementation 'com.felipecsl.asymmetricgridview:library:2.0.1'
     implementation 'com.nineoldandroids:library:2.4.0'
     implementation 'com.daimajia.slider:library:1.1.5@aar'
+    implementation 'com.borax12.materialdaterangepicker:library:1.9'
 }
 
 apply plugin: 'com.google.gms.google-services'

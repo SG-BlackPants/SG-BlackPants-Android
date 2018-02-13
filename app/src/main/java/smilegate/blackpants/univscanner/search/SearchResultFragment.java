@@ -3,6 +3,7 @@ package smilegate.blackpants.univscanner.search;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -75,15 +76,20 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     @BindView(R.id.btn_register_keyword)
     ImageButton registerKeywordBtn;
 
-    @BindView(R.id.nvView)
-    View drawerView;
+    @BindView(R.id.filterView)
+    NavigationView drawerFilterView;
 
     @BindView(R.id.btn_filter)
     Button filterBtn;
 
     @OnClick(R.id.btn_filter)
     public void filterClick(Button button) {
-        drawerLayout.openDrawer(drawerView);
+        drawerLayout.openDrawer(drawerFilterView);
+    }
+
+    @OnClick(R.id.btn_start_date)
+    public void setStartDateClick(Button button) {
+        Toast.makeText(getContext(), "버튼클릭", Toast.LENGTH_LONG).show();
     }
 
     @OnClick(R.id.btn_register_keyword)
