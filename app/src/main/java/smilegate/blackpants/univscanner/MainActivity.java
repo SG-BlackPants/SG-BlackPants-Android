@@ -55,8 +55,8 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     private UserApiService mUserApiService;
     private Context mContext = MainActivity.this;
     private MenuItem mPrevMenuItem;
-    private MyBottomBarTab mMyBottomBarTab;
-    private BottomBarTab mBottomBarTab;
+    public static MyBottomBarTab sMyBottomBarTab;
+    public static BottomBarTab mBottomBarTab;
     private boolean isUnivAuth;
 
     private final int INDEX_HOME = FragNavController.TAB1;
@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         Log.d(TAG, "onCreate()");
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        //android.os.Debug.waitForDebugger();  // this line is key
         new Prefs.Builder()
                 .setContext(this)
                 .setMode(ContextWrapper.MODE_PRIVATE)
@@ -124,8 +125,8 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         });
 
         mBottomBarTab = bottomBar.getTabWithId(R.id.bb_menu_notification);
-        //mBottomBarTab.setBadgeCount(1);
-        mMyBottomBarTab = new MyBottomBarTab(mBottomBarTab);
+        mBottomBarTab.setBadgeCount(1);
+        //sMyBottomBarTab = new MyBottomBarTab(mBottomBarTab);
         //signOut();
     }
 
@@ -245,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
             case INDEX_HOME:
                 return SearchFragment.newInstance(0);
             case INDEX_NOTIFICATION:
-                return NotificationFragment.newInstance(0, mMyBottomBarTab);
+                return NotificationFragment.newInstance(0);
             case INDEX_PROFILE:
                 return ProfileFragment.newInstance(0);
         }

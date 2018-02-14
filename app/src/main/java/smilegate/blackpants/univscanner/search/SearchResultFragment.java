@@ -13,10 +13,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.pixplicity.easyprefs.library.Prefs;
 
 import java.util.ArrayList;
@@ -31,9 +35,12 @@ import retrofit2.Response;
 import smilegate.blackpants.univscanner.R;
 import smilegate.blackpants.univscanner.data.model.Article;
 import smilegate.blackpants.univscanner.data.model.ArticleMessage;
+import smilegate.blackpants.univscanner.data.model.Push;
 import smilegate.blackpants.univscanner.data.model.SearchResults;
+import smilegate.blackpants.univscanner.data.model.Users;
 import smilegate.blackpants.univscanner.data.remote.ApiUtils;
 import smilegate.blackpants.univscanner.data.remote.ArticleApiService;
+import smilegate.blackpants.univscanner.data.remote.UserApiService;
 import smilegate.blackpants.univscanner.utils.BaseFragment;
 import smilegate.blackpants.univscanner.utils.SearchResultFeedAdapter;
 
@@ -46,12 +53,12 @@ import static smilegate.blackpants.univscanner.MainActivity.mNavController;
 public class SearchResultFragment extends BaseFragment implements SearchResultFeedAdapter.ContentDetailClickListener {
     private static final String TAG = "SearchResultFragment";
     private View mView;
-
     private RecyclerView.LayoutManager mLayoutManager;
     private SearchResultFeedAdapter mAdapter;
     private List<SearchResults> mSearchResultsList;
     private SearchResults mSearchResults;
     private ArticleApiService mArticleApiService;
+    private UserApiService mUserApiService;
     private String mKeyword;
 
     @BindView(R.id.btn_searchresult_back)
@@ -82,8 +89,32 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     @BindView(R.id.btn_filter)
     Button filterBtn;
 
+    @BindView(R.id.autoText_included_keyword)
+    AutoCompleteTextView includedKeywordTxt;
+
+    @BindView(R.id.text_start_date)
+    TextView startDateTxt;
+
+    @BindView(R.id.text_end_date)
+    TextView endDateTxt;
+
+    @BindView(R.id.checkbox_facebook)
+    CheckBox facebookCheckBox;
+
+    @BindView(R.id.checkbox_everytime)
+    CheckBox everytimeCheckBox;
+
+    @BindView(R.id.btn_filter_apply)
+    Button filterApplyBtn;
+
+    @OnClick(R.id.btn_filter_apply)
+    public void filterApplyClick(Button button) {
+        getSettingFilter();
+    }
+
     @OnClick(R.id.btn_filter)
     public void filterClick(Button button) {
+        initFilter();
         drawerLayout.openDrawer(drawerFilterView);
     }
 
@@ -107,7 +138,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
                             public void onClick(
                                     DialogInterface dialog, int id) {
                                 // 서버로 보내기
-                                Toast.makeText(getContext(), "등록", Toast.LENGTH_LONG).show();
+                                pushKeywordToServer();
                                 dialog.cancel();
                             }
                         })
@@ -150,7 +181,9 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
                 Log.d(TAG, "키워드 : " + mKeyword);
             }
             mArticleApiService = ApiUtils.getArticleApiService();
+            mUserApiService = ApiUtils.getUserApiService();
             mSearchResultsList = new ArrayList<>();
+
             mAdapter = new SearchResultFeedAdapter(getContext(), mSearchResultsList);
             mLayoutManager = new LinearLayoutManager(getContext());
             searchResultRecyclerView.setLayoutManager(mLayoutManager);
@@ -167,14 +200,18 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     }
 
     public void getDataFromServer(String keyword) {
-        mArticleApiService.getArticles(keyword, Prefs.getString("userToken",null), null, null, null, null).enqueue(new Callback<Article>() {
+        mArticleApiService.getArticles(keyword, Prefs.getString("userToken", null), null, null, null, null).enqueue(new Callback<Article>() {
             @Override
             public void onResponse(Call<Article> call, Response<Article> response) {
                 if (response.body() != null) {
                     Log.d(TAG, "Article info getDataFromServer : success");
                     List<ArticleMessage> articleMessages = response.body().getArticleMessage();
-                    addData(articleMessages);
-                    mAdapter.notifyDataSetChanged();
+                    if (articleMessages != null) {
+                        addData(articleMessages);
+                        mAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.d(TAG, "Article info getDataFromServer : onResponse : fail : list null");
+                    }
                 } else {
                     Log.d(TAG, "Article info getDataFromServer : onResponse : fail");
                 }
@@ -233,6 +270,28 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
 
     }
 
+    public void pushKeywordToServer() {
+        String[] communityArray = {"facebook-482012061908784", "everytime"};
+        Push push = new Push(mKeyword, "경희대학교", communityArray, "2018-01-02T08:16:46.000Z", "2018-02-14T08:16:46.000Z", "");
+        mUserApiService.pushKeyword(FirebaseAuth.getInstance().getUid(), push).enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                if (response.body() != null) {
+                    Log.d(TAG, "키워드 등록 성공");
+                    Toast.makeText(getContext(), "등록을 완료하였습니다.", Toast.LENGTH_LONG).show();
+                } else {
+                    Log.d(TAG, "키워드 등록 실패 : onResponse : " + response.message());
+                    Toast.makeText(getContext(), "등록에 실패하였습니다.", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
+                Log.d(TAG, "키워드 등록 실패 : onFailure : " + t.getMessage());
+                Toast.makeText(getContext(), "등록에 실패하였습니다.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 
     DrawerLayout.DrawerListener myDrawerListener = new DrawerLayout.DrawerListener() {
 
@@ -308,5 +367,53 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
 
     public String transformCreatedTime(String data) {
         return data;
+    }
+
+    public void getSettingFilter() {
+        String includedKeyword =includedKeywordTxt.getText().toString().trim();
+        Log.d(TAG, includedKeyword);
+        String startDate = startDateTxt.getText().toString();
+        String endDate = endDateTxt.getText().toString();
+        List<String> communityList = new ArrayList<>();
+        if (facebookCheckBox.isChecked() && facebookCheckBox.isChecked()) {
+            communityList.add("facebook-482012061908784");
+            communityList.add("everytime");
+        } else if (everytimeCheckBox.isChecked()) {
+            communityList.add("everytime");
+        } else {
+            communityList.add("facebook-482012061908784");
+        }
+
+        mArticleApiService.getArticles(mKeyword, Prefs.getString("userToken", null), communityList, startDate, endDate, includedKeyword)
+        .enqueue(new Callback<Article>() {
+            @Override
+            public void onResponse(Call<Article> call, Response<Article> response) {
+                if (response.body() != null) {
+                    List<ArticleMessage> articleMessages = response.body().getArticleMessage();
+                    if (articleMessages != null) {
+                        Log.d(TAG, "Article info getDataFromServer : success");
+                        addData(articleMessages);
+                        mAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.d(TAG, "Article info getDataFromServer : onResponse : fail : list null");
+                    }
+                } else {
+                    Log.d(TAG, "Article info getDataFromServer : onResponse : fail");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Article> call, Throwable t) {
+                Log.d(TAG, "Article info getDataFromServer : fail" + t.getMessage());
+            }
+        });
+    }
+
+    public void initFilter() {
+        includedKeywordTxt.setText("");
+        startDateTxt.setText("2018-01-01T19:12:56.000Z");
+        endDateTxt.setText("2018-02-13T19:12:56.000Z");
+        facebookCheckBox.setChecked(true);
+        everytimeCheckBox.setChecked(true);
     }
 }

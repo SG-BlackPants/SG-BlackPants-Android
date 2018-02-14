@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 
 import com.aotasoft.taggroup.TagGroup;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.pixplicity.easyprefs.library.Prefs;
 
@@ -84,8 +85,12 @@ public class SearchFragment extends BaseFragment {
             //mUniversity = gson.fromJson(json, LoginInfo.class).getUniversity();
             mUniversity = "경희대학교-국제캠퍼스";
             mUid = FirebaseAuth.getInstance().getUid();
-            initRecentKeywordList();
-            initkeywordRankList();
+            if(FirebaseAuth.getInstance().getCurrentUser()!=null){
+                initRecentKeywordList();
+                initkeywordRankList();
+            }
+            Log.d(TAG,"registrationToken : " +FirebaseInstanceId.getInstance().getToken());
+
         }
         return view;
     }

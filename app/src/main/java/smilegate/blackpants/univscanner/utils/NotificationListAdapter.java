@@ -1,6 +1,7 @@
 package smilegate.blackpants.univscanner.utils;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import smilegate.blackpants.univscanner.R;
 import smilegate.blackpants.univscanner.data.model.NotificationMessage;
-import smilegate.blackpants.univscanner.data.remote.RedisApiService;
 
 /**
  * Created by user on 2018-02-13.
@@ -47,7 +47,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationMessage> {
         } else {
             viewHolder = (NotificationListAdapter.ViewHolder) convertView.getTag();
         }
-
+        Log.d(TAG,getItem(position).toString());
         viewHolder.notificationSourceImg.setImageResource(R.drawable.kyunghee_bamboo);
         viewHolder.notificationInfoTxt.setText(getItem(position).getCommunity() + " " + getItem(position).getBoardAddr() + "에서 " + getItem(position).getKeyword() + "관련 게시물이 올라왔습니다.");
         viewHolder.notificationTimeTxt.setText(getItem(position).getCreatedDate());

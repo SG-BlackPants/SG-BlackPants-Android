@@ -3,13 +3,16 @@ package smilegate.blackpants.univscanner.data.remote;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import smilegate.blackpants.univscanner.data.model.LoginInfo;
+import smilegate.blackpants.univscanner.data.model.Push;
 import smilegate.blackpants.univscanner.data.model.Users;
 
 /**
@@ -31,7 +34,10 @@ public interface UserApiService {
                          @Field("name") String name,
                          @Field("university") String university);
 
-    @DELETE("/users/{id}")
-    Call<Users> deleteUser(@Path("id") String uid);
+    @DELETE("/users/{uid}")
+    Call<Users> deleteUser(@Path("uid") String uid);
+
+    @PUT("/users/{uid}/keyword/push")
+    Call<Users> pushKeyword(@Path("uid") String uid, @Body Push push);
 
 }

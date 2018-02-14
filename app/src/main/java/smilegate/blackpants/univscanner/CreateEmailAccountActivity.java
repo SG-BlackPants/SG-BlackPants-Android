@@ -109,7 +109,8 @@ public class CreateEmailAccountActivity extends AppCompatActivity {
     public void createAccount(Button button) {
         if (validateForm()) {
             String university= inputUnivText.getText().toString().trim();
-            university = university.replace(" ", "-");
+            university = university.split(" ")[0];
+            //university = university.replace(" ", "-");
             createUser(university, inputNameText.getText().toString().trim(), inputEmailText.getText().toString().trim(), passwordText.toString().trim());
         }
     }

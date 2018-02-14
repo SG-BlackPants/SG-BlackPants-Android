@@ -14,8 +14,6 @@ public class Users {
 
     private String university;
 
-
-
     public Users(String userToken, String registrationToken, String name, String university) {
         this.userToken = userToken;
         this.registrationToken = registrationToken;

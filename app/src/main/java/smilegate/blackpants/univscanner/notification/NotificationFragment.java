@@ -23,8 +23,8 @@ import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import smilegate.blackpants.univscanner.MainActivity;
 import smilegate.blackpants.univscanner.R;
-import smilegate.blackpants.univscanner.data.model.MyBottomBarTab;
 import smilegate.blackpants.univscanner.data.model.Notification;
 import smilegate.blackpants.univscanner.data.model.NotificationMessage;
 import smilegate.blackpants.univscanner.data.remote.ApiUtils;
@@ -47,7 +47,7 @@ public class NotificationFragment extends BaseFragment {
     @BindView(R.id.list_notification)
     ListView notificationListView;
 
-    public static NotificationFragment newInstance(int instance, MyBottomBarTab myBottomBarTab) {
+    public static NotificationFragment newInstance(int instance) {
         Bundle args = new Bundle();
         //args.putSerializable("badge", myBottomBarTab);
         args.putInt(ARGS_INSTANCE, instance);
@@ -65,16 +65,14 @@ public class NotificationFragment extends BaseFragment {
             ButterKnife.bind(this, view);
             mRedisApiService = ApiUtils.getRedisApiService();
             initNotificationList();
-            /*MyBottomBarTab myBottomBarTab = (MyBottomBarTab) getArguments().getSerializable("badge");
-            mBottomBarTab = myBottomBarTab.getBottomBarTab();
-            mBottomBarTab.removeBadge();*/
+            MainActivity.mBottomBarTab.removeBadge();
             setBadge();
         }
         return view;
     }
 
     public void initNotificationList() {
-        mNotificationList = new ArrayList<>();
+
       /*  mRegisteredKeywordList.add("비트코인");
         mRegisteredKeywordList.add("꿀교양");*/
         mRedisApiService.getPushHistory(Prefs.getString("userToken", null)).enqueue(new Callback<Notification>() {
@@ -82,10 +80,14 @@ public class NotificationFragment extends BaseFragment {
             public void onResponse(Call<Notification> call, Response<Notification> response) {
                 if (response.body() != null) {
                     Log.d(TAG, "알림 히스토리 서버통신 성공");
+                    mNotificationList = new ArrayList<>();
                     mNotificationList = response.body().getMessages();
                     if (mNotificationList.size() > 0) {
                         mAdapter = new NotificationListAdapter(getContext(), R.layout.layout_notification_listitem, mNotificationList);
                         notificationListView.setAdapter(mAdapter);
+                        for(int i=0; i<mNotificationList.size();i++) {
+                            Log.d(TAG,mNotificationList.get(i).toString());
+                        }
                     } else {
                         Log.d(TAG, "현재까지는 알림 히스토리가 없음");
                     }
@@ -103,7 +105,7 @@ public class NotificationFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.bind(this, view).unbind();
+        //ButterKnife.bind(this, view).unbind();
     }
 
     public void setBadge() {
@@ -114,7 +116,6 @@ public class NotificationFragment extends BaseFragment {
         intent.putExtra("badge_count_class_name", getLauncherClassName(getContext()));
 
         Prefs.putInt("badgeCount", 0);
-
         getContext().sendBroadcast(intent);
     }
 
