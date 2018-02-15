@@ -15,8 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +29,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,11 +38,11 @@ import smilegate.blackpants.univscanner.data.model.Article;
 import smilegate.blackpants.univscanner.data.model.ArticleMessage;
 import smilegate.blackpants.univscanner.data.model.Push;
 import smilegate.blackpants.univscanner.data.model.SearchResults;
-import smilegate.blackpants.univscanner.data.model.Users;
 import smilegate.blackpants.univscanner.data.remote.ApiUtils;
 import smilegate.blackpants.univscanner.data.remote.ArticleApiService;
 import smilegate.blackpants.univscanner.data.remote.UserApiService;
 import smilegate.blackpants.univscanner.utils.BaseFragment;
+import smilegate.blackpants.univscanner.utils.FilterCommunityListAdapter;
 import smilegate.blackpants.univscanner.utils.SearchResultFeedAdapter;
 
 import static smilegate.blackpants.univscanner.MainActivity.mNavController;
@@ -50,7 +51,7 @@ import static smilegate.blackpants.univscanner.MainActivity.mNavController;
  * Created by user on 2018-01-25.
  */
 
-public class SearchResultFragment extends BaseFragment implements SearchResultFeedAdapter.ContentDetailClickListener {
+public class SearchResultFragment extends BaseFragment implements SearchResultFeedAdapter.ContentDetailClickListener, FilterCommunityListAdapter.CommunityCheckboxListener {
     private static final String TAG = "SearchResultFragment";
     private View mView;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -60,6 +61,12 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     private ArticleApiService mArticleApiService;
     private UserApiService mUserApiService;
     private String mKeyword;
+
+    private List<String> mCommunityList;
+    private FilterCommunityListAdapter mCommunityAdapter;
+
+    @BindView(R.id.list_filter_community)
+    ListView communityListView;
 
     @BindView(R.id.btn_searchresult_back)
     ImageButton searchResultBackBtn;
@@ -98,11 +105,13 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     @BindView(R.id.text_end_date)
     TextView endDateTxt;
 
+/*
     @BindView(R.id.checkbox_facebook)
     CheckBox facebookCheckBox;
 
     @BindView(R.id.checkbox_everytime)
     CheckBox everytimeCheckBox;
+*/
 
     @BindView(R.id.btn_filter_apply)
     Button filterApplyBtn;
@@ -273,9 +282,9 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     public void pushKeywordToServer() {
         String[] communityArray = {"facebook-482012061908784", "everytime"};
         Push push = new Push(mKeyword, "경희대학교", communityArray, "2018-01-02T08:16:46.000Z", "2018-02-14T08:16:46.000Z", "");
-        mUserApiService.pushKeyword(FirebaseAuth.getInstance().getUid(), push).enqueue(new Callback<Users>() {
+        mUserApiService.pushKeyword(FirebaseAuth.getInstance().getUid(), push).enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<Users> call, Response<Users> response) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.body() != null) {
                     Log.d(TAG, "키워드 등록 성공");
                     Toast.makeText(getContext(), "등록을 완료하였습니다.", Toast.LENGTH_LONG).show();
@@ -286,7 +295,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
             }
 
             @Override
-            public void onFailure(Call<Users> call, Throwable t) {
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.d(TAG, "키워드 등록 실패 : onFailure : " + t.getMessage());
                 Toast.makeText(getContext(), "등록에 실패하였습니다.", Toast.LENGTH_LONG).show();
             }
@@ -374,17 +383,17 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
         Log.d(TAG, includedKeyword);
         String startDate = startDateTxt.getText().toString();
         String endDate = endDateTxt.getText().toString();
-        List<String> communityList = new ArrayList<>();
-        if (facebookCheckBox.isChecked() && facebookCheckBox.isChecked()) {
+     /*   List<String> communityList = new ArrayList<>();*/
+       /* if (facebookCheckBox.isChecked() && facebookCheckBox.isChecked()) {
             communityList.add("facebook-482012061908784");
             communityList.add("everytime");
         } else if (everytimeCheckBox.isChecked()) {
             communityList.add("everytime");
         } else {
             communityList.add("facebook-482012061908784");
-        }
+        }*/
 
-        mArticleApiService.getArticles(mKeyword, Prefs.getString("userToken", null), communityList, startDate, endDate, includedKeyword)
+       /* mArticleApiService.getArticles(mKeyword, Prefs.getString("userToken", null), communityList, startDate, endDate, includedKeyword)
         .enqueue(new Callback<Article>() {
             @Override
             public void onResponse(Call<Article> call, Response<Article> response) {
@@ -406,14 +415,34 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
             public void onFailure(Call<Article> call, Throwable t) {
                 Log.d(TAG, "Article info getDataFromServer : fail" + t.getMessage());
             }
-        });
+        });*/
     }
 
     public void initFilter() {
+
+        mCommunityList = new ArrayList<String>();
+        mCommunityList.add("페이스북 대나무숲");
+        mCommunityList.add("페이스북 1");
+        mCommunityList.add("페이스북 2");
+        mCommunityList.add("페이스북 3");
+        mCommunityList.add("페이스북 4");
+        mCommunityList.add("페이스북 4");
+        mCommunityList.add("페이스북 5");
+        mCommunityList.add("페이스북 6");
+
+        mCommunityAdapter = new FilterCommunityListAdapter(getContext(), R.layout.layout_filter_community_listitem, mCommunityList);
+        mCommunityAdapter.setCheckBoxListner(this);
+        communityListView.setAdapter(mCommunityAdapter);
+        SearchFragment.setListViewHeightBasedOnChildren(communityListView);
+
         includedKeywordTxt.setText("");
         startDateTxt.setText("2018-01-01T19:12:56.000Z");
         endDateTxt.setText("2018-02-13T19:12:56.000Z");
-        facebookCheckBox.setChecked(true);
-        everytimeCheckBox.setChecked(true);
+       /* facebookCheckBox.setChecked(true);
+        everytimeCheckBox.setChecked(true);*/
+    }
+    @Override
+    public void onCheckboxClickListner(String value, boolean isChecked) {
+        Toast.makeText(getContext(), value + " 클릭 " + isChecked, Toast.LENGTH_LONG).show();
     }
 }

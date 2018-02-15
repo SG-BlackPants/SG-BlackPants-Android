@@ -2,6 +2,7 @@ package smilegate.blackpants.univscanner.data.remote;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -13,6 +14,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import smilegate.blackpants.univscanner.data.model.LoginInfo;
 import smilegate.blackpants.univscanner.data.model.Push;
+import smilegate.blackpants.univscanner.data.model.RefreshToken;
 import smilegate.blackpants.univscanner.data.model.Users;
 
 /**
@@ -38,6 +40,10 @@ public interface UserApiService {
     Call<Users> deleteUser(@Path("uid") String uid);
 
     @PUT("/users/{uid}/keyword/push")
-    Call<Users> pushKeyword(@Path("uid") String uid, @Body Push push);
+    Call<ResponseBody> pushKeyword(@Path("uid") String uid, @Body Push push);
 
+    @PUT("/users/{uid}/refreshToken")
+    Call<ResponseBody> setRefreshRegistrationToken(@Path("uid") String uid, @Body RefreshToken refreshToken);
 }
+
+
