@@ -15,7 +15,18 @@ import android.widget.ListView;
 import com.pixplicity.easyprefs.library.Prefs;
 import com.roughike.bottombar.BottomBarTab;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -26,6 +37,7 @@ import retrofit2.Response;
 import smilegate.blackpants.univscanner.MainActivity;
 import smilegate.blackpants.univscanner.R;
 import smilegate.blackpants.univscanner.data.model.Notification;
+import smilegate.blackpants.univscanner.data.model.NotificationDetail;
 import smilegate.blackpants.univscanner.data.model.NotificationMessage;
 import smilegate.blackpants.univscanner.data.remote.ApiUtils;
 import smilegate.blackpants.univscanner.data.remote.RedisApiService;
@@ -40,10 +52,10 @@ public class NotificationFragment extends BaseFragment {
     private static final String TAG = "NotificationFragment";
     private View view;
     private BottomBarTab mBottomBarTab;
-    private List<NotificationMessage> mNotificationList;
+    private List<NotificationDetail> mNotificationList;
     private NotificationListAdapter mAdapter;
     private RedisApiService mRedisApiService;
-
+    private HashMap<String, String> mCommunityHashMap;
     @BindView(R.id.list_notification)
     ListView notificationListView;
 
@@ -64,6 +76,7 @@ public class NotificationFragment extends BaseFragment {
             //btn = cachedView.findViewById(R.id.button);
             ButterKnife.bind(this, view);
             mRedisApiService = ApiUtils.getRedisApiService();
+            getCommunityList();
             initNotificationList();
             MainActivity.mBottomBarTab.removeBadge();
             setBadge();
@@ -80,14 +93,16 @@ public class NotificationFragment extends BaseFragment {
             public void onResponse(Call<Notification> call, Response<Notification> response) {
                 if (response.body() != null) {
                     Log.d(TAG, "알림 히스토리 서버통신 성공");
-                    mNotificationList = new ArrayList<>();
-                    mNotificationList = response.body().getMessages();
-                    if (mNotificationList.size() > 0) {
+                    List<NotificationMessage> notificationList = new ArrayList<>();
+
+                    notificationList = response.body().getMessages();
+                    if (notificationList.size() > 0) {
+                        addData(notificationList);
                         mAdapter = new NotificationListAdapter(getContext(), R.layout.layout_notification_listitem, mNotificationList);
                         notificationListView.setAdapter(mAdapter);
-                        for(int i=0; i<mNotificationList.size();i++) {
+                       /* for(int i=0; i<mNotificationList.size();i++) {
                             Log.d(TAG,mNotificationList.get(i).toString());
-                        }
+                        }*/
                     } else {
                         Log.d(TAG, "현재까지는 알림 히스토리가 없음");
                     }
@@ -100,6 +115,89 @@ public class NotificationFragment extends BaseFragment {
                 Log.d(TAG, "알림 히스토리 서버통신 실패 : onFailure : " + t.getMessage());
             }
         });
+    }
+
+    public void addData(List<NotificationMessage> notificationMessages) {
+        mNotificationList = new ArrayList<>();
+        NotificationDetail notificationDetail;
+        String keyword, createdDate, communityId, communityName, boardAddr;
+
+        for (int i = 0; i < notificationMessages.size(); i++) {
+            keyword = notificationMessages.get(i).getKeyword();
+            createdDate = transformCreatedTime(notificationMessages.get(i).getCreatedDate());
+            communityId = notificationMessages.get(i).getCommunity();
+            communityName = transformCommunity(notificationMessages.get(i).getCommunity());
+            boardAddr = notificationMessages.get(i).getBoardAddr();
+
+            notificationDetail = new NotificationDetail(keyword , communityId, communityName, boardAddr, createdDate);
+            mNotificationList.add(i, notificationDetail);
+        }
+    }
+
+    public String transformCreatedTime(String time) {
+        String result;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        Date convertedDate = new Date();
+        try {
+            convertedDate = dateFormat.parse(time);
+            Log.d(TAG,dateFormat.format(convertedDate));
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        //포스트된 날짜 datetime으로 변경
+        Calendar postDay = Calendar.getInstance();
+        postDay.setTime(convertedDate);
+        int postDayYear = postDay.get(Calendar.YEAR);
+        int postDayMonth = postDay.get(Calendar.MONTH)+1;
+        int postDayDate = postDay.get(Calendar.DATE);
+        int postDayAM_PM_temp = postDay.get(Calendar.AM_PM);
+        String postDayAM_PM;
+        if(postDayAM_PM_temp==0) {
+            postDayAM_PM = "오전";
+        } else {
+            postDayAM_PM = "오후";
+        }
+        int postDayHour = postDay.get(Calendar.HOUR);
+        if(postDayHour==0) {
+            postDayHour = 12;
+        }
+        int postDayMinute_temp = postDay.get(Calendar.MINUTE);
+        String postDayMinute;
+        if(postDayMinute_temp<10) {
+            postDayMinute = "0"+postDayMinute_temp;
+        } else {
+            postDayMinute = postDayMinute_temp+"";
+        }
+        //오늘 날짜
+        Calendar today = Calendar.getInstance();
+        int todayYear = today.get(Calendar.YEAR);
+        int todayMonth = today.get(Calendar.MONTH)+1;
+        int todayDate = today.get(Calendar.DATE);
+
+
+        if(!((postDayYear==todayYear)&&(postDayMonth==todayMonth)&&(postDayDate==todayDate))) {
+            // 오늘이 아닌 경우
+            if(postDayYear == todayYear) {
+                // 같은 년도일 경우 년 생략
+                result = postDayMonth+"월 "+postDayDate+"일 "+postDayAM_PM+" "+postDayHour+":"+postDayMinute;
+            } else {
+                result = postDayYear+"년 "+postDayMonth+"월 "+postDayDate+"일 "+postDayAM_PM+" "+postDayHour+":"+postDayMinute;
+            }
+        } else {
+            // 오늘인 경우
+            result = "오늘 "+postDayAM_PM+" "+postDayHour+":"+postDayMinute;
+        }
+        return result;
+    }
+
+    public String transformCommunity(String data) {
+
+        if(mCommunityHashMap.containsKey(data)) {
+            return mCommunityHashMap.get(data);
+        } else {
+            return data;
+        }
     }
 
     @Override
@@ -137,4 +235,79 @@ public class NotificationFragment extends BaseFragment {
         return null;
     }
 
+    public String loadJSONFromAsset(String mode) {
+        String json = null;
+        try {
+            InputStream is;
+            if(mode.equals("community_id")) {
+                is = getActivity().getAssets().open("community_id.json");
+            } else {
+                is = getActivity().getAssets().open("university_communitylist.json");
+            }
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
+    public void getCommunityList() {
+        mCommunityHashMap = new HashMap<>();
+        try {
+
+            //원래 소스
+           /* JSONObject obj = new JSONObject(loadJSONFromAsset("community_list"));
+            String university = loginInfo.getUniversity();
+            if(university.contains("경희대학교")) {
+                university = "경희대학교";
+            } else if(university.contains("세종대학교")){
+                university = "세종대학교";
+            }
+
+            JSONArray content = obj.getJSONArray(university);
+            for (int i = 0; i < content.length(); i++) {
+                JSONObject communityInfo = content.getJSONObject(i);
+                String id = communityInfo.getString("id");
+                String name = communityInfo.getString("name");
+                mCommunityHashMap.put(id, name);
+                mCommunityList.add(new Community(id,name));
+            }*/
+
+            //테스트 소스 - 경희, 세종, 한성대 커뮤니티 일단 다 집어넣음
+            JSONObject obj = new JSONObject(loadJSONFromAsset("community_list"));
+            String university = "경희대학교";
+            JSONArray content = obj.getJSONArray(university);
+            for (int i = 0; i < content.length(); i++) {
+                JSONObject communityInfo = content.getJSONObject(i);
+                String id = communityInfo.getString("id");
+                String name = communityInfo.getString("name");
+                mCommunityHashMap.put(id, name);
+            }
+
+            university = "세종대학교";
+            content = obj.getJSONArray(university);
+            for (int i = 0; i < content.length(); i++) {
+                JSONObject communityInfo = content.getJSONObject(i);
+                String id = communityInfo.getString("id");
+                String name = communityInfo.getString("name");
+                mCommunityHashMap.put(id, name);
+            }
+
+            university = "한성대학교";
+            content = obj.getJSONArray(university);
+            for (int i = 0; i < content.length(); i++) {
+                JSONObject communityInfo = content.getJSONObject(i);
+                String id = communityInfo.getString("id");
+                String name = communityInfo.getString("name");
+                mCommunityHashMap.put(id, name);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }

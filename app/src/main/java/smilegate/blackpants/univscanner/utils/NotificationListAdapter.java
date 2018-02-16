@@ -1,6 +1,9 @@
 package smilegate.blackpants.univscanner.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,21 +17,21 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import smilegate.blackpants.univscanner.R;
-import smilegate.blackpants.univscanner.data.model.NotificationMessage;
+import smilegate.blackpants.univscanner.data.model.NotificationDetail;
 
 /**
  * Created by user on 2018-02-13.
  */
 
-public class NotificationListAdapter extends ArrayAdapter<NotificationMessage> {
+public class NotificationListAdapter extends ArrayAdapter<NotificationDetail> {
     private static final String TAG = "NotificationListAdapter";
 
     private LayoutInflater mInflater;
-    private List<NotificationMessage> mNotificationList = null;
+    private List<NotificationDetail> mNotificationList = null;
     private int mLayoutResource;
     private Context mContext;
 
-    public NotificationListAdapter(Context context, int resource, List<NotificationMessage> objects) {
+    public NotificationListAdapter(Context context, int resource, List<NotificationDetail> objects) {
         super(context, resource, objects);
         this.mContext = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -48,8 +51,16 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationMessage> {
             viewHolder = (NotificationListAdapter.ViewHolder) convertView.getTag();
         }
         Log.d(TAG,getItem(position).toString());
-        viewHolder.notificationSourceImg.setImageResource(R.drawable.kyunghee_bamboo);
-        viewHolder.notificationInfoTxt.setText(getItem(position).getCommunity() + " " + getItem(position).getBoardAddr() + "에서 " + getItem(position).getKeyword() + "관련 게시물이 올라왔습니다.");
+
+        Resources res = mContext.getResources();
+        String mDrawableName = getCommunityLogo(getItem(position).getCommunityName());
+        int resID = res.getIdentifier(mDrawableName , "drawable", mContext.getPackageName());
+        Drawable drawable = res.getDrawable(resID );
+        viewHolder.notificationSourceImg.setImageDrawable(drawable);
+
+        String communityName = "<b><font color='#000'>"+getItem(position).getCommunityName()+"</font></b>";
+        String keyword = "<b><font color='#000'>"+getItem(position).getKeyword()+"</font></b>";
+        viewHolder.notificationInfoTxt.setText(Html.fromHtml(communityName+ "에서 " + keyword + "관련 게시물이 올라왔습니다."));
         viewHolder.notificationTimeTxt.setText(getItem(position).getCreatedDate());
 
         return convertView;
@@ -70,6 +81,24 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationMessage> {
         ViewHolder(View view, Context context) {
             ButterKnife.bind(this, view);
             this.context = context;
+        }
+    }
+
+    public String getCommunityLogo(String community) {
+        if(community.equals("Kyunghee bamboo grove")) {
+            return "kyunghee_bamboo";
+        } else if(community.equals("경희대학교 - 국제캠 대신 전해드립니다")) {
+            return "kyunghee_daeshin";
+        } else if(community.equals("애브리타임")) {
+            return "everytime";
+        } else if(community.equals("세종대학교 대나무숲")) {
+            return "sejong_bamboo";
+        } else if(community.equals("세종대학교 대신 전해드립니다")) {
+            return "sejong_daeshin";
+        } else if(community.equals("한성대학교 대나무숲")) {
+            return "hansung_daeshin";
+        } else {
+            return "ic_hashtag";
         }
     }
 }

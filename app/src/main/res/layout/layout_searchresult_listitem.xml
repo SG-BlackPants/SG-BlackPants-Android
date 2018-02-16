@@ -13,8 +13,8 @@
         android:weightSum="100"
         android:background="@color/white"
         android:layout_marginBottom="5dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
         android:layout_marginTop="15dp">
         <RelativeLayout
             android:layout_width="0dp"
@@ -28,7 +28,7 @@
                 android:layout_centerVertical="true"
                 android:src="@drawable/ic_hashtag"
                 app:civ_border_color="@color/middle_grey"
-                app:civ_border_width="0.8dp" />
+                app:civ_border_width="0.5dp" />
 
         </RelativeLayout>
         <LinearLayout
@@ -78,8 +78,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="3dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="5dp"
         android:bufferType="spannable"
         android:text="수강신청 12일부터인데
@@ -104,7 +104,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginBottom="1dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
         android:layout_marginTop="15dp">
 
         <TextView
@@ -132,7 +133,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginBottom="1dp"
-        android:layout_marginStart="10dp"       >
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -157,7 +159,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginBottom="15dp"
-        android:layout_marginStart="10dp">
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp">
 
         <TextView
             android:layout_width="wrap_content"

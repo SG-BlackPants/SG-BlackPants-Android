@@ -1,5 +1,7 @@
 package smilegate.blackpants.univscanner.search;
 
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -17,6 +19,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 import smilegate.blackpants.univscanner.R;
 import smilegate.blackpants.univscanner.data.model.SearchResults;
 import smilegate.blackpants.univscanner.utils.BaseFragment;
@@ -53,6 +56,8 @@ public class SearchDetailFragment extends BaseFragment {
     ImageButton searchResultDetailBackBtn;
     @BindView(R.id.LinLayout_searchImage)
     LinearLayout searchImageLayout;
+    @BindView(R.id.img_post_icon)
+    CircleImageView postIcon;
 
     @OnClick(R.id.btn_searchresult_detail_back)
     public void searchResultBack(ImageButton imageButton) {
@@ -111,6 +116,12 @@ public class SearchDetailFragment extends BaseFragment {
             setListViewHeightBasedOnChildren(postImageListView);
             Log.d(TAG,"initContent() : size >= 1");
         }
+
+        Resources res = getResources();
+        String mDrawableName = getCommunityLogo(mSearchResults.getCommunity());
+        int resID = res.getIdentifier(mDrawableName , "drawable", getActivity().getPackageName());
+        Drawable drawable = res.getDrawable(resID );
+        postIcon.setImageDrawable(drawable);
     }
 
     public static void setListViewHeightBasedOnChildren(ListView listView) {
@@ -132,6 +143,24 @@ public class SearchDetailFragment extends BaseFragment {
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
         listView.requestLayout();
+    }
+
+    public String getCommunityLogo(String community) {
+        if(community.equals("Kyunghee bamboo grove")) {
+            return "kyunghee_bamboo";
+        } else if(community.equals("경희대학교 - 국제캠 대신 전해드립니다")) {
+            return "kyunghee_daeshin";
+        } else if(community.equals("애브리타임")) {
+            return "everytime";
+        } else if(community.equals("세종대학교 대나무숲")) {
+            return "sejong_bamboo";
+        } else if(community.equals("세종대학교 대신 전해드립니다")) {
+            return "sejong_daeshin";
+        } else if(community.equals("한성대학교 대나무숲")) {
+            return "hansung_daeshin";
+        } else {
+            return "ic_hashtag";
+        }
     }
 }
 

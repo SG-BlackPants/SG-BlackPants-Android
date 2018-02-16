@@ -267,35 +267,9 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
             author = articleMessages.get(i).getSource().getAuthor();
             url = transformUrl(boardAddr, articleMessages.get(i).getSource().getCommunity());
             images = articleMessages.get(i).getSource().getImages();
-            //Log.d(TAG, "이미지 : " + articleMessages.get(i).getSource().getImages().get(0));
-            //Log.d(TAG, "이미지 갯수: " + images.toString());
             searchResults = new SearchResults(id, title, createdDate, content, community, boardAddr, author, url, images);
             mSearchResultsList.add(i, searchResults);
         }
-
-        /*SearchResults searchResults = new SearchResults("0", "수강신청 날짜가 언제인가요?", "3시간 전", "수강신청 12일부터인데\n학년이 월요일날 하잖아요\n그러면 앞서서 4학년3학년들이 좋은과목 인원 수 다채우면 1,2학년들은 그냥 다른과목을 선택해야하나요? 아니면 학년별로 수강신청 제한이 있나요?"
-                , "페이스북", "대나무숲", "익명", "www.facebook.com", new ArrayList<String>() {
-            {
-                add("https://homepages.cae.wisc.edu/~ece533/images/fruits.png");
-            }
-        });
-        mSearchResultsList.add(0, searchResults);
-        searchResults = new SearchResults("1", "수강신청 날짜가 언제인가요?", "3시간 전", "수강신청 12일부터인데\n학년이 월요일날 하잖아요\n그러면 앞서서 4학년3학년들이 좋은과목 인원 수 다채우면 1,2학년들은 그냥 다른과목을 선택해야하나요? 아니면 학년별로 수강신청 제한이 있나요?.. 자세히 보기"
-                , "페이스북", "대나무숲", "익명", "www.facebook.com", new ArrayList<String>());
-        mSearchResultsList.add(1, searchResults);
-        searchResults = new SearchResults("2", "수강신청 날짜가 언제인가요?", "3시간 전", "수강신청 12일부터인데\n학년이 월요일날 하잖아요\n그러면 앞서서 4학년3학년들이 좋은과목 인원 수 다채우면 1,2학년들은 그냥 다른과목을 선택해야하나요? 아니면 학년별로 수강신청 제한이 있나요?.. 자세히 보기"
-                , "페이스북", "대나무숲", "익명", "www.facebook.com", new ArrayList<String>() {
-            {
-                add("https://homepages.cae.wisc.edu/~ece533/images/arctichare.png");
-                add("https://homepages.cae.wisc.edu/~ece533/images/fruits.png");
-                add("https://homepages.cae.wisc.edu/~ece533/images/arctichare.png");
-            }
-        });
-        mSearchResultsList.add(2, searchResults);
-        searchResults = new SearchResults("3", "수강신청 날짜가 언제인가요?", "3시간 전", "수강신청 12일부터인데\n학년이 월요일날 하잖아요\n그러면 앞서서 4학년3학년들이 좋은과목 인원 수 다채우면 1,2학년들은 그냥 다른과목을 선택해야하나요? 아니면 학년별로 수강신청 제한이 있나요?"
-                , "페이스북", "대나무숲", "익명", "www.facebook.com", new ArrayList<String>());
-        mSearchResultsList.add(3, searchResults);*/
-
     }
 
     public void pushKeywordToServer() {
