@@ -130,6 +130,9 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     @BindView(R.id.btn_filter_apply)
     Button filterApplyBtn;
 
+    @BindView(R.id.text_search_result)
+    TextView keywordTxt;
+
     @OnClick(R.id.btn_filter_apply)
     public void filterApplyClick(Button button) {
         getSettingFilter();
@@ -205,6 +208,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
             Bundle bundle = this.getArguments();
             if (bundle != null) {
                 mKeyword = bundle.getString("keyword");
+                keywordTxt.setText(mKeyword);
                 Log.d(TAG, "키워드 : " + mKeyword);
             }
             mArticleApiService = ApiUtils.getArticleApiService();

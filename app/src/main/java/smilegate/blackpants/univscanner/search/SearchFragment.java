@@ -58,12 +58,27 @@ public class SearchFragment extends BaseFragment {
     @BindView(R.id.tag_group)
     TagGroup tagGroup;
 
+    @OnClick(R.id.tag_group)
+    public void tagClick(TagGroup tagGroup) {
+        Log.d(TAG, "클릭 : "+tagGroup.getInputTagText());
+    }
+
     @OnClick(R.id.top_searchbar)
     public void search(RelativeLayout layout) {
         if (mFragmentNavigation != null) {
             mFragmentNavigation.pushFragment(SearchViewFragment.newInstance(0));
         }
     }
+
+    private TagGroup.OnTagClickListener mTagClickListener = new TagGroup.OnTagClickListener() {
+        @Override
+        public void onTagClick(TagGroup tagGroup, String tag, int position) {
+            if (mFragmentNavigation != null) {
+                mFragmentNavigation.pushFragment(SearchResultFragment.newInstance(0, tag));
+            }
+        }
+    };
+
 
     public static SearchFragment newInstance(int instance) {
         Bundle args = new Bundle();
@@ -121,6 +136,7 @@ public class SearchFragment extends BaseFragment {
                 mRecenetKeywordList = response.body();
                 if(mRecenetKeywordList!=null) {
                     tagGroup.setTags(mRecenetKeywordList);
+                    tagGroup.setOnTagClickListener(mTagClickListener);
                 } else {
                     Log.d(TAG, "최근 키워드 서버통신 실패 : "+ response.body());
                 }
