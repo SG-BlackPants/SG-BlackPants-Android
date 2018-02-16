@@ -96,7 +96,7 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
         } else {
             holder.postContent.setText(searchResults.getContent());
         }
-        holder.postSource.setText(searchResults.getCommunity() + " " + searchResults.getBoardAddr());
+        holder.postSource.setText(searchResults.getCommunity());
         holder.postAuthor.setText(searchResults.getAuthor());
         holder.postUrl.setText(searchResults.getUrl());
 

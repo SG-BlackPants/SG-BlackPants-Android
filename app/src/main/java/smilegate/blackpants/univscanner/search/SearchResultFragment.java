@@ -31,6 +31,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -70,7 +71,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     private ArticleApiService mArticleApiService;
     private UserApiService mUserApiService;
     private String mKeyword;
-
+    private HashMap<String, String> mCommunityHashMap;
     private List<Community> mCommunityList;
     private FilterCommunityListAdapter mCommunityAdapter;
 
@@ -132,7 +133,6 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
 
     @OnClick(R.id.btn_filter)
     public void filterClick(Button button) {
-        initFilter();
         drawerLayout.openDrawer(drawerFilterView);
     }
 
@@ -206,7 +206,8 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
             mArticleApiService = ApiUtils.getArticleApiService();
             mUserApiService = ApiUtils.getUserApiService();
             mSearchResultsList = new ArrayList<>();
-
+            mCommunityHashMap = new HashMap<String, String>();
+            initFilter();
             mAdapter = new SearchResultFeedAdapter(getContext(), mSearchResultsList);
             mLayoutManager = new LinearLayoutManager(getContext());
             searchResultRecyclerView.setLayoutManager(mLayoutManager);
@@ -357,12 +358,11 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     }
 
     public String transformCommunity(String data) {
-        if (data.contains("facebook")) {
-            return "페이스북";
-        } else if (data.contains("everytime")) {
-            return "애브리타임";
+
+        if(mCommunityHashMap.containsKey(data)) {
+            return mCommunityHashMap.get(data);
         } else {
-            return "기타 커뮤니티";
+            return data;
         }
     }
 
@@ -484,8 +484,11 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
         Gson gson = new Gson();
         String json = Prefs.getString("userInfo","");
         LoginInfo loginInfo = gson.fromJson(json, LoginInfo.class);
+        mCommunityList = new ArrayList<Community>();
         try {
-            JSONObject obj = new JSONObject(loadJSONFromAsset("community_list"));
+
+            //원래 소스
+           /* JSONObject obj = new JSONObject(loadJSONFromAsset("community_list"));
             String university = loginInfo.getUniversity();
             if(university.contains("경희대학교")) {
                 university = "경희대학교";
@@ -494,11 +497,43 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
             }
 
             JSONArray content = obj.getJSONArray(university);
-            mCommunityList = new ArrayList<Community>();
             for (int i = 0; i < content.length(); i++) {
                 JSONObject communityInfo = content.getJSONObject(i);
                 String id = communityInfo.getString("id");
                 String name = communityInfo.getString("name");
+                mCommunityHashMap.put(id, name);
+                mCommunityList.add(new Community(id,name));
+            }*/
+
+           //테스트 소스 - 경희, 세종, 한성대 커뮤니티 일단 다 집어넣음
+            JSONObject obj = new JSONObject(loadJSONFromAsset("community_list"));
+            String university = "경희대학교";
+            JSONArray content = obj.getJSONArray(university);
+            for (int i = 0; i < content.length(); i++) {
+                JSONObject communityInfo = content.getJSONObject(i);
+                String id = communityInfo.getString("id");
+                String name = communityInfo.getString("name");
+                mCommunityHashMap.put(id, name);
+                mCommunityList.add(new Community(id,name));
+            }
+
+            university = "세종대학교";
+            content = obj.getJSONArray(university);
+            for (int i = 0; i < content.length(); i++) {
+                JSONObject communityInfo = content.getJSONObject(i);
+                String id = communityInfo.getString("id");
+                String name = communityInfo.getString("name");
+                mCommunityHashMap.put(id, name);
+                mCommunityList.add(new Community(id,name));
+            }
+
+            university = "한성대학교";
+            content = obj.getJSONArray(university);
+            for (int i = 0; i < content.length(); i++) {
+                JSONObject communityInfo = content.getJSONObject(i);
+                String id = communityInfo.getString("id");
+                String name = communityInfo.getString("name");
+                mCommunityHashMap.put(id, name);
                 mCommunityList.add(new Community(id,name));
             }
 

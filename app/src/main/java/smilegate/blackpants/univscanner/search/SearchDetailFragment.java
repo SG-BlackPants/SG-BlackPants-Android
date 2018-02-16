@@ -97,7 +97,7 @@ public class SearchDetailFragment extends BaseFragment {
 
         postContent.setText(mSearchResults.getContent());
 
-        postSource.setText(mSearchResults.getCommunity() + " " + mSearchResults.getBoardAddr());
+        postSource.setText(mSearchResults.getCommunity());
         postAuthor.setText(mSearchResults.getAuthor());
         postUrl.setText(mSearchResults.getUrl());
 
