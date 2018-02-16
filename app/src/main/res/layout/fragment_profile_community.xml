@@ -6,15 +6,16 @@
     android:background="@color/white">
 
     <include
-        android:id="@+id/top_notification"
-        layout="@layout/layout_top_notificationbar"/>
+        android:id="@+id/top_profilecommunity"
+        layout="@layout/layout_top_profilecommunity" />
 
     <ListView
-        android:id="@+id/list_notification"
+        android:id="@+id/list_community"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/top_notification"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/top_profilecommunity"
         android:divider="@color/white"
-        android:background="@color/white"
-        android:dividerHeight="1dip"/>
+        android:dividerHeight="0dip"
+        android:background="@color/white"/>
 </RelativeLayout>

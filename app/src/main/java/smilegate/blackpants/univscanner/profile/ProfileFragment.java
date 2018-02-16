@@ -63,11 +63,20 @@ public class ProfileFragment extends BaseFragment {
     TextView profileUniversityTxt;
     @BindView(R.id.relLayout_registeredKeywordView)
     RelativeLayout regKeywordViewBtn;
+    @BindView(R.id.relLayout_communityView)
+    RelativeLayout regCommunityViewBtn;
 
     @OnClick(R.id.relLayout_registeredKeywordView)
     public void keywordViewClick(RelativeLayout relativeLayout) {
         if (mFragmentNavigation != null) {
             mFragmentNavigation.pushFragment(ProfileRegisteredKeywordFragment.newInstance(0));
+        }
+    }
+
+    @OnClick(R.id.relLayout_communityView)
+    public void communityViewClick(RelativeLayout relativeLayout) {
+        if (mFragmentNavigation != null) {
+            mFragmentNavigation.pushFragment(ProfileCommunityFragment.newInstance(0));
         }
     }
 
