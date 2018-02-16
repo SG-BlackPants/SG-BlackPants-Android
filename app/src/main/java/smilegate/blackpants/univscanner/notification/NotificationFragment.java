@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.pixplicity.easyprefs.library.Prefs;
@@ -99,6 +100,18 @@ public class NotificationFragment extends BaseFragment {
                     if (notificationList.size() > 0) {
                         addData(notificationList);
                         mAdapter = new NotificationListAdapter(getContext(), R.layout.layout_notification_listitem, mNotificationList);
+                        notificationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                String communityId = mNotificationList.get(position).getCommunityId();
+                                String communityName = mNotificationList.get(position).getCommunityName();
+                                String boardAddr = mNotificationList.get(position).getBoardAddr();
+                                String createdDate = mNotificationList.get(position).getCreatedDate();
+                                if (mFragmentNavigation != null) {
+                                    mFragmentNavigation.pushFragment(NotificationDetailFragment.newInstance(0, communityId, communityName, boardAddr, createdDate));
+                                }
+                            }
+                        });
                         notificationListView.setAdapter(mAdapter);
                        /* for(int i=0; i<mNotificationList.size();i++) {
                             Log.d(TAG,mNotificationList.get(i).toString());
