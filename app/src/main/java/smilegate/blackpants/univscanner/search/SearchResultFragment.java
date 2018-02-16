@@ -30,7 +30,11 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -261,7 +265,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
             community = transformCommunity(articleMessages.get(i).getSource().getCommunity());
             boardAddr = transformBoardAddr(articleMessages.get(i).getSource().getBoardAddr());
             author = articleMessages.get(i).getSource().getAuthor();
-            url = transformUrl(boardAddr, community);
+            url = transformUrl(boardAddr, articleMessages.get(i).getSource().getCommunity());
             images = articleMessages.get(i).getSource().getImages();
             //Log.d(TAG, "이미지 : " + articleMessages.get(i).getSource().getImages().get(0));
             //Log.d(TAG, "이미지 갯수: " + images.toString());
@@ -371,25 +375,78 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     }
 
     public String transformTitle(String data, String content) {
-        if (content.length() > 20) {
-            return content.substring(0, 20) + "...";
+        if (content.length() > 30) {
+            return content.substring(0, 30) + "...";
         } else {
             return content;
         }
     }
 
     public String transformUrl(String boardAddr, String community) {
-        if (community.equals("페이스북")) {
-            return "http://www.facebook.com/" + boardAddr;
-        } else if (community.equals("애브리타임")) {
-            return "없음";
+        if (community.contains("facebook")) {
+            return "https://www.facebook.com/" + boardAddr;
+        } else if (community.contains("everytime")) {
+            return "https://everytime.kr" + boardAddr;
         } else {
             return "없음";
         }
     }
 
-    public String transformCreatedTime(String data) {
-        return data;
+    public String transformCreatedTime(String time) {
+        String result;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        Date convertedDate = new Date();
+        try {
+            convertedDate = dateFormat.parse(time);
+            Log.d(TAG,dateFormat.format(convertedDate));
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        //포스트된 날짜 datetime으로 변경
+        Calendar postDay = Calendar.getInstance();
+        postDay.setTime(convertedDate);
+        int postDayYear = postDay.get(Calendar.YEAR);
+        int postDayMonth = postDay.get(Calendar.MONTH)+1;
+        int postDayDate = postDay.get(Calendar.DATE);
+        int postDayAM_PM_temp = postDay.get(Calendar.AM_PM);
+        String postDayAM_PM;
+        if(postDayAM_PM_temp==0) {
+            postDayAM_PM = "오전";
+        } else {
+            postDayAM_PM = "오후";
+        }
+        int postDayHour = postDay.get(Calendar.HOUR);
+        if(postDayHour==0) {
+            postDayHour = 12;
+        }
+        int postDayMinute_temp = postDay.get(Calendar.MINUTE);
+        String postDayMinute;
+        if(postDayMinute_temp<10) {
+            postDayMinute = "0"+postDayMinute_temp;
+        } else {
+            postDayMinute = postDayMinute_temp+"";
+        }
+        //오늘 날짜
+        Calendar today = Calendar.getInstance();
+        int todayYear = today.get(Calendar.YEAR);
+        int todayMonth = today.get(Calendar.MONTH)+1;
+        int todayDate = today.get(Calendar.DATE);
+
+
+        if(!((postDayYear==todayYear)&&(postDayMonth==todayMonth)&&(postDayDate==todayDate))) {
+            // 오늘이 아닌 경우
+            if(postDayYear == todayYear) {
+                // 같은 년도일 경우 년 생략
+                result = postDayMonth+"월 "+postDayDate+"일 "+postDayAM_PM+" "+postDayHour+":"+postDayMinute;
+            } else {
+                result = postDayYear+"년 "+postDayMonth+"월 "+postDayDate+"일 "+postDayAM_PM+" "+postDayHour+":"+postDayMinute;
+            }
+        } else {
+            // 오늘인 경우
+            result = "오늘 "+postDayAM_PM+" "+postDayHour+":"+postDayMinute;
+        }
+        return result;
     }
 
     public void getSettingFilter() {
@@ -447,8 +504,11 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
         SearchFragment.setListViewHeightBasedOnChildren(communityListView);
 
         includedKeywordTxt.setText("");
-        /*startDateTxt.setText("2018-01-01T19:12:56.000Z");
-        endDateTxt.setText("2018-02-13T19:12:56.000Z");*/
+
+        //System.out.println(convertedDate);
+
+        startDateTxt.setText("2018-01-01T19:12:56.000Z");
+        endDateTxt.setText("2018-02-13T19:12:56.000Z");
         startDateTxt.setText("2018년 01월 01일");
         endDateTxt.setText("2018년 03월 15일");
        /* facebookCheckBox.setChecked(true);

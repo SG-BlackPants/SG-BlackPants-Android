@@ -1,7 +1,9 @@
 package smilegate.blackpants.univscanner.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -9,6 +11,7 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +25,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 import smilegate.blackpants.univscanner.R;
 import smilegate.blackpants.univscanner.data.model.SearchResults;
 
@@ -61,7 +65,8 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
         TextView postUrl;
         @BindView(R.id.text_post_image)
         ImageView postImage;
-
+        @BindView(R.id.img_post_icon)
+        CircleImageView postIcon;
 
         public MyViewHolder(View view) {
             super(view);
@@ -99,7 +104,13 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
         holder.postSource.setText(searchResults.getCommunity());
         holder.postAuthor.setText(searchResults.getAuthor());
         holder.postUrl.setText(searchResults.getUrl());
+        Linkify.addLinks(holder.postUrl, Linkify.WEB_URLS);
 
+        Resources res = mContext.getResources();
+        String mDrawableName = getCommunityLogo(searchResults.getCommunity());
+        int resID = res.getIdentifier(mDrawableName , "drawable", mContext.getPackageName());
+        Drawable drawable = res.getDrawable(resID );
+        holder.postIcon.setImageDrawable(drawable);
 
         if (searchResults.getImages() == null) {
             holder.postImage.setVisibility(View.GONE);
@@ -166,8 +177,8 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
     public String settingViewDetails(String content, List<String> images) {
         String result;
 
-        if (content.length() > 1000) {
-            result = content.substring(0, 1000) + "...  자세히 보기";
+        if (content.length() > 600) {
+            result = content.substring(0, 600) + "...  자세히 보기";
         } else if (images != null) {
             if (images.size() > 1) {
                 result = content + "... 자세히 보기";
@@ -179,6 +190,24 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
         }
 
         return result;
+    }
+
+    public String getCommunityLogo(String community) {
+        if(community.equals("Kyunghee bamboo grove")) {
+            return "kyunghee_bamboo";
+        } else if(community.equals("경희대학교 - 국제캠 대신 전해드립니다")) {
+            return "kyunghee_daeshin";
+        } else if(community.equals("애브리타임")) {
+            return "everytime";
+        } else if(community.equals("세종대학교 대나무숲")) {
+            return "sejong_bamboo";
+        } else if(community.equals("세종대학교 대신 전해드립니다")) {
+            return "sejong_daeshin";
+        } else if(community.equals("한성대학교 대나무숲")) {
+            return "hansung_daeshin";
+        } else {
+            return "ic_hashtag";
+        }
     }
 
 }
