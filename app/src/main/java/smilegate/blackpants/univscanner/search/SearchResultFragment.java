@@ -21,8 +21,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
 import com.pixplicity.easyprefs.library.Prefs;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +43,8 @@ import retrofit2.Response;
 import smilegate.blackpants.univscanner.R;
 import smilegate.blackpants.univscanner.data.model.Article;
 import smilegate.blackpants.univscanner.data.model.ArticleMessage;
+import smilegate.blackpants.univscanner.data.model.Community;
+import smilegate.blackpants.univscanner.data.model.LoginInfo;
 import smilegate.blackpants.univscanner.data.model.Push;
 import smilegate.blackpants.univscanner.data.model.SearchResults;
 import smilegate.blackpants.univscanner.data.remote.ApiUtils;
@@ -62,7 +71,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     private UserApiService mUserApiService;
     private String mKeyword;
 
-    private List<String> mCommunityList;
+    private List<Community> mCommunityList;
     private FilterCommunityListAdapter mCommunityAdapter;
 
     @BindView(R.id.list_filter_community)
@@ -127,9 +136,14 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
         drawerLayout.openDrawer(drawerFilterView);
     }
 
-    @OnClick(R.id.btn_start_date)
-    public void setStartDateClick(Button button) {
-        Toast.makeText(getContext(), "버튼클릭", Toast.LENGTH_LONG).show();
+    @OnClick(R.id.text_start_date)
+    public void setStartDateClick(TextView textView) {
+        Toast.makeText(getContext(), "시작날짜클릭", Toast.LENGTH_LONG).show();
+    }
+
+    @OnClick(R.id.text_end_date)
+    public void setEndDateClick(TextView textView) {
+        Toast.makeText(getContext(), "종료날짜클릭", Toast.LENGTH_LONG).show();
     }
 
     @OnClick(R.id.btn_register_keyword)
@@ -420,15 +434,12 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
 
     public void initFilter() {
 
-        mCommunityList = new ArrayList<String>();
+       /* mCommunityList = new ArrayList<String>();
         mCommunityList.add("페이스북 대나무숲");
-        mCommunityList.add("페이스북 1");
-        mCommunityList.add("페이스북 2");
-        mCommunityList.add("페이스북 3");
-        mCommunityList.add("페이스북 4");
-        mCommunityList.add("페이스북 4");
-        mCommunityList.add("페이스북 5");
-        mCommunityList.add("페이스북 6");
+        mCommunityList.add("애브리타임");
+        mCommunityList.add("페이스북 대나무숲");
+        mCommunityList.add("애브리타임");*/
+        getCommunityList();
 
         mCommunityAdapter = new FilterCommunityListAdapter(getContext(), R.layout.layout_filter_community_listitem, mCommunityList);
         mCommunityAdapter.setCheckBoxListner(this);
@@ -436,13 +447,63 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
         SearchFragment.setListViewHeightBasedOnChildren(communityListView);
 
         includedKeywordTxt.setText("");
-        startDateTxt.setText("2018-01-01T19:12:56.000Z");
-        endDateTxt.setText("2018-02-13T19:12:56.000Z");
+        /*startDateTxt.setText("2018-01-01T19:12:56.000Z");
+        endDateTxt.setText("2018-02-13T19:12:56.000Z");*/
+        startDateTxt.setText("2018년 01월 01일");
+        endDateTxt.setText("2018년 03월 15일");
        /* facebookCheckBox.setChecked(true);
         everytimeCheckBox.setChecked(true);*/
     }
     @Override
     public void onCheckboxClickListner(String value, boolean isChecked) {
         Toast.makeText(getContext(), value + " 클릭 " + isChecked, Toast.LENGTH_LONG).show();
+    }
+
+    public String loadJSONFromAsset(String mode) {
+        String json = null;
+        try {
+            InputStream is;
+            if(mode.equals("community_id")) {
+                is = getActivity().getAssets().open("community_id.json");
+            } else {
+                 is = getActivity().getAssets().open("university_communitylist.json");
+            }
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
+    public void getCommunityList() {
+        Gson gson = new Gson();
+        String json = Prefs.getString("userInfo","");
+        LoginInfo loginInfo = gson.fromJson(json, LoginInfo.class);
+        try {
+            JSONObject obj = new JSONObject(loadJSONFromAsset("community_list"));
+            String university = loginInfo.getUniversity();
+            if(university.contains("경희대학교")) {
+                university = "경희대학교";
+            } else if(university.contains("세종대학교")){
+                university = "세종대학교";
+            }
+
+            JSONArray content = obj.getJSONArray(university);
+            mCommunityList = new ArrayList<Community>();
+            for (int i = 0; i < content.length(); i++) {
+                JSONObject communityInfo = content.getJSONObject(i);
+                String id = communityInfo.getString("id");
+                String name = communityInfo.getString("name");
+                mCommunityList.add(new Community(id,name));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

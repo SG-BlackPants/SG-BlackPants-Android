@@ -2,16 +2,18 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:layout_marginEnd="10dp">
 
     <CheckBox
         android:id="@+id/checkbox_community"
         android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:gravity="center_vertical"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
         android:layout_marginTop="10dp"
         android:text="페이스북"
-        android:textSize="15dp"
+        android:textSize="16dp"
+        android:paddingStart="10dp"
         android:textColor="@color/black"/>
-
 </RelativeLayout>

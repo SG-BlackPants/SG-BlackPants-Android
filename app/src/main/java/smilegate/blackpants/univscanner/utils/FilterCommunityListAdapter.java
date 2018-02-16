@@ -13,16 +13,17 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import smilegate.blackpants.univscanner.R;
+import smilegate.blackpants.univscanner.data.model.Community;
 
 /**
  * Created by Semin on 2018-02-15.
  */
 
-public class FilterCommunityListAdapter extends ArrayAdapter<String> {
+public class FilterCommunityListAdapter extends ArrayAdapter<Community> {
     private static final String TAG = "RegisteredKeywordListAdapter";
 
     private LayoutInflater mInflater;
-    private List<String> mRegisteredKeywords = null;
+    private List<Community> mRegisteredKeywords = null;
     private int mLayoutResource;
     private Context mContext;
 
@@ -37,7 +38,7 @@ public class FilterCommunityListAdapter extends ArrayAdapter<String> {
     }
 
 
-    public FilterCommunityListAdapter(Context context, int resource, List<String> objects) {
+    public FilterCommunityListAdapter(Context context, int resource, List<Community> objects) {
         super(context, resource, objects);
         this.mContext = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -57,14 +58,14 @@ public class FilterCommunityListAdapter extends ArrayAdapter<String> {
             viewHolder = (FilterCommunityListAdapter.ViewHolder) convertView.getTag();
         }
 
-        viewHolder.communityCheckbox.setText(getItem(position));
+        viewHolder.communityCheckbox.setText(getItem(position).getName());
         viewHolder.communityCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (communityCheckboxListener != null) {
-                    communityCheckboxListener.onCheckboxClickListner(getItem(position), isChecked);
+                    communityCheckboxListener.onCheckboxClickListner(getItem(position).getId(), isChecked);
                 }
             }
         });

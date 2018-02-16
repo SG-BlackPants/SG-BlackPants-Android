@@ -29,8 +29,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
                     android:layout_marginTop="15dp"
                     android:orientation="vertical">
 
@@ -40,24 +40,24 @@
                         android:layout_height="wrap_content"
                         android:text="결과 내 포함될 키워드"
                         android:textColor="@color/black"
-                        android:textSize="15dp" />
+                        android:textSize="17dp" />
 
                     <AutoCompleteTextView
                         android:id="@+id/autoText_included_keyword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="20dp"
                         android:hint="유니브스캐너"
                         android:imeOptions="actionNext"
                         android:maxLines="1"
                         android:singleLine="true"
                         android:textColor="@color/dark_grey"
-                        android:textSize="15dp" />
+                        android:textSize="16dp" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0.8dp"
+                    android:layout_height="1dp"
                     android:layout_marginBottom="15dp"
                     android:layout_marginTop="15dp"
                     android:background="@color/middle_grey" />
@@ -65,9 +65,10 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
                     android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -76,59 +77,90 @@
                         android:layout_height="wrap_content"
                         android:text="기간"
                         android:textColor="@color/black"
-                        android:textSize="15dp" />
+                        android:textSize="17dp" />
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:orientation="horizontal">
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="15dp">
 
-                        <Button
-                            android:id="@+id/btn_start_date"
-                            android:layout_width="50dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center_vertical"
-                            android:text="시작"
-                            android:textSize="10dp" />
+                        <ImageView
+                            android:id="@+id/img_time"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_time"/>
 
                         <TextView
                             android:id="@+id/text_start_date"
-                            android:layout_width="150dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center_vertical"
-                            android:gravity="center"
-                            android:text="2017년 10월 31일"
-                            android:textSize="11dp" />
-                    </LinearLayout>
+                            android:layout_width="130dp"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@+id/img_time"
+                            android:padding="5dp"
+                            android:textAlignment="center"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="20dp"
+                            android:text="2018년 01월 23일"
+                            android:textColor="@color/darker_grey"
+                            android:textSize="13dp"
+                            android:background="@drawable/textbox"/>
 
-                    <LinearLayout
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@+id/text_start_date"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="10dp"
+                            android:text="부터"
+                            android:textColor="@color/black"
+                            android:textSize="16dp"/>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="15dp">
 
-                        <Button
-                            android:id="@+id/btn_end_date"
-                            android:layout_width="50dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center_vertical"
-                            android:text="종료"
-                            android:textSize="10dp" />
+                        <ImageView
+                            android:id="@+id/img_temp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_centerVertical="true"/>
 
                         <TextView
                             android:id="@+id/text_end_date"
-                            android:layout_width="150dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center_vertical"
-                            android:gravity="center"
-                            android:text="2017년 10월 31일"
-                            android:textSize="11dp" />
-                    </LinearLayout>
+                            android:layout_width="130dp"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@+id/img_temp"
+                            android:padding="5dp"
+                            android:textAlignment="center"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="20dp"
+                            android:text="2018년 01월 23일"
+                            android:textColor="@color/darker_grey"
+                            android:textSize="13dp"
+                            android:background="@drawable/textbox"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@+id/text_end_date"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="10dp"
+                            android:text="까지"
+                            android:textColor="@color/black"
+                            android:textSize="16dp"/>
+
+                    </RelativeLayout>
+
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0.8dp"
+                    android:layout_height="1dp"
                     android:layout_marginBottom="15dp"
                     android:layout_marginTop="15dp"
                     android:background="@color/middle_grey" />
@@ -136,8 +168,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
                     android:layout_marginTop="5dp"
                     android:orientation="vertical">
 
@@ -147,31 +179,106 @@
                         android:layout_height="wrap_content"
                         android:text="커뮤니티"
                         android:textColor="@color/black"
-                        android:textSize="15dp" />
+                        android:textSize="17dp" />
 
                     <ListView
                         android:id="@+id/list_filter_community"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="15dp"
                         android:divider="@color/white"
                         android:dividerHeight="0dip"
                         android:scrollbars="none" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@color/middle_grey" />
 
-                <Button
-                    android:id="@+id/btn_filter_apply"
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Button" />
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="20dp">
+
+                    <TextView
+                        android:id="@+id/text_filter_save"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="필터(조건) 설정 저장"
+                        android:textColor="@color/black"
+                        android:textSize="17dp"/>
+
+                    <Switch
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"/>
+
+                </RelativeLayout>
 
             </LinearLayout>
-
         </ScrollView>
 
     </LinearLayout>
 
 </android.support.design.widget.NavigationView>
+
+
+
+<!--<LinearLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_marginTop="10dp"
+android:orientation="horizontal">
+
+
+<Button
+    android:id="@+id/btn_start_date"
+    android:layout_width="50dp"
+    android:layout_height="30dp"
+    android:layout_gravity="center_vertical"
+    android:text="시작"
+    android:textSize="10dp" />
+
+<TextView
+    android:id="@+id/text_start_date"
+    android:layout_width="150dp"
+    android:layout_height="30dp"
+    android:layout_gravity="center_vertical"
+    android:gravity="center"
+    android:text="2017년 10월 31일"
+    android:textSize="11dp" />
+</LinearLayout>
+
+<LinearLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal">
+
+<Button
+    android:id="@+id/btn_end_date"
+    android:layout_width="50dp"
+    android:layout_height="30dp"
+    android:layout_gravity="center_vertical"
+    android:text="종료"
+    android:textSize="10dp" />
+
+<TextView
+    android:id="@+id/text_end_date"
+    android:layout_width="150dp"
+    android:layout_height="30dp"
+    android:layout_gravity="center_vertical"
+    android:gravity="center"
+    android:text="2017년 10월 31일"
+    android:textSize="11dp" />
+</LinearLayout>-->
 
 
     <!--<LinearLayout
