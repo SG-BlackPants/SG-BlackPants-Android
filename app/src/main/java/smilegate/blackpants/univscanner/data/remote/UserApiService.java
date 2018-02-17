@@ -42,6 +42,9 @@ public interface UserApiService {
     @PUT("/users/{uid}/keyword/push")
     Call<ResponseBody> pushKeyword(@Path("uid") String uid, @Body Push push);
 
+    @PUT("/users/{uid}/keyword/pop")
+    Call<ResponseBody> popKeyword(@Path("uid") String uid, @Body Push push);
+
     @PUT("/users/{uid}/refreshToken")
     Call<ResponseBody> setRefreshRegistrationToken(@Path("uid") String uid, @Body RefreshToken refreshToken);
 }

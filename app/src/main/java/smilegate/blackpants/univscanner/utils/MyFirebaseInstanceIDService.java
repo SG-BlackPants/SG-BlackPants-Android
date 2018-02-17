@@ -75,7 +75,6 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
                    Log.d(TAG, "send refresh registration token to server : onResponse: fail : "+response.message());
                }
            }
-
            @Override
            public void onFailure(Call<ResponseBody> call, Throwable t) {
                Log.d(TAG, "send refresh registration token to server : fail : "+t.getMessage());

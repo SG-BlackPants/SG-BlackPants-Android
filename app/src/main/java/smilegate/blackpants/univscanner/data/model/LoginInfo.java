@@ -3,6 +3,8 @@ package smilegate.blackpants.univscanner.data.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 /**
  * Created by user on 2018-02-08.
  */
@@ -21,10 +23,18 @@ public class LoginInfo {
     @Expose
     private boolean isRegistered;
 
+    @SerializedName("keywords")
+    @Expose
+    private List<Keywords> keywords;
+
     public LoginInfo(String name, String university, boolean isRegistered) {
         this.name = name;
         this.university = university;
         this.isRegistered = isRegistered;
+    }
+
+    public LoginInfo(List<Keywords> keywords) {
+        this.keywords = keywords;
     }
 
     public String getName() {
@@ -51,4 +61,11 @@ public class LoginInfo {
         isRegistered = registered;
     }
 
+    public List<Keywords> getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(List<Keywords> keywords) {
+        this.keywords = keywords;
+    }
 }

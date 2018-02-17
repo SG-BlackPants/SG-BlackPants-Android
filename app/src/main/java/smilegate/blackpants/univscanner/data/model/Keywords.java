@@ -1,31 +1,27 @@
 package smilegate.blackpants.univscanner.data.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by user on 2018-01-24.
  */
 
 public class Keywords {
 
-    private String name;
+    @SerializedName("keyword")
+    @Expose
+    private String keyword;
 
-    public Keywords(String name) {
-        this.name = name;
+    public Keywords(String keyword) {
+        this.keyword = keyword;
     }
 
-    public String getName() {
-        return name;
+    public String getKeyword() {
+        return keyword;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void Keywords() {}
-
-    @Override
-    public String toString() {
-        return "Users{" +
-                ", name='" + name + '\'' +
-                '}';
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 }

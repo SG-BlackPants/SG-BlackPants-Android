@@ -148,7 +148,8 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
 
     @OnClick(R.id.btn_filter_apply)
     public void filterApplyClick(Button button) {
-        getSettingFilter();
+        //getSettingFilter();
+        getDataFromServer(mKeyword);
         drawerLayout.closeDrawer(drawerFilterView);
     }
 
@@ -283,7 +284,19 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     }
 
     public void getDataFromServer(String keyword) {
-        mArticleApiService.getArticles(keyword, Prefs.getString("userToken", null), null, null, null, null).enqueue(new Callback<Article>() {
+        List<String> communityList = new ArrayList<>();
+
+        Set<Map.Entry<String, Boolean>> set = mCommunityCheckHashMap.entrySet();
+        Iterator<Map.Entry<String, Boolean>> it = set.iterator();
+
+        while (it.hasNext()) {
+            Map.Entry<String, Boolean> e = (Map.Entry<String, Boolean>) it.next();
+            if (e.getValue()) {
+                communityList.add(e.getKey());
+            }
+        }
+
+        mArticleApiService.getArticles(keyword, Prefs.getString("userToken", null), null, null, null, mSecondWord).enqueue(new Callback<Article>() {
             @Override
             public void onResponse(Call<Article> call, Response<Article> response) {
                 if (response.body() != null) {
@@ -328,8 +341,30 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     }
 
     public void pushKeywordToServer() {
-        String[] communityArray = {"facebook-482012061908784", "everytime"};
-        Push push = new Push(mKeyword, "경희대학교", communityArray, "2018-01-02T08:16:46.000Z", "2018-02-14T08:16:46.000Z", "");
+        String secondWord = mUserSetting.getSecondWord();
+        String startDate = mUserSetting.getStartDate();
+        String endDate = mUserSetting.getEndDate();
+        HashMap<String, Boolean> communityCheckHashMap = mUserSetting.getCommunityHashMap();
+
+        List<String> communityList = new ArrayList<>();
+
+        Set<Map.Entry<String, Boolean>> set = communityCheckHashMap.entrySet();
+        Iterator<Map.Entry<String, Boolean>> it = set.iterator();
+
+        while (it.hasNext()) {
+            Map.Entry<String, Boolean> e = (Map.Entry<String, Boolean>) it.next();
+            if (e.getValue()) {
+                communityList.add(e.getKey());
+            }
+        }
+
+        Gson gson = new Gson();
+        String json = Prefs.getString("userInfo", "");
+        LoginInfo loginInfo = gson.fromJson(json, LoginInfo.class);
+        String university = loginInfo.getUniversity();
+        //String[] communityArray = {"facebook-482012061908784", "everytime"};
+        Push push = new Push(mKeyword, "경희대학교", communityList, startDate, endDate, secondWord);
+        Log.d(TAG,"PUSH : "+push.toString());
         mUserApiService.pushKeyword(FirebaseAuth.getInstance().getUid(), push).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -498,7 +533,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
         return dayYear + "년 " + dayMonth + "월 " + dayDate + "일";
     }
 
-    public void getSettingFilter() {
+   /* public void getSettingFilter() {
         mSecondWord = includedKeywordTxt.getText().toString().trim();
 
         List<String> communityList = new ArrayList<>();
@@ -536,7 +571,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
                 Log.d(TAG, "Article info getDataFromServer : fail" + t.getMessage());
             }
         });
-    }
+    }*/
 
     public void initFilter() {
         String uid = FirebaseAuth.getInstance().getUid();

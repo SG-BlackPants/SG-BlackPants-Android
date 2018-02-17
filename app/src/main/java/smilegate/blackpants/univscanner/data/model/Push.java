@@ -3,6 +3,8 @@ package smilegate.blackpants.univscanner.data.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 /**
  * Created by user on 2018-02-14.
  */
@@ -17,7 +19,7 @@ public class Push {
     private String university;
     @SerializedName("community")
     @Expose
-    private String[] community;
+    private List<String> community;
     @SerializedName("startDate")
     @Expose
     private String startDate;
@@ -28,13 +30,18 @@ public class Push {
     @Expose
     private String secondWord;
 
-    public Push(String keyword, String university, String[] community, String startDate, String endDate, String secondWord) {
+    public Push(String keyword, String university, List<String> community, String startDate, String endDate, String secondWord) {
         this.keyword = keyword;
         this.university = university;
         this.community = community;
         this.startDate = startDate;
         this.endDate = endDate;
         this.secondWord = secondWord;
+    }
+
+    public Push(String keyword, String university) {
+        this.keyword = keyword;
+        this.university = university;
     }
 
     public String getKeyword() {
@@ -53,11 +60,11 @@ public class Push {
         this.university = university;
     }
 
-    public String[] getCommunity() {
+    public List<String> getCommunity() {
         return community;
     }
 
-    public void setCommunity(String[] community) {
+    public void setCommunity(List<String> community) {
         this.community = community;
     }
 
@@ -83,5 +90,17 @@ public class Push {
 
     public void setSecondWord(String secondWord) {
         this.secondWord = secondWord;
+    }
+
+    @Override
+    public String toString() {
+        return "Push{" +
+                "keyword='" + keyword + '\'' +
+                ", university='" + university + '\'' +
+                ", community=" + community +
+                ", startDate='" + startDate + '\'' +
+                ", endDate='" + endDate + '\'' +
+                ", secondWord='" + secondWord + '\'' +
+                '}';
     }
 }

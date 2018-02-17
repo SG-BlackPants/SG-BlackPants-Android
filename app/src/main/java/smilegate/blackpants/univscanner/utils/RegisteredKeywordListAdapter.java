@@ -13,16 +13,17 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import smilegate.blackpants.univscanner.R;
+import smilegate.blackpants.univscanner.data.model.Keywords;
 
 /**
  * Created by Semin on 2018-02-09.
  */
 
-public class RegisteredKeywordListAdapter extends ArrayAdapter<String> {
+public class RegisteredKeywordListAdapter extends ArrayAdapter<Keywords> {
     private static final String TAG = "RegisteredKeywordListAdapter";
 
     private LayoutInflater mInflater;
-    private List<String> mRegisteredKeywords = null;
+    private List<Keywords> mRegisteredKeywords = null;
     private int mLayoutResource;
     private Context mContext;
 
@@ -37,7 +38,7 @@ public class RegisteredKeywordListAdapter extends ArrayAdapter<String> {
     }
 
 
-    public RegisteredKeywordListAdapter(Context context, int resource, List<String> objects) {
+    public RegisteredKeywordListAdapter(Context context, int resource, List<Keywords> objects) {
         super(context, resource, objects);
         this.mContext = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -57,13 +58,13 @@ public class RegisteredKeywordListAdapter extends ArrayAdapter<String> {
             viewHolder = (RegisteredKeywordListAdapter.ViewHolder) convertView.getTag();
         }
 
-        viewHolder.name.setText(getItem(position));
+        viewHolder.name.setText(getItem(position).getKeyword());
         viewHolder.imageButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 if (keywordDeleteListener != null) {
-                    keywordDeleteListener.onButtonClickListner(position, getItem(position));
+                    keywordDeleteListener.onButtonClickListner(position, getItem(position).getKeyword());
                 }
             }
         });

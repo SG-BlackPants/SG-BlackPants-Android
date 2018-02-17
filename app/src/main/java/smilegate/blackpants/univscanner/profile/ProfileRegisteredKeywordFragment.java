@@ -1,5 +1,6 @@
 package smilegate.blackpants.univscanner.profile;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,13 +13,26 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
+import com.pixplicity.easyprefs.library.Prefs;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import smilegate.blackpants.univscanner.R;
+import smilegate.blackpants.univscanner.data.model.Keywords;
+import smilegate.blackpants.univscanner.data.model.LoginInfo;
+import smilegate.blackpants.univscanner.data.model.Push;
+import smilegate.blackpants.univscanner.data.remote.ApiUtils;
+import smilegate.blackpants.univscanner.data.remote.UserApiService;
 import smilegate.blackpants.univscanner.utils.BaseFragment;
 import smilegate.blackpants.univscanner.utils.RegisteredKeywordListAdapter;
 
@@ -31,8 +45,11 @@ import static smilegate.blackpants.univscanner.MainActivity.mNavController;
 public class ProfileRegisteredKeywordFragment extends BaseFragment implements RegisteredKeywordListAdapter.KeywordDeleteListener {
     private static final String TAG = "RegisteredKeydFragment";
     private View view;
-    private List<String> mRegisteredKeywordList;
+    private List<Keywords> mRegisteredKeywordList;
     private RegisteredKeywordListAdapter mAdapter;
+    private UserApiService mUserApiService;
+    private Context mContext;
+    private RegisteredKeywordListAdapter.KeywordDeleteListener listener = this;
 
     @BindView(R.id.list_registered_keyword)
     ListView registeredKeywordListView;
@@ -47,7 +64,7 @@ public class ProfileRegisteredKeywordFragment extends BaseFragment implements Re
         }
     }
 
-    /*@OnClick(R.id.btn_delete_registeredkeyword)
+  /*  @OnClick(R.id.btn_delete_registeredkeyword)
     public void keywordDeleteClick(ImageButton imageButton) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         Log.d(TAG,"등록 키워드 클릭");
@@ -78,7 +95,7 @@ public class ProfileRegisteredKeywordFragment extends BaseFragment implements Re
         dialog.show();
 
     }
-*/
+    */
     public static ProfileRegisteredKeywordFragment newInstance(int instance) {
         Bundle args = new Bundle();
         args.putInt(ARGS_INSTANCE, instance);
@@ -97,23 +114,41 @@ public class ProfileRegisteredKeywordFragment extends BaseFragment implements Re
         if (view == null) {
             view = inflater.inflate(R.layout.fragment_profile_registeredkeyword, container, false);
             ButterKnife.bind(this, view);
+            mUserApiService = ApiUtils.getUserApiService();
             initRegisteredKeywordList();
+            mContext = getContext();
         }
         return view;
     }
 
     public void initRegisteredKeywordList() {
         mRegisteredKeywordList = new ArrayList<>();
-        mRegisteredKeywordList.add("비트코인");
-        mRegisteredKeywordList.add("꿀교양");
 
-        mAdapter = new RegisteredKeywordListAdapter(getContext(), R.layout.layout_profileregisteredkeyword_listitem, mRegisteredKeywordList);
-        mAdapter.setCustomButtonListner(this);
-        registeredKeywordListView.setAdapter(mAdapter);
+        mUserApiService.getLoginInfo(FirebaseAuth.getInstance().getUid()).enqueue(new Callback<LoginInfo>() {
+            @Override
+            public void onResponse(Call<LoginInfo> call, Response<LoginInfo> response) {
+                if(response.body() != null) {
+                    mRegisteredKeywordList = response.body().getKeywords();
+                    if(mRegisteredKeywordList != null) {
+                        Log.d(TAG,"등록된 키워드 서버통신 성공 : success");
+                        mAdapter = new RegisteredKeywordListAdapter(getContext(), R.layout.layout_profileregisteredkeyword_listitem, mRegisteredKeywordList);
+                        mAdapter.setCustomButtonListner(listener);
+                        registeredKeywordListView.setAdapter(mAdapter);
+                    } else {
+                        Log.d(TAG,"등록된 키워드가 없음 : onResponse : fail : "+response.message());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginInfo> call, Throwable t) {
+                Log.d(TAG,"등록된 키워드 서버통신 실패 : onFailure : fail : "+ t.getMessage());
+            }
+        });
     }
 
     @Override
-    public void onButtonClickListner(int position, String value) {
+    public void onButtonClickListner(final int position, final String value) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         Log.d(TAG,"등록 키워드 클릭");
 
@@ -127,7 +162,7 @@ public class ProfileRegisteredKeywordFragment extends BaseFragment implements Re
                             public void onClick(
                                     DialogInterface dialog, int id) {
                                 // 서버로 보내기
-                                Toast.makeText(getContext(), "삭제", Toast.LENGTH_LONG).show();
+                               removeKeyword(position,value);
                                 dialog.cancel();
                             }
                         })
@@ -141,6 +176,32 @@ public class ProfileRegisteredKeywordFragment extends BaseFragment implements Re
                         });
         AlertDialog dialog = alertDialogBuilder.create();
         dialog.show();
+    }
+
+    public void removeKeyword(final int position, final String value) {
+        Gson gson = new Gson();
+        String json = Prefs.getString("userInfo","");
+        LoginInfo loginInfo = gson.fromJson(json, LoginInfo.class);
+        String university = loginInfo.getUniversity();
+        Push popKeyword = new Push(value, "경희대학교");
+        mUserApiService.popKeyword(FirebaseAuth.getInstance().getUid(), popKeyword).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if(response.body()!=null) {
+                    Log.d(TAG, "등록된 키워드 삭제 서버통신 성공");
+                    Toast.makeText(getContext(), "삭제가 완료되었습니다.", Toast.LENGTH_LONG).show();
+                    mAdapter.remove(mRegisteredKeywordList.get(position));
+                    mAdapter.notifyDataSetChanged();
+                } else {
+                    Log.d(TAG, "등록된 키워드 삭제 서버통신 실패 : onResponse : fail : " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.d(TAG, "등록된 키워드 삭제 서버통신 실패 : onFailure : fail : " + t.getMessage());
+            }
+        });
     }
 
 }
