@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -26,6 +27,7 @@ public class FilterCommunityListAdapter extends ArrayAdapter<Community> {
     private List<Community> mRegisteredKeywords = null;
     private int mLayoutResource;
     private Context mContext;
+    private HashMap<String, Boolean> mCommunityCheckHashMap;
 
     CommunityCheckboxListener communityCheckboxListener;
 
@@ -38,12 +40,13 @@ public class FilterCommunityListAdapter extends ArrayAdapter<Community> {
     }
 
 
-    public FilterCommunityListAdapter(Context context, int resource, List<Community> objects) {
+    public FilterCommunityListAdapter(Context context, int resource, List<Community> objects, HashMap<String, Boolean> hashMap) {
         super(context, resource, objects);
         this.mContext = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.mLayoutResource = resource;
         this.mRegisteredKeywords = objects;
+        this.mCommunityCheckHashMap = hashMap;
     }
 
     @Override
@@ -59,6 +62,13 @@ public class FilterCommunityListAdapter extends ArrayAdapter<Community> {
         }
 
         viewHolder.communityCheckbox.setText(getItem(position).getName());
+
+        if(mCommunityCheckHashMap.get(getItem(position).getId())) {
+            viewHolder.communityCheckbox.setChecked(true);
+        } else {
+            viewHolder.communityCheckbox.setChecked(false);
+        }
+
         viewHolder.communityCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
 

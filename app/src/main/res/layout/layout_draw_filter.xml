@@ -217,6 +217,7 @@
                         android:textSize="17dp"/>
 
                     <Switch
+                        android:id="@+id/switch_filter_save"
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"/>

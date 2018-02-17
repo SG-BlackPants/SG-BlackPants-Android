@@ -1,5 +1,6 @@
 package smilegate.blackpants.univscanner.search;
 
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,8 +16,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,7 +40,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,6 +59,7 @@ import smilegate.blackpants.univscanner.data.model.Community;
 import smilegate.blackpants.univscanner.data.model.LoginInfo;
 import smilegate.blackpants.univscanner.data.model.Push;
 import smilegate.blackpants.univscanner.data.model.SearchResults;
+import smilegate.blackpants.univscanner.data.model.UserSetting;
 import smilegate.blackpants.univscanner.data.remote.ApiUtils;
 import smilegate.blackpants.univscanner.data.remote.ArticleApiService;
 import smilegate.blackpants.univscanner.data.remote.UserApiService;
@@ -78,6 +86,15 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     private HashMap<String, String> mCommunityHashMap;
     private List<Community> mCommunityList;
     private FilterCommunityListAdapter mCommunityAdapter;
+    private DatePickerDialog.OnDateSetListener mStartDateSetListener;
+    private DatePickerDialog.OnDateSetListener mEndDateSetListener;
+
+    //필터관련  변수
+    private String mStartDate;
+    private String mEndDate;
+    private String mSecondWord;
+    private HashMap<String, Boolean> mCommunityCheckHashMap;
+    private UserSetting mUserSetting;
 
     @BindView(R.id.list_filter_community)
     ListView communityListView;
@@ -87,8 +104,12 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
 
     @OnClick(R.id.btn_searchresult_back)
     public void searchResultBack(ImageButton imageButton) {
-        if (!mNavController.popFragment()) {
-            getActivity().onBackPressed();
+        if(drawerLayout.isDrawerOpen(drawerFilterView)) {
+            drawerLayout.closeDrawer(drawerFilterView);
+        } else {
+            if (!mNavController.popFragment()) {
+                getActivity().onBackPressed();
+            }
         }
     }
 
@@ -98,9 +119,6 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     @BindView(R.id.drawerLayout_searchresult)
     DrawerLayout drawerLayout;
 
-    /*@BindView(R.id.drawer_filter)
-    View drawerView;
-*/
     @BindView(R.id.btn_register_keyword)
     ImageButton registerKeywordBtn;
 
@@ -119,23 +137,19 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     @BindView(R.id.text_end_date)
     TextView endDateTxt;
 
-/*
-    @BindView(R.id.checkbox_facebook)
-    CheckBox facebookCheckBox;
-
-    @BindView(R.id.checkbox_everytime)
-    CheckBox everytimeCheckBox;
-*/
-
     @BindView(R.id.btn_filter_apply)
     Button filterApplyBtn;
 
     @BindView(R.id.text_search_result)
     TextView keywordTxt;
 
+    @BindView(R.id.switch_filter_save)
+    Switch filterSaveSwitch;
+
     @OnClick(R.id.btn_filter_apply)
     public void filterApplyClick(Button button) {
         getSettingFilter();
+        drawerLayout.closeDrawer(drawerFilterView);
     }
 
     @OnClick(R.id.btn_filter)
@@ -145,12 +159,20 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
 
     @OnClick(R.id.text_start_date)
     public void setStartDateClick(TextView textView) {
-        Toast.makeText(getContext(), "시작날짜클릭", Toast.LENGTH_LONG).show();
+        //Toast.makeText(getContext(), "시작날짜클릭", Toast.LENGTH_LONG).show();
+        DatePickerDialog dialog = new DatePickerDialog(getContext(), mStartDateSetListener, 2018, 1, 1);
+        dialog.getDatePicker().setMinDate(setDatePicker(0));
+        dialog.getDatePicker().setMaxDate(setDatePicker(1));
+        dialog.show();
     }
 
     @OnClick(R.id.text_end_date)
     public void setEndDateClick(TextView textView) {
-        Toast.makeText(getContext(), "종료날짜클릭", Toast.LENGTH_LONG).show();
+        //Toast.makeText(getContext(), "종료날짜클릭", Toast.LENGTH_LONG).show();
+        DatePickerDialog dialog = new DatePickerDialog(getContext(), mEndDateSetListener, 2018, 2, 17);
+        dialog.getDatePicker().setMinDate(setDatePicker(0));
+        dialog.getDatePicker().setMaxDate(setDatePicker(1));
+        dialog.show();
     }
 
     @OnClick(R.id.btn_register_keyword)
@@ -182,7 +204,6 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
                         });
         AlertDialog dialog = alertDialogBuilder.create();
         dialog.show();
-
     }
 
 
@@ -223,10 +244,40 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
             searchResultRecyclerView.setAdapter(mAdapter);
             mAdapter.setContentDetailClickListner(this);
             getDataFromServer(mKeyword);
-
-            //addData();
-
-
+            mStartDateSetListener = new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                    month = month + 1;
+                    String tempDate = makeSimpleDateFormat(year, month, dayOfMonth);
+                    if (checkDateValid(tempDate, mEndDate)) {
+                        mStartDate = tempDate;
+                        startDateTxt.setText(year + "년 " + month + "월 " + dayOfMonth + "일");
+                    } else {
+                        Toast.makeText(getContext(), "종료 날짜보다 이전 날짜여야 합니다.", Toast.LENGTH_LONG).show();
+                    }
+                }
+            };
+            mEndDateSetListener = new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                    month = month + 1;
+                    String tempDate = makeSimpleDateFormat(year, month, dayOfMonth);
+                    if (checkDateValid(mStartDate, tempDate)) {
+                        mEndDate = tempDate;
+                        endDateTxt.setText(year + "년 " + month + "월 " + dayOfMonth + "일");
+                    } else {
+                        Toast.makeText(getContext(), "시작 날짜보다 이후의 날짜여야 합니다.", Toast.LENGTH_LONG).show();
+                    }
+                }
+            };
+            filterSaveSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        saveFilter();
+                    }
+                }
+            });
         }
         return mView;
     }
@@ -260,7 +311,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
         SearchResults searchResults;
         String id, title, createdDate, content, community, boardAddr, author, url;
         List<String> images;
-
+        mSearchResultsList.clear();
         for (int i = 0; i < articleMessages.size(); i++) {
             id = articleMessages.get(i).getId();
             content = articleMessages.get(i).getSource().getContent();
@@ -341,7 +392,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
 
     public String transformCommunity(String data) {
 
-        if(mCommunityHashMap.containsKey(data)) {
+        if (mCommunityHashMap.containsKey(data)) {
             return mCommunityHashMap.get(data);
         } else {
             return data;
@@ -376,7 +427,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
         Date convertedDate = new Date();
         try {
             convertedDate = dateFormat.parse(time);
-            Log.d(TAG,dateFormat.format(convertedDate));
+            Log.d(TAG, dateFormat.format(convertedDate));
         } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -385,64 +436,84 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
         Calendar postDay = Calendar.getInstance();
         postDay.setTime(convertedDate);
         int postDayYear = postDay.get(Calendar.YEAR);
-        int postDayMonth = postDay.get(Calendar.MONTH)+1;
+        int postDayMonth = postDay.get(Calendar.MONTH) + 1;
         int postDayDate = postDay.get(Calendar.DATE);
         int postDayAM_PM_temp = postDay.get(Calendar.AM_PM);
         String postDayAM_PM;
-        if(postDayAM_PM_temp==0) {
+        if (postDayAM_PM_temp == 0) {
             postDayAM_PM = "오전";
         } else {
             postDayAM_PM = "오후";
         }
         int postDayHour = postDay.get(Calendar.HOUR);
-        if(postDayHour==0) {
+        if (postDayHour == 0) {
             postDayHour = 12;
         }
         int postDayMinute_temp = postDay.get(Calendar.MINUTE);
         String postDayMinute;
-        if(postDayMinute_temp<10) {
-            postDayMinute = "0"+postDayMinute_temp;
+        if (postDayMinute_temp < 10) {
+            postDayMinute = "0" + postDayMinute_temp;
         } else {
-            postDayMinute = postDayMinute_temp+"";
+            postDayMinute = postDayMinute_temp + "";
         }
         //오늘 날짜
         Calendar today = Calendar.getInstance();
         int todayYear = today.get(Calendar.YEAR);
-        int todayMonth = today.get(Calendar.MONTH)+1;
+        int todayMonth = today.get(Calendar.MONTH) + 1;
         int todayDate = today.get(Calendar.DATE);
 
 
-        if(!((postDayYear==todayYear)&&(postDayMonth==todayMonth)&&(postDayDate==todayDate))) {
+        if (!((postDayYear == todayYear) && (postDayMonth == todayMonth) && (postDayDate == todayDate))) {
             // 오늘이 아닌 경우
-            if(postDayYear == todayYear) {
+            if (postDayYear == todayYear) {
                 // 같은 년도일 경우 년 생략
-                result = postDayMonth+"월 "+postDayDate+"일 "+postDayAM_PM+" "+postDayHour+":"+postDayMinute;
+                result = postDayMonth + "월 " + postDayDate + "일 " + postDayAM_PM + " " + postDayHour + ":" + postDayMinute;
             } else {
-                result = postDayYear+"년 "+postDayMonth+"월 "+postDayDate+"일 "+postDayAM_PM+" "+postDayHour+":"+postDayMinute;
+                result = postDayYear + "년 " + postDayMonth + "월 " + postDayDate + "일 " + postDayAM_PM + " " + postDayHour + ":" + postDayMinute;
             }
         } else {
             // 오늘인 경우
-            result = "오늘 "+postDayAM_PM+" "+postDayHour+":"+postDayMinute;
+            result = "오늘 " + postDayAM_PM + " " + postDayHour + ":" + postDayMinute;
         }
         return result;
     }
 
-    public void getSettingFilter() {
-        String includedKeyword =includedKeywordTxt.getText().toString().trim();
-        Log.d(TAG, includedKeyword);
-        String startDate = startDateTxt.getText().toString();
-        String endDate = endDateTxt.getText().toString();
-     /*   List<String> communityList = new ArrayList<>();*/
-       /* if (facebookCheckBox.isChecked() && facebookCheckBox.isChecked()) {
-            communityList.add("facebook-482012061908784");
-            communityList.add("everytime");
-        } else if (everytimeCheckBox.isChecked()) {
-            communityList.add("everytime");
-        } else {
-            communityList.add("facebook-482012061908784");
-        }*/
+    public String transformfilterTime(String time) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        Date convertedDate = new Date();
+        try {
+            convertedDate = dateFormat.parse(time);
+            Log.d(TAG, dateFormat.format(convertedDate));
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        //포스트된 날짜 datetime으로 변경
+        Calendar day = Calendar.getInstance();
+        day.setTime(convertedDate);
+        int dayYear = day.get(Calendar.YEAR);
+        int dayMonth = day.get(Calendar.MONTH) + 1;
+        int dayDate = day.get(Calendar.DATE);
 
-       /* mArticleApiService.getArticles(mKeyword, Prefs.getString("userToken", null), communityList, startDate, endDate, includedKeyword)
+        return dayYear + "년 " + dayMonth + "월 " + dayDate + "일";
+    }
+
+    public void getSettingFilter() {
+        mSecondWord = includedKeywordTxt.getText().toString().trim();
+
+        List<String> communityList = new ArrayList<>();
+
+        Set<Map.Entry<String, Boolean>> set = mCommunityCheckHashMap.entrySet();
+        Iterator<Map.Entry<String, Boolean>> it = set.iterator();
+
+        while (it.hasNext()) {
+            Map.Entry<String, Boolean> e = (Map.Entry<String, Boolean>) it.next();
+            if (e.getValue()) {
+                communityList.add(e.getKey());
+            }
+        }
+
+        mArticleApiService.getArticles(mKeyword, Prefs.getString("userToken", null), communityList, mStartDate, mEndDate, mSecondWord)
         .enqueue(new Callback<Article>() {
             @Override
             public void onResponse(Call<Article> call, Response<Article> response) {
@@ -464,47 +535,51 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
             public void onFailure(Call<Article> call, Throwable t) {
                 Log.d(TAG, "Article info getDataFromServer : fail" + t.getMessage());
             }
-        });*/
+        });
     }
 
     public void initFilter() {
+        String uid = FirebaseAuth.getInstance().getUid();
 
-       /* mCommunityList = new ArrayList<String>();
-        mCommunityList.add("페이스북 대나무숲");
-        mCommunityList.add("애브리타임");
-        mCommunityList.add("페이스북 대나무숲");
-        mCommunityList.add("애브리타임");*/
+        if (Prefs.getString(uid + "_userSetting", null) == null) {
+            userInitSetting();
+        }
         getCommunityList();
 
-        mCommunityAdapter = new FilterCommunityListAdapter(getContext(), R.layout.layout_filter_community_listitem, mCommunityList);
+        Gson gson = new Gson();
+        String json = Prefs.getString(uid + "_userSetting", null);
+        mUserSetting = gson.fromJson(json, UserSetting.class);
+
+        mSecondWord = mUserSetting.getSecondWord();
+        mStartDate = mUserSetting.getStartDate();
+        mEndDate = mUserSetting.getEndDate();
+        mCommunityCheckHashMap = mUserSetting.getCommunityHashMap();
+
+        mCommunityAdapter = new FilterCommunityListAdapter(getContext(), R.layout.layout_filter_community_listitem, mCommunityList, mCommunityCheckHashMap);
         mCommunityAdapter.setCheckBoxListner(this);
         communityListView.setAdapter(mCommunityAdapter);
         SearchFragment.setListViewHeightBasedOnChildren(communityListView);
 
-        includedKeywordTxt.setText("");
-
-        //System.out.println(convertedDate);
-
-        startDateTxt.setText("2018-01-01T19:12:56.000Z");
-        endDateTxt.setText("2018-02-13T19:12:56.000Z");
-        startDateTxt.setText("2018년 01월 01일");
-        endDateTxt.setText("2018년 03월 15일");
-       /* facebookCheckBox.setChecked(true);
-        everytimeCheckBox.setChecked(true);*/
+        //뷰 세팅
+        includedKeywordTxt.setText(mSecondWord);
+        startDateTxt.setText(transformfilterTime(mStartDate));
+        endDateTxt.setText(transformfilterTime(mEndDate));
     }
+
     @Override
     public void onCheckboxClickListner(String value, boolean isChecked) {
-        Toast.makeText(getContext(), value + " 클릭 " + isChecked, Toast.LENGTH_LONG).show();
+        //Toast.makeText(getContext(), value + " 클릭 " + isChecked, Toast.LENGTH_LONG).show();
+        mCommunityCheckHashMap.put(value, isChecked);
     }
 
     public String loadJSONFromAsset(String mode) {
         String json = null;
         try {
             InputStream is;
-            if(mode.equals("community_id")) {
+            if (mode.equals("community_id")) {
                 is = getActivity().getAssets().open("community_id.json");
             } else {
-                 is = getActivity().getAssets().open("university_communitylist.json");
+                is = getActivity().getAssets().open("university_communitylist.json");
             }
             int size = is.available();
             byte[] buffer = new byte[size];
@@ -520,7 +595,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
 
     public void getCommunityList() {
         Gson gson = new Gson();
-        String json = Prefs.getString("userInfo","");
+        String json = Prefs.getString("userInfo", "");
         LoginInfo loginInfo = gson.fromJson(json, LoginInfo.class);
         mCommunityList = new ArrayList<Community>();
         try {
@@ -543,7 +618,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
                 mCommunityList.add(new Community(id,name));
             }*/
 
-           //테스트 소스 - 경희, 세종, 한성대 커뮤니티 일단 다 집어넣음
+            //테스트 소스 - 경희, 세종, 한성대 커뮤니티 일단 다 집어넣음
             JSONObject obj = new JSONObject(loadJSONFromAsset("community_list"));
             String university = "경희대학교";
             JSONArray content = obj.getJSONArray(university);
@@ -552,17 +627,17 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
                 String id = communityInfo.getString("id");
                 String name = communityInfo.getString("name");
                 mCommunityHashMap.put(id, name);
-                mCommunityList.add(new Community(id,name));
+                mCommunityList.add(new Community(id, name));
             }
 
-            university = "세종대학교";
+           /* university = "세종대학교";
             content = obj.getJSONArray(university);
             for (int i = 0; i < content.length(); i++) {
                 JSONObject communityInfo = content.getJSONObject(i);
                 String id = communityInfo.getString("id");
                 String name = communityInfo.getString("name");
                 mCommunityHashMap.put(id, name);
-                mCommunityList.add(new Community(id,name));
+                mCommunityList.add(new Community(id, name));
             }
 
             university = "한성대학교";
@@ -572,11 +647,122 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
                 String id = communityInfo.getString("id");
                 String name = communityInfo.getString("name");
                 mCommunityHashMap.put(id, name);
-                mCommunityList.add(new Community(id,name));
-            }
+                mCommunityList.add(new Community(id, name));
+            }*/
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public long setDatePicker(int mode) {
+        Calendar minCal = Calendar.getInstance();
+        Calendar maxCal = Calendar.getInstance();
+        Date day = new Date();
+
+        if (mode == 0) {
+            // 선택할 수 있는 최소날짜
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            try {
+                day = dateFormat.parse("2018-01-01T00:00:00");
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            minCal.setTime(day);
+            long minDate = minCal.getTime().getTime();
+            return minDate;
+        } else {
+            // 선택할 수 있는 최대날짜
+            maxCal.setTime(day);
+            long maxDate = maxCal.getTime().getTime();
+            return maxDate;
+        }
+    }
+
+    public boolean checkDateValid(String start, String end) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        Date convertedStartDate = new Date();
+        Date convertedEndDate = new Date();
+        try {
+            convertedStartDate = dateFormat.parse(start);
+            convertedEndDate = dateFormat.parse(end);
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        Calendar day = Calendar.getInstance();
+        day.setTime(convertedStartDate);
+        long startMilliseconds = day.getTime().getTime();
+        day.setTime(convertedEndDate);
+        long endMilliseconds = day.getTime().getTime();
+
+        if (endMilliseconds - startMilliseconds >= 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public String makeSimpleDateFormat(int year, int month, int dayOfMonth) {
+        String tempMonth, tempDay;
+
+        if (month < 10) {
+            tempMonth = "0" + month;
+        } else {
+            tempMonth = String.valueOf(month);
+        }
+
+        if (dayOfMonth < 10) {
+            tempDay = "0" + dayOfMonth;
+        } else {
+            tempDay = String.valueOf(dayOfMonth);
+        }
+
+        String result = year + "-" + tempMonth + "-" + tempDay + "T00:00:00";
+        Log.d(TAG, "변환된 날짜 : " + result);
+        return result;
+    }
+
+    public void userInitSetting() {
+        Gson gson = new Gson();
+        String json = Prefs.getString("userInfo", "");
+        LoginInfo loginInfo = gson.fromJson(json, LoginInfo.class);
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH) + 1;
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        HashMap<String, Boolean> communityHashMap = new HashMap<>();
+
+        try {
+            JSONObject obj = new JSONObject(loadJSONFromAsset("community_list"));
+            //String university = loginInfo.getUniversity();
+            String university = "경희대학교";
+            JSONArray content = obj.getJSONArray(university);
+            for (int i = 0; i < content.length(); i++) {
+                JSONObject communityInfo = content.getJSONObject(i);
+                String id = communityInfo.getString("id");
+                communityHashMap.put(id, true);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        UserSetting userSetting = new UserSetting("", makeSimpleDateFormat(2018, 1, 1), makeSimpleDateFormat(year, month, day), communityHashMap);
+        String uid = FirebaseAuth.getInstance().getUid();
+        json = gson.toJson(userSetting);
+        Log.d(TAG, "Json : " + json);
+        Prefs.putString(uid + "_userSetting", json);
+    }
+
+    public void saveFilter() {
+        Gson gson = new Gson();
+        mSecondWord = includedKeywordTxt.getText().toString().trim();
+        UserSetting userSetting = new UserSetting(mSecondWord, mStartDate, mEndDate, mCommunityCheckHashMap);
+        String uid = FirebaseAuth.getInstance().getUid();
+        String json = gson.toJson(userSetting);
+        Log.d(TAG, "Json : " + json);
+        Prefs.putString(uid + "_userSetting", json);
     }
 }

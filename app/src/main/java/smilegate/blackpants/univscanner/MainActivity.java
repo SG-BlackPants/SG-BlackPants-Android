@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         Log.d(TAG, "onCreate()");
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        //android.os.Debug.waitForDebugger();  // this line is key
+
         new Prefs.Builder()
                 .setContext(this)
                 .setMode(ContextWrapper.MODE_PRIVATE)
