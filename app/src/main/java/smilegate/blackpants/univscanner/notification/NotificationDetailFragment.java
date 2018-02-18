@@ -12,6 +12,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -68,6 +70,12 @@ public class NotificationDetailFragment extends BaseFragment {
     LinearLayout searchImageLayout;
     @BindView(R.id.img_post_icon)
     CircleImageView postIcon;
+    @BindView(R.id.scrollView_searchresult)
+    ScrollView scrollView;
+    @BindView(R.id.progressbar_searchdetail)
+    ProgressBar progressBar;
+    @BindView(R.id.text_search_result_noInternet)
+    TextView noInternetTxt;
 
     @OnClick(R.id.btn_searchresult_detail_back)
     public void searchResultBack(ImageButton imageButton) {
@@ -98,14 +106,17 @@ public class NotificationDetailFragment extends BaseFragment {
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_searchresult_detail, container, false);
             ButterKnife.bind(this, mView);
+            scrollView.setVisibility(View.GONE);
+            noInternetTxt.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
             Bundle bundle = this.getArguments();
-            if(bundle!=null){
+            if (bundle != null) {
                 mCommunityId = bundle.getString("communityId");
                 mCommunityName = bundle.getString("communityName");
                 mBoardAddr = bundle.getString("boardAddr");
                 mCreatedDate = bundle.getString("createdDate");
             }
-            mBoardAddr = mBoardAddr.replace('/','-');
+            mBoardAddr = mBoardAddr.replace('/', '-');
             mArticleApiService = ApiUtils.getArticleApiService();
             getNotificationDetailFromServer();
         }
@@ -113,28 +124,34 @@ public class NotificationDetailFragment extends BaseFragment {
     }
 
     public void getNotificationDetailFromServer() {
+        progressBar.setVisibility(View.VISIBLE);
         mArticleApiService.getNotificationDetail(mCommunityId, mBoardAddr).enqueue(new Callback<NotificationArticle>() {
             @Override
             public void onResponse(Call<NotificationArticle> call, Response<NotificationArticle> response) {
-                if(response.body() != null) {
-                    Log.d(TAG,"알림 상세내용 서버통신 성공");
+                progressBar.setVisibility(View.GONE);
+                if (response.body() != null) {
+                    scrollView.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "알림 상세내용 서버통신 성공");
                     Source source = response.body().getSource();
                     initContent(source);
                 } else {
-                    Log.d(TAG,"알림 상세내용 서버통신 실패 : onResponse : "+response.message());
+                    Log.d(TAG, "알림 상세내용 서버통신 실패 : onResponse : " + response.message());
+                    noInternetTxt.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onFailure(Call<NotificationArticle> call, Throwable t) {
-                Log.d(TAG,"알림 상세내용 서버통신 실패 : onFailure : "+ t.getMessage());
+                progressBar.setVisibility(View.GONE);
+                noInternetTxt.setVisibility(View.VISIBLE);
+                Log.d(TAG, "알림 상세내용 서버통신 실패 : onFailure : " + t.getMessage());
             }
         });
     }
 
     public void initContent(Source source) {
         String title = transformTitle(source.getTitle(), source.getContent());
-        String url = transformUrl(source.getBoardAddr(),source.getCommunity());
+        String url = transformUrl(source.getBoardAddr(), source.getCommunity());
 
         postName.setText(title);
         postTime.setText(mCreatedDate);
@@ -145,19 +162,19 @@ public class NotificationDetailFragment extends BaseFragment {
 
         if (source.getImages().size() < 1) {
             searchImageLayout.setVisibility(View.GONE);
-            Log.d(TAG,"initContent() : size <1");
+            Log.d(TAG, "initContent() : size <1");
         } else {
             mImageList = source.getImages();
             mAdapter = new SearchResultImageListAdapter(getContext(), R.layout.layout_searchresult_detail_listitem, mImageList);
             postImageListView.setAdapter(mAdapter);
             setListViewHeightBasedOnChildren(postImageListView);
-            Log.d(TAG,"initContent() : size >= 1");
+            Log.d(TAG, "initContent() : size >= 1");
         }
 
         Resources res = getResources();
         String mDrawableName = getCommunityLogo(mCommunityName);
-        int resID = res.getIdentifier(mDrawableName , "drawable", getActivity().getPackageName());
-        Drawable drawable = res.getDrawable(resID );
+        int resID = res.getIdentifier(mDrawableName, "drawable", getActivity().getPackageName());
+        Drawable drawable = res.getDrawable(resID);
         postIcon.setImageDrawable(drawable);
     }
 
@@ -202,17 +219,17 @@ public class NotificationDetailFragment extends BaseFragment {
     }
 
     public String getCommunityLogo(String community) {
-        if(community.equals("Kyunghee bamboo grove")) {
+        if (community.equals("Kyunghee bamboo grove")) {
             return "kyunghee_bamboo";
-        } else if(community.equals("경희대학교 - 국제캠 대신 전해드립니다")) {
+        } else if (community.equals("경희대학교 - 국제캠 대신 전해드립니다")) {
             return "kyunghee_daeshin";
-        } else if(community.equals("애브리타임")) {
+        } else if (community.equals("애브리타임")) {
             return "everytime";
-        } else if(community.equals("세종대학교 대나무숲")) {
+        } else if (community.equals("세종대학교 대나무숲")) {
             return "sejong_bamboo";
-        } else if(community.equals("세종대학교 대신 전해드립니다")) {
+        } else if (community.equals("세종대학교 대신 전해드립니다")) {
             return "sejong_daeshin";
-        } else if(community.equals("한성대학교 대나무숲")) {
+        } else if (community.equals("한성대학교 대나무숲")) {
             return "hansung_daeshin";
         } else {
             return "ic_hashtag";

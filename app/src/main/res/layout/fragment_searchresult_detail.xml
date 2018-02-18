@@ -9,206 +9,234 @@
         android:id="@+id/top_create_account"
         layout="@layout/layout_top_searchresult_detail" />
 
-    <ScrollView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <ScrollView
+            android:id="@+id/scrollView_searchresult"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
             <LinearLayout
-                android:id="@+id/LinLayout1"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginBottom="5dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
-                android:background="@color/white"
-                android:orientation="horizontal"
-                android:weightSum="100">
-
-                <RelativeLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="13">
-
-                    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/img_post_icon"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_hashtag"
-                        app:civ_border_color="@color/middle_grey"
-                        app:civ_border_width="0.8dp" />
-
-                </RelativeLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="80"
-                    android:orientation="vertical"
-                    android:weightSum="100">
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_weight="50">
-
-                        <TextView
-                            android:id="@+id/text_post_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical"
-                            android:text="수강신청 날짜가 언제인가요?"
-                            android:textColor="@android:color/black"
-                            android:textSize="17dp"
-                            android:textStyle="bold" />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_weight="50">
-
-                        <TextView
-                            android:id="@+id/text_post_time"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical"
-                            android:singleLine="true"
-                            android:text="3시간 전"
-                            android:textColor="@color/middle_darker_grey"
-                            android:textSize="13dp" />
-
-                    </RelativeLayout>
-                </LinearLayout>
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/text_post_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="3dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="5dp"
-                android:bufferType="spannable"
-                android:text="수강신청 12일부터인데
-4학년이 월요일날 하잖아요
-그러면 앞서서 4학년3학년들이 좋은과목 인원 수 다채우면 1,2학년들은 그냥 다른과목을 선택해야하나요? 아니면 학년별로 수강신청 제한이 있나요?"
-                android:textColor="@color/black"
-                android:textSize="15dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="1dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="출처 : "
-                    android:textColor="@color/dark_grey"
-                    android:textSize="13dp" />
-
-                <TextView
-                    android:id="@+id/text_post_source"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/text_post_name"
-                    android:layout_marginStart="5dp"
-                    android:singleLine="true"
-                    android:text="페이스북 대나무숲"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="13dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="1dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginStart="15dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="작성자 : "
-                    android:textColor="@color/dark_grey"
-                    android:textSize="13dp" />
-
-                <TextView
-                    android:id="@+id/text_post_author"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/text_post_name"
-                    android:layout_marginStart="5dp"
-                    android:singleLine="true"
-                    android:text="익명"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="13dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginStart="15dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="원본링크 : "
-                    android:textColor="@color/dark_grey"
-                    android:textSize="13dp" />
-
-                <TextView
-                    android:id="@+id/text_post_url"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/text_post_name"
-                    android:autoLink="web"
-                    android:linksClickable="true"
-                    android:layout_marginStart="5dp"
-                    android:singleLine="true"
-                    android:text="www.facebook.com"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="13dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/LinLayout_searchImage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/LinLayout1"
                     android:layout_width="match_parent"
-                    android:layout_height="15dp"
-                    android:background="@color/light_grey" />
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:weightSum="100">
 
-                <ListView
-                    android:id="@+id/list_postimage"
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="13">
+
+                        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                            android:id="@+id/img_post_icon"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_hashtag"
+                            app:civ_border_color="@color/middle_grey"
+                            app:civ_border_width="0.8dp" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="80"
+                        android:orientation="vertical"
+                        android:weightSum="100">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="50">
+
+                            <TextView
+                                android:id="@+id/text_post_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:gravity="center_vertical"
+                                android:text="수강신청 날짜가 언제인가요?"
+                                android:textColor="@android:color/black"
+                                android:textSize="17dp"
+                                android:textStyle="bold" />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="50">
+
+                            <TextView
+                                android:id="@+id/text_post_time"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:gravity="center_vertical"
+                                android:singleLine="true"
+                                android:text="3시간 전"
+                                android:textColor="@color/middle_darker_grey"
+                                android:textSize="13dp" />
+
+                        </RelativeLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/text_post_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:divider="@color/light_grey"
-                    android:dividerHeight="15dp"
-                    android:scrollbars="none" />
-            </LinearLayout>
+                    android:layout_marginBottom="3dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="5dp"
+                    android:bufferType="spannable"
+                    android:text="수강신청 12일부터인데
+4학년이 월요일날 하잖아요
+그러면 앞서서 4학년3학년들이 좋은과목 인원 수 다채우면 1,2학년들은 그냥 다른과목을 선택해야하나요? 아니면 학년별로 수강신청 제한이 있나요?"
+                    android:textColor="@color/black"
+                    android:textSize="15dp" />
 
-        </LinearLayout>
-    </ScrollView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="15dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="출처 : "
+                        android:textColor="@color/dark_grey"
+                        android:textSize="13dp" />
+
+                    <TextView
+                        android:id="@+id/text_post_source"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/text_post_name"
+                        android:layout_marginStart="5dp"
+                        android:singleLine="true"
+                        android:text="페이스북 대나무숲"
+                        android:textColor="@color/dark_grey"
+                        android:textSize="13dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="작성자 : "
+                        android:textColor="@color/dark_grey"
+                        android:textSize="13dp" />
+
+                    <TextView
+                        android:id="@+id/text_post_author"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/text_post_name"
+                        android:layout_marginStart="5dp"
+                        android:singleLine="true"
+                        android:text="익명"
+                        android:textColor="@color/dark_grey"
+                        android:textSize="13dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="원본링크 : "
+                        android:textColor="@color/dark_grey"
+                        android:textSize="13dp" />
+
+                    <TextView
+                        android:id="@+id/text_post_url"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/text_post_name"
+                        android:autoLink="web"
+                        android:linksClickable="true"
+                        android:layout_marginStart="5dp"
+                        android:singleLine="true"
+                        android:text="www.facebook.com"
+                        android:textColor="@color/dark_grey"
+                        android:textSize="13dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/LinLayout_searchImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="15dp"
+                        android:background="@color/light_grey" />
+
+                    <ListView
+                        android:id="@+id/list_postimage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:divider="@color/light_grey"
+                        android:dividerHeight="15dp"
+                        android:scrollbars="none" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/text_search_result_noInternet"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="인터넷에서 정보를 가져올 수 없습니다."
+            android:textSize="20dp"
+            android:textColor="@color/darker_grey"
+            android:gravity="center"
+            android:visibility="gone"/>
+
+        <ProgressBar
+            android:id="@+id/progressbar_searchdetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:minHeight="10dp"
+            android:minWidth="10dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"/>
+    </FrameLayout>
+
 </LinearLayout>

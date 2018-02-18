@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
 import com.pixplicity.easyprefs.library.Prefs;
@@ -57,6 +58,9 @@ public class SearchViewFragment extends BaseFragment {
     @BindView(R.id.btn_searchview_clear)
     ImageButton searchViewClearBtn;
 
+    @BindView(R.id.progressbar_searchview)
+    ProgressBar progressBar;
+
     @OnClick(R.id.btn_searchview_back)
     public void searchViewBack(ImageButton imageButton) {
         if (!mNavController.popFragment()) {
@@ -97,6 +101,7 @@ public class SearchViewFragment extends BaseFragment {
             initTextListener();
             searchViewClearBtn.setVisibility(View.GONE);
             count=0;
+            progressBar.setVisibility(View.GONE);
         }
         return mView;
     }
@@ -114,7 +119,11 @@ public class SearchViewFragment extends BaseFragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+               /* String text = searchAutoText.getText().toString().toLowerCase(Locale.getDefault());
+                if(text.length()==0) {
+                    mKeywordsList.clear();
+                    searchViewClearBtn.setVisibility(View.GONE);
+                }*/
             }
 
             @Override
@@ -123,7 +132,6 @@ public class SearchViewFragment extends BaseFragment {
                 Log.d(TAG, "afterTextChanged : " + text);
                 count++;
                 searchForMatch(text);
-
             }
         });
     }
@@ -131,16 +139,17 @@ public class SearchViewFragment extends BaseFragment {
     public void searchForMatch(String keyword) {
         Log.d(TAG, "searchForMatch : searcing for a match: " + keyword);
         mKeywordsList.clear();
-
-        if(keyword.length()==0) {
+        if(keyword.length()==0 || keyword.equals("")) {
             count=0;
             searchViewClearBtn.setVisibility(View.GONE);
         } else {
+            progressBar.setVisibility(View.VISIBLE);
             searchViewClearBtn.setVisibility(View.VISIBLE);
             //서버통신
             mRedisApiService.getAutocompleteKeywords(mLoginInfo.getUniversity(),keyword).enqueue(new Callback<List<String>>() {
                 @Override
                 public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                    progressBar.setVisibility(View.GONE);
                     if(response.body()!=null) {
                         Log.d(TAG, "자동완성 키워드 서버통신 성공");
                         mKeywordsList = response.body();
@@ -159,6 +168,7 @@ public class SearchViewFragment extends BaseFragment {
 
                 @Override
                 public void onFailure(Call<List<String>> call, Throwable t) {
+                    progressBar.setVisibility(View.GONE);
                     Log.d(TAG, "자동완성 키워드 서버통신 실패 : onFailure "+ t.getMessage());
                 }
             });

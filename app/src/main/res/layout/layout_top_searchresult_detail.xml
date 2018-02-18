@@ -26,5 +26,6 @@
         android:maxLines="1"
         android:singleLine="true"
         android:text="게시물"
-        android:textSize="20dp" />
+        android:textColor="@color/black"
+        android:textSize="19dp" />
 </RelativeLayout>

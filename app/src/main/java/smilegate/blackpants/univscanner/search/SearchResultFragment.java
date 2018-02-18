@@ -20,6 +20,7 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -146,6 +147,18 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     @BindView(R.id.switch_filter_save)
     Switch filterSaveSwitch;
 
+    @BindView(R.id.text_search_result_status)
+    TextView searchResultStatusTxt;
+
+    @BindView(R.id.progressbar_searchresult)
+    ProgressBar progressBar;
+
+    @BindView(R.id.text_resultCount)
+    TextView resultCount;
+
+    @BindView(R.id.progressbar_resultCount)
+    ProgressBar progressBarResultCount;
+
     @OnClick(R.id.btn_filter_apply)
     public void filterApplyClick(Button button) {
         //getSettingFilter();
@@ -227,6 +240,8 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_search_result, container, false);
             ButterKnife.bind(this, mView);
+            progressBar.setVisibility(View.GONE);
+            progressBarResultCount.setVisibility(View.GONE);
             Bundle bundle = this.getArguments();
             if (bundle != null) {
                 mKeyword = bundle.getString("keyword");
@@ -284,6 +299,9 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     }
 
     public void getDataFromServer(String keyword) {
+        progressBar.setVisibility(View.VISIBLE);
+        progressBarResultCount.setVisibility(View.VISIBLE);
+
         List<String> communityList = new ArrayList<>();
 
         Set<Map.Entry<String, Boolean>> set = mCommunityCheckHashMap.entrySet();
@@ -299,23 +317,37 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
         mArticleApiService.getArticles(keyword, Prefs.getString("userToken", null), null, null, null, mSecondWord).enqueue(new Callback<Article>() {
             @Override
             public void onResponse(Call<Article> call, Response<Article> response) {
+                progressBar.setVisibility(View.GONE);
+                progressBarResultCount.setVisibility(View.GONE);
                 if (response.body() != null) {
                     Log.d(TAG, "Article info getDataFromServer : success");
                     List<ArticleMessage> articleMessages = response.body().getArticleMessage();
-                    if (articleMessages != null) {
+                    if (articleMessages.size() != 0) {
                         addData(articleMessages);
                         mAdapter.notifyDataSetChanged();
+                        resultCount.setText(articleMessages.size()+"개의 결과");
                     } else {
-                        Log.d(TAG, "Article info getDataFromServer : onResponse : fail : list null");
+                        searchResultStatusTxt.setVisibility(View.VISIBLE);
+                        searchResultStatusTxt.setText("해당 키워드에 대한 검색결과가 없습니다.");
+                        resultCount.setText("0개의 결과");
+                        Log.d(TAG, "Article info getDataFromServer : onResponse : fail : "+response.message());
                     }
                 } else {
-                    Log.d(TAG, "Article info getDataFromServer : onResponse : fail");
+                    searchResultStatusTxt.setVisibility(View.VISIBLE);
+                    resultCount.setText("0개의 결과");
+                    searchResultStatusTxt.setText("인터넷 연결이 원활하지 않습니다.");
+                    Log.d(TAG, "Article info getDataFromServer : onResponse : fail : "+response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<Article> call, Throwable t) {
-                Log.d(TAG, "Article info getDataFromServer : fail");
+                progressBar.setVisibility(View.GONE);
+                progressBarResultCount.setVisibility(View.GONE);
+                searchResultStatusTxt.setVisibility(View.VISIBLE);
+                resultCount.setText("0개의 결과");
+                searchResultStatusTxt.setText("인터넷 연결이 원활하지 않습니다.");
+                Log.d(TAG, "Article info getDataFromServer : fail : " + t.getMessage());
             }
         });
     }

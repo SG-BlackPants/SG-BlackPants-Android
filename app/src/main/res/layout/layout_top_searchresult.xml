@@ -47,4 +47,5 @@
     <include
         android:id="@+id/middle_searchresult"
         layout="@layout/layout_middle_searchresult" />
+
 </LinearLayout>

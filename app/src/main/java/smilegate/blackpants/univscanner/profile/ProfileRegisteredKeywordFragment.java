@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,6 +38,7 @@ import smilegate.blackpants.univscanner.data.remote.UserApiService;
 import smilegate.blackpants.univscanner.utils.BaseFragment;
 import smilegate.blackpants.univscanner.utils.RegisteredKeywordListAdapter;
 
+import static android.view.View.GONE;
 import static smilegate.blackpants.univscanner.MainActivity.mNavController;
 
 /**
@@ -57,12 +60,20 @@ public class ProfileRegisteredKeywordFragment extends BaseFragment implements Re
     @BindView(R.id.btn_profileregisteredkeyword_back)
     ImageButton backBtn;
 
+    @BindView(R.id.text_registered_status)
+    TextView statusTxt;
+
+    @BindView(R.id.progressbar_registeredKeyword)
+    ProgressBar progressBar;
+
     @OnClick(R.id.btn_profileregisteredkeyword_back)
     public void backClick(ImageButton imageButton) {
         if (!mNavController.popFragment()) {
             getActivity().onBackPressed();
         }
     }
+
+
 
   /*  @OnClick(R.id.btn_delete_registeredkeyword)
     public void keywordDeleteClick(ImageButton imageButton) {
@@ -114,6 +125,8 @@ public class ProfileRegisteredKeywordFragment extends BaseFragment implements Re
         if (view == null) {
             view = inflater.inflate(R.layout.fragment_profile_registeredkeyword, container, false);
             ButterKnife.bind(this, view);
+            progressBar.setVisibility(GONE);
+            statusTxt.setVisibility(GONE);
             mUserApiService = ApiUtils.getUserApiService();
             initRegisteredKeywordList();
             mContext = getContext();
@@ -122,26 +135,40 @@ public class ProfileRegisteredKeywordFragment extends BaseFragment implements Re
     }
 
     public void initRegisteredKeywordList() {
+        progressBar.setVisibility(View.VISIBLE);
         mRegisteredKeywordList = new ArrayList<>();
 
         mUserApiService.getLoginInfo(FirebaseAuth.getInstance().getUid()).enqueue(new Callback<LoginInfo>() {
             @Override
             public void onResponse(Call<LoginInfo> call, Response<LoginInfo> response) {
+                progressBar.setVisibility(GONE);
                 if(response.body() != null) {
                     mRegisteredKeywordList = response.body().getKeywords();
                     if(mRegisteredKeywordList != null) {
                         Log.d(TAG,"등록된 키워드 서버통신 성공 : success");
-                        mAdapter = new RegisteredKeywordListAdapter(getContext(), R.layout.layout_profileregisteredkeyword_listitem, mRegisteredKeywordList);
-                        mAdapter.setCustomButtonListner(listener);
-                        registeredKeywordListView.setAdapter(mAdapter);
+                        if(mRegisteredKeywordList.size() != 0) {
+                            mAdapter = new RegisteredKeywordListAdapter(getContext(), R.layout.layout_profileregisteredkeyword_listitem, mRegisteredKeywordList);
+                            mAdapter.setCustomButtonListner(listener);
+                            registeredKeywordListView.setAdapter(mAdapter);
+                        } else {
+                            statusTxt.setVisibility(View.VISIBLE);
+                            statusTxt.setText("현재 등록된 키워드가 없습니다.");
+                            registeredKeywordListView.setVisibility(View.GONE);
+                            Log.d(TAG,"등록된 키워드가 없음 : onResponse : fail : "+response.message());
+                        }
                     } else {
-                        Log.d(TAG,"등록된 키워드가 없음 : onResponse : fail : "+response.message());
+                        statusTxt.setVisibility(View.VISIBLE);
+                        statusTxt.setText("인터넷이 원활하지 못하여 정보를 받아올 수 없습니다.");
+                        Log.d(TAG,"등록된 키워드 서버통신 결과 null : onResponse : null : "+response.message());
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<LoginInfo> call, Throwable t) {
+                progressBar.setVisibility(GONE);
+                statusTxt.setVisibility(View.VISIBLE);
+                statusTxt.setText("인터넷이 원활하지 못하여 정보를 받아올 수 없습니다.");
                 Log.d(TAG,"등록된 키워드 서버통신 실패 : onFailure : fail : "+ t.getMessage());
             }
         });
@@ -162,7 +189,7 @@ public class ProfileRegisteredKeywordFragment extends BaseFragment implements Re
                             public void onClick(
                                     DialogInterface dialog, int id) {
                                 // 서버로 보내기
-                               removeKeyword(position,value);
+                                removeKeyword(position,value);
                                 dialog.cancel();
                             }
                         })
@@ -179,6 +206,7 @@ public class ProfileRegisteredKeywordFragment extends BaseFragment implements Re
     }
 
     public void removeKeyword(final int position, final String value) {
+        progressBar.setVisibility(View.VISIBLE);
         Gson gson = new Gson();
         String json = Prefs.getString("userInfo","");
         LoginInfo loginInfo = gson.fromJson(json, LoginInfo.class);
@@ -187,19 +215,28 @@ public class ProfileRegisteredKeywordFragment extends BaseFragment implements Re
         mUserApiService.popKeyword(FirebaseAuth.getInstance().getUid(), popKeyword).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                progressBar.setVisibility(GONE);
                 if(response.body()!=null) {
                     Log.d(TAG, "등록된 키워드 삭제 서버통신 성공");
                     Toast.makeText(getContext(), "삭제가 완료되었습니다.", Toast.LENGTH_LONG).show();
                     mAdapter.remove(mRegisteredKeywordList.get(position));
                     mAdapter.notifyDataSetChanged();
+                    if(mAdapter.getCount()==0) {
+                        statusTxt.setVisibility(View.VISIBLE);
+                        statusTxt.setText("현재 등록된 키워드가 없습니다.");
+                        registeredKeywordListView.setVisibility(View.GONE);
+                    }
                 } else {
                     Log.d(TAG, "등록된 키워드 삭제 서버통신 실패 : onResponse : fail : " + response.message());
+                    Toast.makeText(getContext(), "인터넷이 원활하지 못하여 삭제가 취소되었습니다.", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
+                progressBar.setVisibility(GONE);
                 Log.d(TAG, "등록된 키워드 삭제 서버통신 실패 : onFailure : fail : " + t.getMessage());
+                Toast.makeText(getContext(), "인터넷이 원활하지 못하여 삭제가 취소되었습니다.", Toast.LENGTH_LONG).show();
             }
         });
     }

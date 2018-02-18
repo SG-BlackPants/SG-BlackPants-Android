@@ -14,14 +14,38 @@
             android:id="@+id/top_searchresult"
             layout="@layout/layout_top_searchresult" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/list_searchresult"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/top_searchresult"
-            android:clipToPadding="false"
-            android:scrollbars="vertical" />
+            android:layout_below="@+id/top_searchresult">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/list_searchresult"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:scrollbars="vertical" />
 
+            <TextView
+                android:id="@+id/text_search_result_status"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="해당 키워드에 대한 검색결과가 없습니다."
+                android:textSize="20dp"
+                android:textColor="@color/darker_grey"
+                android:gravity="center"
+                android:visibility="gone"/>
+
+            <ProgressBar
+                android:id="@+id/progressbar_searchresult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:minHeight="10dp"
+                android:minWidth="10dp"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true" />
+
+        </FrameLayout>
     </RelativeLayout>
     <include
         layout="@layout/layout_draw_filter" />

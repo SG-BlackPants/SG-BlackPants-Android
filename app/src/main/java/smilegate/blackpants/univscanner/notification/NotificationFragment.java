@@ -2,12 +2,15 @@ package smilegate.blackpants.univscanner.notification;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.pixplicity.easyprefs.library.Prefs;
 import com.roughike.bottombar.BottomBarTab;
@@ -46,7 +49,7 @@ import smilegate.blackpants.univscanner.utils.NotificationListAdapter;
  * Created by user on 2018-01-22.
  */
 
-public class NotificationFragment extends BaseFragment {
+public class NotificationFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "NotificationFragment";
     private View view;
     private BottomBarTab mBottomBarTab;
@@ -54,9 +57,19 @@ public class NotificationFragment extends BaseFragment {
     private NotificationListAdapter mAdapter;
     private RedisApiService mRedisApiService;
     private HashMap<String, String> mCommunityHashMap;
+    private SwipeRefreshLayout.OnRefreshListener listener = this;
 
     @BindView(R.id.list_notification)
     ListView notificationListView;
+
+    @BindView(R.id.progressbar_notification)
+    ProgressBar progressBar;
+
+    @BindView(R.id.text_noHistory)
+    TextView noHistoryTxt;
+
+    @BindView(R.id.swipe_notification)
+    SwipeRefreshLayout swipeLayout;
 
     public static NotificationFragment newInstance(int instance) {
         Bundle args = new Bundle();
@@ -74,6 +87,9 @@ public class NotificationFragment extends BaseFragment {
             view = inflater.inflate(R.layout.fragment_notification, container, false);
             //btn = cachedView.findViewById(R.id.button);
             ButterKnife.bind(this, view);
+            swipeLayout.setOnRefreshListener(listener);
+            noHistoryTxt.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
             mRedisApiService = ApiUtils.getRedisApiService();
             getCommunityList();
             initNotificationList();
@@ -89,7 +105,7 @@ public class NotificationFragment extends BaseFragment {
     }
 
     public void initNotificationList() {
-
+        progressBar.setVisibility(View.VISIBLE);
       /*  mRegisteredKeywordList.add("비트코인");
         mRegisteredKeywordList.add("꿀교양");*/
         mRedisApiService.getPushHistory(Prefs.getString("userToken", null)).enqueue(new Callback<Notification>() {
@@ -98,7 +114,6 @@ public class NotificationFragment extends BaseFragment {
                 if (response.body() != null) {
                     Log.d(TAG, "알림 히스토리 서버통신 성공");
                     List<NotificationMessage> notificationList = new ArrayList<>();
-
                     notificationList = response.body().getMessages();
                     if (notificationList.size() > 0) {
                         addData(notificationList);
@@ -120,15 +135,19 @@ public class NotificationFragment extends BaseFragment {
                             Log.d(TAG,mNotificationList.get(i).toString());
                         }*/
                     } else {
+                        noHistoryTxt.setVisibility(View.VISIBLE);
                         Log.d(TAG, "현재까지는 알림 히스토리가 없음");
                     }
                 } else {
                     Log.d(TAG, "알림 히스토리 서버통신 실패 : onResponse : " + response.message());
                 }
+                progressBar.setVisibility(View.GONE);
             }
             @Override
             public void onFailure(Call<Notification> call, Throwable t) {
                 Log.d(TAG, "알림 히스토리 서버통신 실패 : onFailure : " + t.getMessage());
+                noHistoryTxt.setVisibility(View.VISIBLE);
+                noHistoryTxt.setText("현재 인터넷과의 연결이 원할하지 않습니다.");
             }
         });
     }
@@ -302,5 +321,11 @@ public class NotificationFragment extends BaseFragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        initNotificationList();
+        swipeLayout.setRefreshing(false);
     }
 }

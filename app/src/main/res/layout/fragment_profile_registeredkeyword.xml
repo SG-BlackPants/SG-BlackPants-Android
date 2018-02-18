@@ -8,13 +8,39 @@
         android:id="@+id/top_profileregisteredkeyword"
         layout="@layout/layout_top_profileregisteredkeyword" />
 
-    <ListView
-        android:id="@+id/list_registered_keyword"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/top_profileregisteredkeyword"
-        android:divider="@color/white"
-        android:dividerHeight="0dip" />
+        android:layout_below="@+id/top_profileregisteredkeyword">
+        <TextView
+            android:id="@+id/text_registered_status"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="현재 등록된 키워드가 없습니다."
+            android:textColor="@color/darker_grey"
+            android:textSize="20dp" />
+
+        <ListView
+            android:id="@+id/list_registered_keyword"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:divider="@color/white"
+            android:dividerHeight="0dip" />
+
+        <ProgressBar
+            android:id="@+id/progressbar_registeredKeyword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:minHeight="10dp"
+            android:minWidth="10dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+
+
+    </FrameLayout>
+
 
 </RelativeLayout>
