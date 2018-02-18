@@ -43,7 +43,7 @@ public class KeywordNotificationManager {
         notificationBuilder.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_VIBRATE)
                 .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.drawable.ic_notification)
+                .setSmallIcon(R.drawable.app_launcher)
                 .setPriority(Notification.PRIORITY_MAX) // this is deprecated in API 26 but you can still use for below 26. check below update for 26 API
                 .setContentTitle(title)
                 .setContentText(body)
