@@ -46,7 +46,8 @@ public class KeywordNotificationManager {
                 .setSmallIcon(R.drawable.ic_notification)
                 .setPriority(Notification.PRIORITY_MAX) // this is deprecated in API 26 but you can still use for below 26. check below update for 26 API
                 .setContentTitle(title)
-                .setContentText(body);
+                .setContentText(body)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(body));
 
         Intent resultIntent = new Intent(mContext, MainActivity.class);
         resultIntent.putExtra("notificationFragment",true);
