@@ -10,8 +10,8 @@
     <ImageView
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="10dp"
         android:layout_centerVertical="true"
         android:src="@drawable/ic_search"
         android:id="@+id/img_search"/>
@@ -21,8 +21,9 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/img_search"
+        android:textColor="@color/dark_grey"
         android:text="키워드 검색"
-        android:textSize="20sp"/>
+        android:textSize="19sp"/>
 </RelativeLayout>
 
 

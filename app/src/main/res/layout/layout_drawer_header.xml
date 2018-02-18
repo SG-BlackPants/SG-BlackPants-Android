@@ -1,18 +1,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:background="@color/main_color"
+    android:background="@color/white"
     android:padding="16dp"
     android:theme="@style/TempTheme"
     android:orientation="horizontal"
-    android:gravity="bottom">
+    android:gravity="bottom"
+    android:elevation="3dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="검색 필터(조건)"
-        android:textColor="@android:color/white"
-        android:textSize="20dp"/>
+        android:textColor="@color/black"
+        android:textSize="19dp"/>
 
     <Button
         android:id="@+id/btn_filter_apply"
@@ -21,7 +22,7 @@
         android:textAlignment="textEnd"
         android:text="완료"
         android:textSize="18dp"
-        android:textColor="@color/white"
+        android:textColor="@color/redpink"
         android:layout_alignParentEnd="true"
         android:background="@android:color/transparent"/>
 </RelativeLayout>
