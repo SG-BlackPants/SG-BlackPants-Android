@@ -1,8 +1,10 @@
 package smilegate.blackpants.univscanner.profile;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +31,7 @@ import com.pixplicity.easyprefs.library.Prefs;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import dmax.dialog.SpotsDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,6 +53,8 @@ public class ProfileFragment extends BaseFragment {
     private FirebaseUser mUser;
     private GoogleSignInClient mGoogleSignInClient;
     private UserApiService mUserApiService;
+    private android.app.AlertDialog mLogoutDialog;
+    private android.app.AlertDialog mDeleteDialog;
 
     @BindView(R.id.relLayout_logout)
     RelativeLayout logoutBtn;
@@ -83,13 +88,63 @@ public class ProfileFragment extends BaseFragment {
     @OnClick(R.id.relLayout_logout)
     public void logoutClick(RelativeLayout relativeLayout) {
         Log.d(TAG,"로그아웃 클릭");
-        signOut();
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+
+        alertDialogBuilder.setTitle("로그아웃");
+
+        alertDialogBuilder
+                .setMessage("정말 로그아웃 하시겠습니까?")
+                .setCancelable(false)
+                .setPositiveButton("예",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(
+                                    DialogInterface dialog, int id) {
+                                // 서버로 보내기
+                                signOut();
+                                dialog.cancel();
+                            }
+                        })
+                .setNegativeButton("아니오",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(
+                                    DialogInterface dialog, int id) {
+                                // 다이얼로그를 취소한다
+                                dialog.cancel();
+                            }
+                        });
+        AlertDialog dialog = alertDialogBuilder.create();
+        dialog.show();
     }
 
     @OnClick(R.id.relLayout_delete)
     public void deleteAccountClick(RelativeLayout relativeLayout) {
         Log.d(TAG,"회원탈퇴 클릭");
-        deleteAccount();
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+
+        alertDialogBuilder.setTitle("회원탈퇴");
+
+        alertDialogBuilder
+                .setMessage("정말 탈퇴하시겠습니까?")
+                .setCancelable(false)
+                .setPositiveButton("예",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(
+                                    DialogInterface dialog, int id) {
+                                // 서버로 보내기
+                                deleteAccount();
+                                dialog.cancel();
+                            }
+                        })
+                .setNegativeButton("아니오",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(
+                                    DialogInterface dialog, int id) {
+                                // 다이얼로그를 취소한다
+                                dialog.cancel();
+                            }
+                        });
+        AlertDialog dialog = alertDialogBuilder.create();
+        dialog.show();
     }
 
     public static ProfileFragment newInstance(int instance) {
@@ -121,6 +176,8 @@ public class ProfileFragment extends BaseFragment {
             profileNameTxt.setText(loginInfo.getName());
             profileUniversityTxt.setText(loginInfo.getUniversity());
             profileEmailTxt.setText(mAuth.getCurrentUser().getEmail());
+            mLogoutDialog = new SpotsDialog(getContext(), R.style.logoutTheme);
+            mDeleteDialog = new SpotsDialog(getContext(), R.style.deleteTheme);
         }
         return view;
     }
@@ -131,6 +188,7 @@ public class ProfileFragment extends BaseFragment {
     }
 
     public void signOut() {
+        mLogoutDialog.show();
         String loginRoute = Prefs.getString("loginRoute", "email");
 
         mAuth.signOut();
@@ -206,6 +264,7 @@ public class ProfileFragment extends BaseFragment {
     }*/
 
     private void deleteAccount() {
+        mDeleteDialog.show();
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (mUser != null) {
@@ -273,11 +332,12 @@ public class ProfileFragment extends BaseFragment {
 
 
     public void goLoginActivity() {
-
         Prefs.putString("loginRoute", null);
         //Intent intent = new Intent(getContext(), LoginActivity.class);
         //startActivity(intent);
         //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        mLogoutDialog.dismiss();
+        mDeleteDialog.dismiss();
         getActivity().finish();
     }
 

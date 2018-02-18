@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Base64;
 import android.util.Log;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +44,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,6 +70,9 @@ public class LoginActivity extends AppCompatActivity {
     private android.app.AlertDialog mDialog;
     private boolean mIsFirstLogin;
     private List<String> mUniversityList;
+    private TimerTask mTask;
+    private Timer mTimer;
+    private boolean mode;
 
     @BindView(R.id.btn_google_login)
     Button googleLoginBtn;
@@ -81,6 +88,9 @@ public class LoginActivity extends AppCompatActivity {
 
     @BindView(R.id.text_information)
     TextView informationTxt;
+
+    @BindView(R.id.text_change)
+    TextView changeTxt;
 
     @OnClick(R.id.btn_google_login)
     public void googleLogin(Button button) {
@@ -112,12 +122,12 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mDialog = new SpotsDialog(this, R.style.loginLodingTheme);
         mIsFirstLogin = false;
-
+        setChangeText();
         String infoStr = "계속 진행하시면 유니브스캐너의 <(>서비스 약관<)>과 <(>개인정보처리방침<)>에<br> 동의하시게 됩니다.";
         String colorCodeStart = "<font color='#ff7473'>";
         String colorCodeEnd = "</font>";
-        infoStr =  infoStr.replace("<(>",colorCodeStart); // <(> and <)> are different replace them with your color code String, First one with start tag
-        infoStr=  infoStr.replace("<)>",colorCodeEnd); // then end tag
+        infoStr = infoStr.replace("<(>", colorCodeStart); // <(> and <)> are different replace them with your color code String, First one with start tag
+        infoStr = infoStr.replace("<)>", colorCodeEnd); // then end tag
 
         informationTxt.setText((Html.fromHtml(infoStr)));
 
@@ -146,12 +156,12 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onCancel() {
                         Log.d(TAG, "facebook:onCancel");
-                }
+                    }
 
-        @Override
-        public void onError(FacebookException error) {
-            Log.d(TAG, "facebook:onError", error);
-        }
+                    @Override
+                    public void onError(FacebookException error) {
+                        Log.d(TAG, "facebook:onError", error);
+                    }
                 });
 
 
@@ -208,7 +218,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // 로그인 인증 성공
                             mIsFirstLogin = task.getResult().getAdditionalUserInfo().isNewUser();
-                            Log.d(TAG, "Google Login : mIsFirstLogin : "+ mIsFirstLogin);
+                            Log.d(TAG, "Google Login : mIsFirstLogin : " + mIsFirstLogin);
                             Log.d(TAG, "signInWithCredential : success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             Prefs.putString("loginRoute", "google");
@@ -237,7 +247,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // 로그인 인증 성공
                             mIsFirstLogin = task.getResult().getAdditionalUserInfo().isNewUser();
-                            Log.d(TAG, "Facebook Login : mIsFirstLogin : "+ mIsFirstLogin);
+                            Log.d(TAG, "Facebook Login : mIsFirstLogin : " + mIsFirstLogin);
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             Prefs.putString("loginRoute", "facebook");
@@ -288,8 +298,8 @@ public class LoginActivity extends AppCompatActivity {
                             Prefs.putString("idToken", idToken);
                             Log.i("token", "token : success : " + idToken);
                             String registrationToken = FirebaseInstanceId.getInstance().getToken();
-                            Log.d(TAG,"registrationToken : "+registrationToken);
-                            if(mIsFirstLogin) {
+                            Log.d(TAG, "registrationToken : " + registrationToken);
+                            if (mIsFirstLogin) {
                                 Intent intent = new Intent(LoginActivity.this, CreateSocialAccountActivity.class);
                                 startActivity(intent);
                             } else {
@@ -297,6 +307,7 @@ public class LoginActivity extends AppCompatActivity {
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
+                                mTimer.cancel();
                                 finish();
                             }
                         } else {
@@ -308,80 +319,38 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-  /*  public static class ConnectServer extends AsyncTask<Void, Void, Void> {
+    public void setChangeText() {
+        mode = true;
+        final Animation in = new AlphaAnimation(0.0f, 1.0f);
+        in.setDuration(500);
 
-        @Override
-        protected Void doInBackground(Void... voids) {
+        final Animation out = new AlphaAnimation(1.0f, 0.0f);
+        out.setDuration(500);
 
-            final String url = "https://androidtutorials.herokuapp.com/";
-
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(url)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            UsersApi userApi = retrofit.create(UsersApi.class);
-
-            Call<List<User>> response = userApi.getUsersGet();
-
-            try {
-                for(User user : response.execute().body())
-                    Log.e("ResponseData",user.getName()+" "+user.getNickName());
-            } catch (IOException e) {
-                e.printStackTrace();
+        mTask = new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mode) {
+                            mode = false;
+                            changeTxt.startAnimation(out);
+                            changeTxt.setText("키워드 기반 대학교 커뮤니티 정보 알림 서비스");
+                            changeTxt.startAnimation(in);
+                        } else {
+                            mode = true;
+                            changeTxt.startAnimation(out);
+                            changeTxt.setText("원하는 키워드에 대한 알림을 받아보세요");
+                            changeTxt.startAnimation(in);
+                        }
+                    }
+                });
             }
-            return null;
-        }
+        };
+        mTimer = new Timer();
+        mTimer.schedule(mTask, 0, 2000);
     }
-*/
-    /*public void sendPost(String title, String body) {
-        mUserApiService.savePost(title, body, 1).enqueue(new Callback<Users>() {
-            @Override
-            public void onResponse(Call<Users> call, Response<Users> response) {
 
-                if(response.isSuccessful()) {
-                    Log.e("ResponseData",response.body().toString());
-                    Log.i(TAG, "post submitted to API." + response.body().toString());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Users> call, Throwable t) {
-                Log.e(TAG, "Unable to submit post to API.");
-            }
-        });
-    }
-*/
-   /* public void getPost() {
-        mUserApiService.getPost().enqueue(new Callback<List<Users>>() {
-            @Override
-            public void onResponse(Call<List<Users>> call, Response<List<Users>> response) {
-                for(Users res : response.body())
-                    Log.e("ResponseData",res.getTitle()+" "+res.getBody());
-            }
-
-            @Override
-            public void onFailure(Call<List<Users>> call, Throwable t) {
-                Log.e(TAG, "Unable to get from API.");
-            }
-        });
-    }*/
-
-    /*public void sendPost(String _id, String name, String university) {
-        mUserApiService.saveUser(_id, name, university).enqueue(new Callback<Users>() {
-            @Override
-            public void onResponse(Call<Users> call, Response<Users> response) {
-                if (response.isSuccessful()) {
-                    Log.e("ResponseData", response.body().toString());
-                    Log.i(TAG, "post submitted to API." + response.body().toString());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Users> call, Throwable t) {
-                Log.e(TAG, "Unable to submit post to API.");
-            }
-        });
-    }*/
 
 }
