@@ -1,9 +1,5 @@
 package smilegate.blackpants.univscanner.notification;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -230,24 +226,6 @@ public class NotificationFragment extends BaseFragment {
         MainActivity.mBottomBarTab.removeBadge();
         ShortcutBadger.removeCount(getContext());
         Prefs.putInt("badgeCount", 0);
-    }
-
-    public String getLauncherClassName(Context context) {
-
-        PackageManager pm = context.getPackageManager();
-
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-
-        List<ResolveInfo> resolveInfos = pm.queryIntentActivities(intent, 0);
-        for (ResolveInfo resolveInfo : resolveInfos) {
-            String pkgName = resolveInfo.activityInfo.applicationInfo.packageName;
-            if (pkgName.equalsIgnoreCase(context.getPackageName())) {
-                String className = resolveInfo.activityInfo.name;
-                return className;
-            }
-        }
-        return null;
     }
 
     public String loadJSONFromAsset(String mode) {
