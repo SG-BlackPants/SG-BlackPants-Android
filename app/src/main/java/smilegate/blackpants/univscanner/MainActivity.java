@@ -43,6 +43,7 @@ import smilegate.blackpants.univscanner.notification.NotificationFragment;
 import smilegate.blackpants.univscanner.profile.ProfileFragment;
 import smilegate.blackpants.univscanner.search.SearchFragment;
 import smilegate.blackpants.univscanner.utils.BaseFragment;
+import smilegate.blackpants.univscanner.utils.ServiceState;
 
 public class MainActivity extends AppCompatActivity implements BaseFragment.FragmentNavigation, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
     private static final String TAG = "MainActivity";
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     public static MyBottomBarTab sMyBottomBarTab;
     public static BottomBarTab mBottomBarTab;
     private boolean isUnivAuth;
-
+    public static boolean isNotification;
     private final int INDEX_HOME = FragNavController.TAB1;
     private final int INDEX_NOTIFICATION = FragNavController.TAB2;
     private final int INDEX_PROFILE = FragNavController.TAB3;
@@ -125,8 +126,16 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         });
 
         mBottomBarTab = bottomBar.getTabWithId(R.id.bb_menu_notification);
-        mBottomBarTab.setBadgeCount(1);
-        //sMyBottomBarTab = new MyBottomBarTab(mBottomBarTab);
+        int badgeCount = Prefs.getInt("badgeCount", 0);
+        mBottomBarTab.setBadgeCount(badgeCount);
+        startService(new Intent(getBaseContext(), ServiceState.class));
+
+        isNotification = getIntent().getBooleanExtra("notificationFragment",false);
+        if(MainActivity.isNotification) {
+            MainActivity.isNotification = false;
+            //MainActivity.mNavController.switchTab(INDEX_NOTIFICATION);
+            bottomBar.selectTabAtPosition(INDEX_NOTIFICATION);
+        }
         //signOut();
     }
 
@@ -162,8 +171,8 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
                     @Override
                     public void onComplete(@NonNull Task<GetTokenResult> task) {
                         if (task.isSuccessful()) {
-                            Prefs.putString("userToken",task.getResult().getToken());
-                            Log.d(TAG, "onAuthStateChanged : userToken  : " + Prefs.getString("userToken",null));
+                            Prefs.putString("userToken", task.getResult().getToken());
+                            Log.d(TAG, "onAuthStateChanged : userToken  : " + Prefs.getString("userToken", null));
                             getFromServer(user.getUid());
                             Log.d(TAG, "onAuthStateChanged : singed_in" + user.getUid());
                         } else {

@@ -15,6 +15,7 @@ import com.aotasoft.taggroup.TagGroup;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
+import com.ncapdevi.fragnav.FragNavController;
 import com.pixplicity.easyprefs.library.Prefs;
 
 import java.util.ArrayList;
@@ -40,6 +41,8 @@ import smilegate.blackpants.univscanner.utils.KeywordRankListAdapter;
 
 public class SearchFragment extends BaseFragment {
     private static final String TAG = "SearchFragment";
+    private final int INDEX_NOTIFICATION = FragNavController.TAB2;
+
     private View view;
     private List<String> mKeywordRankList;
     private KeywordRankListAdapter mAdapter;
@@ -91,6 +94,7 @@ public class SearchFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (view == null) {
+            Log.d(TAG,"검색 화면 생성");
             view = inflater.inflate(R.layout.fragment_search, container, false);
             ButterKnife.bind(this, view);
             mUserApiService = ApiUtils.getUserApiService();
@@ -105,7 +109,6 @@ public class SearchFragment extends BaseFragment {
                 initkeywordRankList();
             }
             Log.d(TAG,"registrationToken : " +FirebaseInstanceId.getInstance().getToken());
-
         }
         return view;
     }
@@ -127,6 +130,7 @@ public class SearchFragment extends BaseFragment {
     }
 
     public void initRecentKeywordList() {
+        Log.d(TAG,"최근 키워드 가져오기 함수 실행");
         tagGroup.setGravity(TagGroup.TagGravity.MIDDLE);
         //mTagGroup.setTags(new String[]{"도레미파솔", "김치찌개", "비트코인","수강신청 날짜","멀머날어ㅓ아머리너ㅣㅏ렁니러ㅣ","꿀강","수강편람"});
         mRecenetKeywordList = new ArrayList<String>();
@@ -137,6 +141,7 @@ public class SearchFragment extends BaseFragment {
                 if(mRecenetKeywordList!=null) {
                     tagGroup.setTags(mRecenetKeywordList);
                     tagGroup.setOnTagClickListener(mTagClickListener);
+                    Log.d(TAG, "최근 키워드 서버통신 성공");
                 } else {
                     Log.d(TAG, "최근 키워드 서버통신 실패 : "+ response.body());
                 }
@@ -177,18 +182,6 @@ public class SearchFragment extends BaseFragment {
                 Log.d(TAG,"키워드 순위 서버통신 실패 : "+t.getMessage());
             }
         });
-       /* mKeywordRankList.add(new KeywordRank(1,"비트코인"));
-        mKeywordRankList.add(new KeywordRank(2,"꿀교양"));
-        mKeywordRankList.add(new KeywordRank(3,"수강편람"));
-        mKeywordRankList.add(new KeywordRank(4,"국가장학금 소득분위"));
-        mKeywordRankList.add(new KeywordRank(5,"강의교재"));
-        mKeywordRankList.add(new KeywordRank(6,"평창올림픽"));
-        mKeywordRankList.add(new KeywordRank(7,"지드래곤 대학원"));
-        mKeywordRankList.add(new KeywordRank(8,"개막식"));
-        mKeywordRankList.add(new KeywordRank(9,"개강일"));
-        mKeywordRankList.add(new KeywordRank(10,"수강신청"));*/
-
-
     }
 
     public static void setListViewHeightBasedOnChildren(ListView listView) {
@@ -211,5 +204,15 @@ public class SearchFragment extends BaseFragment {
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
         listView.requestLayout();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG,"검색 뷰 화면");
+        if(mRecenetKeywordList!=null) {
+            tagGroup.setTags(mRecenetKeywordList);
+            tagGroup.setOnTagClickListener(mTagClickListener);
+        }
     }
 }

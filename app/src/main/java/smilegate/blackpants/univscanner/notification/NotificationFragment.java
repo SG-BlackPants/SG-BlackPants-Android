@@ -32,6 +32,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.leolin.shortcutbadger.ShortcutBadger;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -57,6 +58,7 @@ public class NotificationFragment extends BaseFragment {
     private NotificationListAdapter mAdapter;
     private RedisApiService mRedisApiService;
     private HashMap<String, String> mCommunityHashMap;
+
     @BindView(R.id.list_notification)
     ListView notificationListView;
 
@@ -79,10 +81,15 @@ public class NotificationFragment extends BaseFragment {
             mRedisApiService = ApiUtils.getRedisApiService();
             getCommunityList();
             initNotificationList();
-            MainActivity.mBottomBarTab.removeBadge();
-            setBadge();
         }
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG,"알림 뷰 화면");
+        setBadge();
     }
 
     public void initNotificationList() {
@@ -220,14 +227,9 @@ public class NotificationFragment extends BaseFragment {
     }
 
     public void setBadge() {
-        Intent intent = new Intent("android.intent.action.BADGE_COUNT_UPDATE");
-
-        intent.putExtra("badge_count", 0);
-        intent.putExtra("badge_count_package_name", getContext().getPackageName());
-        intent.putExtra("badge_count_class_name", getLauncherClassName(getContext()));
-
+        MainActivity.mBottomBarTab.removeBadge();
+        ShortcutBadger.removeCount(getContext());
         Prefs.putInt("badgeCount", 0);
-        getContext().sendBroadcast(intent);
     }
 
     public String getLauncherClassName(Context context) {

@@ -49,6 +49,7 @@ public class KeywordNotificationManager {
                 .setContentText(body);
 
         Intent resultIntent = new Intent(mContext, MainActivity.class);
+        resultIntent.putExtra("notificationFragment",true);
        /* setBadge(getApplicationContext(), 1);*/
         // The stack builder object will contain an artificial back stack for the
 // started Activity.
