@@ -12,6 +12,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import smilegate.blackpants.univscanner.data.model.CodeResult;
 import smilegate.blackpants.univscanner.data.model.LoginInfo;
 import smilegate.blackpants.univscanner.data.model.Push;
 import smilegate.blackpants.univscanner.data.model.RefreshToken;
@@ -40,13 +41,13 @@ public interface UserApiService {
     Call<Users> deleteUser(@Path("uid") String uid);
 
     @PUT("/users/{uid}/keyword/push")
-    Call<ResponseBody> pushKeyword(@Path("uid") String uid, @Body Push push);
+    Call<CodeResult> pushKeyword(@Path("uid") String uid, @Body Push push);
 
     @PUT("/users/{uid}/keyword/pop")
     Call<ResponseBody> popKeyword(@Path("uid") String uid, @Body Push push);
 
-    @PUT("/users/{uid}/refreshToken")
-    Call<ResponseBody> setRefreshRegistrationToken(@Path("uid") String uid, @Body RefreshToken refreshToken);
+    @PUT("/users/refreshToken")
+    Call<ResponseBody> setRefreshRegistrationToken(@Body RefreshToken refreshToken);
 }
 
 

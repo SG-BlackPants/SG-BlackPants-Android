@@ -125,10 +125,20 @@ public class UniversityAuthActivity extends AppCompatActivity {
         Log.d(TAG,mUid+" / "+mUniversity);
         mIsAutentificate = false;
         mIsSendRecently = false;
-      /*  if (mUniversity.contains("세종대학교")) {*/
-            univDomainTxt.setText("@naver.com");
-        //}
+        initUnivEmail();
 
+    }
+
+    public void initUnivEmail() {
+        if(mUniversity.contains("경희대학교")) {
+            univDomainTxt.setText("@khu.ac.kr");
+        } else if(mUniversity.contains("세종대학교")) {
+            univDomainTxt.setText("@sju.ac.kr");
+        } else if(mUniversity.contains("한성대학교")) {
+            univDomainTxt.setText("@hansung.ac.kr");
+        } else {
+            univDomainTxt.setText("@naver.com");
+        }
     }
 
     @Override

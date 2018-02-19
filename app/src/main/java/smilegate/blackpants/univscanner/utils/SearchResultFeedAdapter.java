@@ -121,7 +121,7 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
                         .load(searchResults.getImages().get(0))
                         .resize(1280, 720)
                         .centerCrop()
-                        .placeholder(R.drawable.app_logo2)
+                        .placeholder(R.drawable.progress_animation)
                         .into(holder.postImage);
             } else {
                 holder.postImage.setVisibility(View.GONE);

@@ -29,6 +29,15 @@ public class Push {
     @SerializedName("secondWord")
     @Expose
     private String secondWord;
+    @SerializedName("result")
+    @Expose
+    private String result;
+    @SerializedName("code")
+    @Expose
+    private String code;
+    @SerializedName("message")
+    @Expose
+    private String message;
 
     public Push(String keyword, String university, List<String> community, String startDate, String endDate, String secondWord) {
         this.keyword = keyword;
@@ -102,5 +111,29 @@ public class Push {
                 ", endDate='" + endDate + '\'' +
                 ", secondWord='" + secondWord + '\'' +
                 '}';
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

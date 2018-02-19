@@ -49,13 +49,13 @@ import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import smilegate.blackpants.univscanner.R;
 import smilegate.blackpants.univscanner.data.model.Article;
 import smilegate.blackpants.univscanner.data.model.ArticleMessage;
+import smilegate.blackpants.univscanner.data.model.CodeResult;
 import smilegate.blackpants.univscanner.data.model.Community;
 import smilegate.blackpants.univscanner.data.model.LoginInfo;
 import smilegate.blackpants.univscanner.data.model.Push;
@@ -105,7 +105,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
 
     @OnClick(R.id.btn_searchresult_back)
     public void searchResultBack(ImageButton imageButton) {
-        if(drawerLayout.isDrawerOpen(drawerFilterView)) {
+        if (drawerLayout.isDrawerOpen(drawerFilterView)) {
             drawerLayout.closeDrawer(drawerFilterView);
         } else {
             if (!mNavController.popFragment()) {
@@ -325,18 +325,18 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
                     if (articleMessages.size() != 0) {
                         addData(articleMessages);
                         mAdapter.notifyDataSetChanged();
-                        resultCount.setText(articleMessages.size()+"개의 결과");
+                        resultCount.setText(articleMessages.size() + "개의 결과");
                     } else {
                         searchResultStatusTxt.setVisibility(View.VISIBLE);
                         searchResultStatusTxt.setText("해당 키워드에 대한 검색결과가 없습니다.");
                         resultCount.setText("0개의 결과");
-                        Log.d(TAG, "Article info getDataFromServer : onResponse : fail : "+response.message());
+                        Log.d(TAG, "Article info getDataFromServer : onResponse : fail : " + response.message());
                     }
                 } else {
                     searchResultStatusTxt.setVisibility(View.VISIBLE);
                     resultCount.setText("0개의 결과");
                     searchResultStatusTxt.setText("인터넷 연결이 원활하지 않습니다.");
-                    Log.d(TAG, "Article info getDataFromServer : onResponse : fail : "+response.message());
+                    Log.d(TAG, "Article info getDataFromServer : onResponse : fail : " + response.message());
                 }
             }
 
@@ -396,21 +396,30 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
         String university = loginInfo.getUniversity();
         //String[] communityArray = {"facebook-482012061908784", "everytime"};
         Push push = new Push(mKeyword, "경희대학교", communityList, startDate, endDate, secondWord);
-        Log.d(TAG,"PUSH : "+push.toString());
-        mUserApiService.pushKeyword(FirebaseAuth.getInstance().getUid(), push).enqueue(new Callback<ResponseBody>() {
+        Log.d(TAG, "PUSH : " + push.toString());
+        //CodeResult codeResult = new CodeResult();
+        mUserApiService.pushKeyword(FirebaseAuth.getInstance().getUid(), push).enqueue(new Callback<CodeResult>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(Call<CodeResult> call, Response<CodeResult> response) {
                 if (response.body() != null) {
-                    Log.d(TAG, "키워드 등록 성공");
-                    Toast.makeText(getContext(), "등록을 완료하였습니다.", Toast.LENGTH_LONG).show();
+                    if (response.code() == 211) {
+                        Log.d(TAG, "키워드 등록 실패 : onResponse : " + response.body().getCode());
+                        Toast.makeText(getContext(), "이미 등록된 키워드입니다.", Toast.LENGTH_LONG).show();
+                    } else if (response.code() == 212) {
+                        Log.d(TAG, "키워드 등록 실패 : onResponse : " + response.message());
+                        Toast.makeText(getContext(), "키워드는 최대 5개까지만 등록할 수 있습니다.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Log.d(TAG, "키워드 등록 성공 : " + response.body().toString());
+                        Toast.makeText(getContext(), "등록을 완료하였습니다.", Toast.LENGTH_LONG).show();
+                    }
                 } else {
                     Log.d(TAG, "키워드 등록 실패 : onResponse : " + response.message());
-                    Toast.makeText(getContext(), "등록에 실패하였습니다.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "키워드 등록에 실패하였습니다.", Toast.LENGTH_LONG).show();
+
                 }
             }
-
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(Call<CodeResult> call, Throwable t) {
                 Log.d(TAG, "키워드 등록 실패 : onFailure : " + t.getMessage());
                 Toast.makeText(getContext(), "등록에 실패하였습니다.", Toast.LENGTH_LONG).show();
             }

@@ -66,7 +66,7 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
        RefreshToken refreshToken = new RefreshToken(mUserToken, mRefreshToken);
 
-       mUserApiService.setRefreshRegistrationToken(uid, refreshToken).enqueue(new Callback<ResponseBody>() {
+       mUserApiService.setRefreshRegistrationToken(refreshToken).enqueue(new Callback<ResponseBody>() {
            @Override
            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                if(response.body()!=null) {
