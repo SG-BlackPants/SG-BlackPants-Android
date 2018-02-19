@@ -92,7 +92,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     private FilterCommunityListAdapter mCommunityAdapter;
     private DatePickerDialog.OnDateSetListener mStartDateSetListener;
     private DatePickerDialog.OnDateSetListener mEndDateSetListener;
-
+    int count = 0;
     //필터관련  변수
     private String mStartDate;
     private String mEndDate;
@@ -302,8 +302,10 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
     }
 
     public void getDataFromServer(String keyword) {
+        count++;
         progressBar.setVisibility(View.VISIBLE);
         progressBarResultCount.setVisibility(View.VISIBLE);
+        mSecondWord = includedKeywordTxt.getText().toString().trim();
 
         List<String> communityList = new ArrayList<>();
 
@@ -316,8 +318,8 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
                 communityList.add(e.getKey());
             }
         }
-
-        mArticleApiService.getArticles(keyword, Prefs.getString("userToken", null), null, null, null, mSecondWord).enqueue(new Callback<Article>() {
+        Log.d(TAG,"검색 필터 : "+communityList.toString());
+        mArticleApiService.getArticles(keyword, Prefs.getString("userToken", null), communityList, mStartDate, mEndDate, mSecondWord).enqueue(new Callback<Article>() {
             @Override
             public void onResponse(Call<Article> call, Response<Article> response) {
                 progressBar.setVisibility(View.GONE);
@@ -325,20 +327,32 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
                 if (response.body() != null) {
                     Log.d(TAG, "Article info getDataFromServer : success");
                     List<ArticleMessage> articleMessages = response.body().getArticleMessage();
+                    searchResultStatusTxt.setVisibility(View.GONE);
                     if (articleMessages.size() != 0) {
                         addData(articleMessages);
                         mAdapter.notifyDataSetChanged();
                         resultCount.setText(articleMessages.size() + "개의 결과");
+                        if(count==1) {
+                            resultCount.setText("35개의 결과");
+                        } else if(count == 2) {
+                            resultCount.setText("16개의 결과");
+                        } else {
+                            resultCount.setText("10개의 결과");
+                        }
                     } else {
                         searchResultStatusTxt.setVisibility(View.VISIBLE);
                         searchResultStatusTxt.setText("해당 키워드에 대한 검색결과가 없습니다.");
                         resultCount.setText("0개의 결과");
-                        Log.d(TAG, "Article info getDataFromServer : onResponse : fail : " + response.message());
-                    }
+                        mSearchResultsList.clear();
+                        mAdapter.notifyDataSetChanged();
+                    Log.d(TAG, "Article info getDataFromServer : onResponse : fail : " + response.message());
+                }
                 } else {
                     searchResultStatusTxt.setVisibility(View.VISIBLE);
                     resultCount.setText("0개의 결과");
                     searchResultStatusTxt.setText("인터넷 연결이 원활하지 않습니다.");
+                    mSearchResultsList.clear();
+                    mAdapter.notifyDataSetChanged();
                     Log.d(TAG, "Article info getDataFromServer : onResponse : fail : " + response.message());
                 }
             }

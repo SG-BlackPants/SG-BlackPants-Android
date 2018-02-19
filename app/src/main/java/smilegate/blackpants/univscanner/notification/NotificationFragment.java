@@ -25,6 +25,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -100,7 +102,7 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG,"알림 뷰 화면");
+        Log.d(TAG, "알림 뷰 화면");
         setBadge();
     }
 
@@ -116,6 +118,7 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
                     Log.d(TAG, "알림 히스토리 서버통신 성공");
                     List<NotificationMessage> notificationList = new ArrayList<>();
                     notificationList = response.body().getMessages();
+                    notificationList = sort(notificationList);
                     if (notificationList.size() > 0) {
                         addData(notificationList);
                         mAdapter = new NotificationListAdapter(getContext(), R.layout.layout_notification_listitem, mNotificationList);
@@ -145,6 +148,7 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
                 }
                 progressBar.setVisibility(View.GONE);
             }
+
             @Override
             public void onFailure(Call<Notification> call, Throwable t) {
                 Log.d(TAG, "알림 히스토리 서버통신 실패 : onFailure : " + t.getMessage());
@@ -159,17 +163,19 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
         NotificationDetail notificationDetail;
         String keyword, createdDate, communityId, communityName, boardAddr;
 
-        for (int i = notificationMessages.size()-1; i >= 0; i--) {
+        for (int i = notificationMessages.size() - 1; i >= 0; i--) {
             keyword = notificationMessages.get(i).getKeyword();
             createdDate = transformCreatedTime(notificationMessages.get(i).getCreatedDate());
             communityId = notificationMessages.get(i).getCommunity();
             communityName = transformCommunity(notificationMessages.get(i).getCommunity());
             boardAddr = notificationMessages.get(i).getBoardAddr();
 
-            notificationDetail = new NotificationDetail(keyword , communityId, communityName, boardAddr, createdDate);
+            notificationDetail = new NotificationDetail(keyword, communityId, communityName, boardAddr, createdDate);
             //mNotificationList.add(i, notificationDetail);
             mNotificationList.add(0, notificationDetail);
         }
+
+
     }
 
     public String transformCreatedTime(String time) {
@@ -178,7 +184,7 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
         Date convertedDate = new Date();
         try {
             convertedDate = dateFormat.parse(time);
-            Log.d(TAG,dateFormat.format(convertedDate));
+            Log.d(TAG, dateFormat.format(convertedDate));
         } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -187,51 +193,51 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
         Calendar postDay = Calendar.getInstance();
         postDay.setTime(convertedDate);
         int postDayYear = postDay.get(Calendar.YEAR);
-        int postDayMonth = postDay.get(Calendar.MONTH)+1;
+        int postDayMonth = postDay.get(Calendar.MONTH) + 1;
         int postDayDate = postDay.get(Calendar.DATE);
         int postDayAM_PM_temp = postDay.get(Calendar.AM_PM);
         String postDayAM_PM;
-        if(postDayAM_PM_temp==0) {
+        if (postDayAM_PM_temp == 0) {
             postDayAM_PM = "오전";
         } else {
             postDayAM_PM = "오후";
         }
         int postDayHour = postDay.get(Calendar.HOUR);
-        if(postDayHour==0) {
+        if (postDayHour == 0) {
             postDayHour = 12;
         }
         int postDayMinute_temp = postDay.get(Calendar.MINUTE);
         String postDayMinute;
-        if(postDayMinute_temp<10) {
-            postDayMinute = "0"+postDayMinute_temp;
+        if (postDayMinute_temp < 10) {
+            postDayMinute = "0" + postDayMinute_temp;
         } else {
-            postDayMinute = postDayMinute_temp+"";
+            postDayMinute = postDayMinute_temp + "";
         }
         //오늘 날짜
         Calendar today = Calendar.getInstance();
         int todayYear = today.get(Calendar.YEAR);
-        int todayMonth = today.get(Calendar.MONTH)+1;
+        int todayMonth = today.get(Calendar.MONTH) + 1;
         int todayDate = today.get(Calendar.DATE);
 
 
-        if(!((postDayYear==todayYear)&&(postDayMonth==todayMonth)&&(postDayDate==todayDate))) {
+        if (!((postDayYear == todayYear) && (postDayMonth == todayMonth) && (postDayDate == todayDate))) {
             // 오늘이 아닌 경우
-            if(postDayYear == todayYear) {
+            if (postDayYear == todayYear) {
                 // 같은 년도일 경우 년 생략
-                result = postDayMonth+"월 "+postDayDate+"일 "+postDayAM_PM+" "+postDayHour+":"+postDayMinute;
+                result = postDayMonth + "월 " + postDayDate + "일 " + postDayAM_PM + " " + postDayHour + ":" + postDayMinute;
             } else {
-                result = postDayYear+"년 "+postDayMonth+"월 "+postDayDate+"일 "+postDayAM_PM+" "+postDayHour+":"+postDayMinute;
+                result = postDayYear + "년 " + postDayMonth + "월 " + postDayDate + "일 " + postDayAM_PM + " " + postDayHour + ":" + postDayMinute;
             }
         } else {
             // 오늘인 경우
-            result = "오늘 "+postDayAM_PM+" "+postDayHour+":"+postDayMinute;
+            result = "오늘 " + postDayAM_PM + " " + postDayHour + ":" + postDayMinute;
         }
         return result;
     }
 
     public String transformCommunity(String data) {
 
-        if(mCommunityHashMap.containsKey(data)) {
+        if (mCommunityHashMap.containsKey(data)) {
             return mCommunityHashMap.get(data);
         } else {
             return data;
@@ -254,7 +260,7 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
         String json = null;
         try {
             InputStream is;
-            if(mode.equals("community_id")) {
+            if (mode.equals("community_id")) {
                 is = getActivity().getAssets().open("community_id.json");
             } else {
                 is = getActivity().getAssets().open("university_communitylist.json");
@@ -330,5 +336,42 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
     public void onRefresh() {
         initNotificationList();
         swipeLayout.setRefreshing(false);
+    }
+
+   public List<NotificationMessage> sort(List<NotificationMessage> list) {
+       Collections.sort(list, new Comparator<NotificationMessage>(){
+           public int compare(NotificationMessage obj1, NotificationMessage obj2)
+           {
+               // TODO Auto-generated method stub
+               long time1 = timeTransform(obj1.getCreatedDate());
+               long time2 = timeTransform(obj2.getCreatedDate());
+
+
+               return (time1 > time2) ? -1: (time1 > time2) ? 1:0;
+           }
+       });
+
+       for(int i=0;i<list.size();i++){
+           Log.d(TAG,"list : " + list.get(i).getCreatedDate());
+       }
+
+       return list;
+   }
+
+    public long timeTransform(String time) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        Date convertedDate = new Date();
+
+        try {
+            convertedDate = dateFormat.parse(time);
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        Calendar day = Calendar.getInstance();
+        day.setTime(convertedDate);
+        long milliseconds = day.getTime().getTime();
+        return milliseconds;
     }
 }
