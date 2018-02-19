@@ -118,6 +118,11 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
                     Log.d(TAG, "알림 히스토리 서버통신 성공");
                     List<NotificationMessage> notificationList = new ArrayList<>();
                     notificationList = response.body().getMessages();
+                    notificationList.add(0,new NotificationMessage("평창","facebook-449006815233880","ㅌㅌ","2018-02-19T23:35:52"));
+                    notificationList.add(0,new NotificationMessage("수강신청","facebook-482012061908784","ㅌㅌ","2018-02-19T08:40:52"));
+                    notificationList.add(0,new NotificationMessage("헬스","facebook-449006815233880","ㅌㅌ","2018-02-19T20:20:52"));
+                    notificationList.add(0,new NotificationMessage("동아리","facebook-482012061908784","ㅌㅌ","2018-02-19T23:00:52"));
+                    notificationList.add(0,new NotificationMessage("개강","everytime","ㅌㅌ","2018-02-14T14:50:52"));
                     notificationList = sort(notificationList);
                     if (notificationList.size() > 0) {
                         addData(notificationList);
@@ -174,7 +179,6 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
             //mNotificationList.add(i, notificationDetail);
             mNotificationList.add(0, notificationDetail);
         }
-
 
     }
 
