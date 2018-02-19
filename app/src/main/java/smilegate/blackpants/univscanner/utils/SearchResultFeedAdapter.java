@@ -17,8 +17,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -42,7 +44,7 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
     public interface ContentDetailClickListener {
         public void onButtonClickListner(SearchResults searchResults, String value);
 
-        //public void onUrlClickListener(String url);
+        public void onImageClickListener(String url);
     }
 
     public void setContentDetailClickListner(SearchResultFeedAdapter.ContentDetailClickListener listener) {
@@ -67,6 +69,8 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
         ImageView postImage;
         @BindView(R.id.img_post_icon)
         CircleImageView postIcon;
+        @BindView(R.id.progressbar_post_progressbar)
+        ProgressBar progressBar;
 
         public MyViewHolder(View view) {
             super(view);
@@ -88,7 +92,7 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, int position) {
 
         final SearchResults searchResults = mSearchResultsList.get(position);
         holder.postName.setText(searchResults.getTitle());
@@ -117,14 +121,35 @@ public class SearchResultFeedAdapter extends RecyclerView.Adapter<SearchResultFe
         } else {
             if(searchResults.getImages().size() > 0) {
                 holder.postImage.setVisibility(View.VISIBLE);
+                holder.postImage.setOnClickListener(new View.OnClickListener(){
+
+                    @Override
+                    public void onClick(View view) {
+                        if (contentDetailClickListener != null) {
+                            contentDetailClickListener.onImageClickListener(searchResults.getImages().get(0));
+                        }
+                    }
+                });
+                holder.progressBar.setVisibility(View.VISIBLE);
                 Picasso.with(mContext)
                         .load(searchResults.getImages().get(0))
                         .resize(1280, 720)
                         .centerCrop()
-                        .placeholder(R.drawable.progress_animation)
-                        .into(holder.postImage);
+                        .into(holder.postImage, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                holder.progressBar.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onError() {
+                                holder.progressBar.setVisibility(View.GONE);
+                            }
+                        });
+
             } else {
                 holder.postImage.setVisibility(View.GONE);
+                holder.progressBar.setVisibility(View.GONE);
             }
         }
     }

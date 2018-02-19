@@ -106,6 +106,7 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
 
     public void initNotificationList() {
         progressBar.setVisibility(View.VISIBLE);
+        notificationListView.setVisibility(View.VISIBLE);
       /*  mRegisteredKeywordList.add("비트코인");
         mRegisteredKeywordList.add("꿀교양");*/
         mRedisApiService.getPushHistory(Prefs.getString("userToken", null)).enqueue(new Callback<Notification>() {
@@ -136,6 +137,7 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
                         }*/
                     } else {
                         noHistoryTxt.setVisibility(View.VISIBLE);
+                        notificationListView.setVisibility(View.GONE);
                         Log.d(TAG, "현재까지는 알림 히스토리가 없음");
                     }
                 } else {
@@ -157,7 +159,7 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
         NotificationDetail notificationDetail;
         String keyword, createdDate, communityId, communityName, boardAddr;
 
-        for (int i = 0; i < notificationMessages.size(); i++) {
+        for (int i = notificationMessages.size()-1; i >= 0; i--) {
             keyword = notificationMessages.get(i).getKeyword();
             createdDate = transformCreatedTime(notificationMessages.get(i).getCreatedDate());
             communityId = notificationMessages.get(i).getCommunity();
@@ -165,7 +167,8 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
             boardAddr = notificationMessages.get(i).getBoardAddr();
 
             notificationDetail = new NotificationDetail(keyword , communityId, communityName, boardAddr, createdDate);
-            mNotificationList.add(i, notificationDetail);
+            //mNotificationList.add(i, notificationDetail);
+            mNotificationList.add(0, notificationDetail);
         }
     }
 

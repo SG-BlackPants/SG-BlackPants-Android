@@ -1,6 +1,7 @@
 package smilegate.blackpants.univscanner.search;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,9 +26,11 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.chrisbanes.photoview.PhotoView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.pixplicity.easyprefs.library.Prefs;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -357,7 +360,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
         String id, title, createdDate, content, community, boardAddr, author, url;
         List<String> images;
         mSearchResultsList.clear();
-        for (int i = 0; i < articleMessages.size(); i++) {
+        for (int i = articleMessages.size() - 1; i >= 0; i--) {
             id = articleMessages.get(i).getId();
             content = articleMessages.get(i).getSource().getContent();
             title = transformTitle(articleMessages.get(i).getSource().getTitle(), content);
@@ -368,7 +371,8 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
             url = transformUrl(boardAddr, articleMessages.get(i).getSource().getCommunity());
             images = articleMessages.get(i).getSource().getImages();
             searchResults = new SearchResults(id, title, createdDate, content, community, boardAddr, author, url, images);
-            mSearchResultsList.add(i, searchResults);
+            //mSearchResultsList.add(i, searchResults);
+            mSearchResultsList.add(0, searchResults);
         }
     }
 
@@ -418,6 +422,7 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
 
                 }
             }
+
             @Override
             public void onFailure(Call<CodeResult> call, Throwable t) {
                 Log.d(TAG, "키워드 등록 실패 : onFailure : " + t.getMessage());
@@ -464,6 +469,39 @@ public class SearchResultFragment extends BaseFragment implements SearchResultFe
         if (mFragmentNavigation != null) {
             mFragmentNavigation.pushFragment(SearchDetailFragment.newInstance(0, searchResults));
         }
+    }
+
+    @Override
+    public void onImageClickListener(String myUrlStr) {
+        final Dialog dialog = new Dialog(getContext());
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.layout_image_dialog);
+
+        ViewGroup.LayoutParams params = dialog.getWindow().getAttributes();
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        dialog.getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
+
+        final PhotoView photoView = (PhotoView) dialog.findViewById(R.id.photoView_searchresult);
+        final ProgressBar progressBar = (ProgressBar) dialog.findViewById(R.id.progressbar_photoView);
+        progressBar.setVisibility(View.VISIBLE);
+        Picasso.with(getContext())
+                .load(myUrlStr)
+                .into(photoView, new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        progressBar.setVisibility(View.GONE);
+                        photoView.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        progressBar.setVisibility(View.GONE);
+                        dialog.dismiss();
+                    }
+                });
+
+        dialog.show();
     }
 
     public String transformCommunity(String data) {

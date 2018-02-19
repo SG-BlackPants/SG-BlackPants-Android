@@ -54,12 +54,6 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
-        <service
-            android:name=".utils.BadgeJobService">
-            <intent-filter>
-                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"></action>
-            </intent-filter>
-        </service>
         <service android:name=".utils.ServiceState" android:stopWithTask="false"></service>
 
     </application>

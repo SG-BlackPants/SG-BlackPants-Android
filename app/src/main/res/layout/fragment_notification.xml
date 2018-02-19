@@ -15,36 +15,36 @@
         android:layout_below="@+id/top_notification">
 
         <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_notification"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/swipe_notification">
-        <ListView
-            android:id="@+id/list_notification"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@color/white"
-            android:background="@color/white"
-            android:dividerHeight="1dip"/>
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/text_noHistory"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="현재 알림 내역이 없습니다."
-            android:textSize="20dp"
-            android:textColor="@color/darker_grey"
-            android:gravity="center"/>
+            <ListView
+                android:id="@+id/list_notification"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                android:divider="@color/white"
+                android:dividerHeight="1dip" />
 
+        </android.support.v4.widget.SwipeRefreshLayout>
         <ProgressBar
             android:id="@+id/progressbar_notification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:layout_gravity="center_horizontal"
             android:minHeight="10dp"
-            android:minWidth="10dp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
-        </android.support.v4.widget.SwipeRefreshLayout>
+            android:minWidth="10dp" />
+        <TextView
+            android:id="@+id/text_noHistory"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="현재 알림 내역이 없습니다."
+            android:textColor="@color/darker_grey"
+            android:textSize="20dp" />
     </FrameLayout>
 
 </RelativeLayout>

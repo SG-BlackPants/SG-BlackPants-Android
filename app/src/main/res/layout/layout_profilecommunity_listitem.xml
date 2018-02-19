@@ -18,7 +18,9 @@
             android:id="@+id/img_profile_community"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:src="@drawable/ic_hashtag" />
+            android:src="@drawable/ic_hashtag"
+            app:civ_border_color="@color/middle_grey"
+            app:civ_border_width="0.4dp" />
 
     </FrameLayout>
 

@@ -1,5 +1,6 @@
 package smilegate.blackpants.univscanner.search;
 
+import android.app.Dialog;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -12,7 +13,11 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.github.chrisbanes.photoview.PhotoView;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -31,7 +36,7 @@ import static smilegate.blackpants.univscanner.MainActivity.mNavController;
  * Created by Semin on 2018-02-11.
  */
 
-public class SearchDetailFragment extends BaseFragment {
+public class SearchDetailFragment extends BaseFragment implements SearchResultImageListAdapter.ImageClickListener {
     private static final String TAG = "SearchDetailFragment";
     private View mView;
     private SearchResults mSearchResults;
@@ -90,7 +95,6 @@ public class SearchDetailFragment extends BaseFragment {
             if(bundle!=null){
                 mSearchResults = bundle.getParcelable("SearchResults");
             }
-
             initContent();
         }
         return mView;
@@ -99,9 +103,7 @@ public class SearchDetailFragment extends BaseFragment {
     public void initContent() {
         postName.setText(mSearchResults.getTitle());
         postTime.setText(mSearchResults.getCreatedDate());
-
         postContent.setText(mSearchResults.getContent());
-
         postSource.setText(mSearchResults.getCommunity());
         postAuthor.setText(mSearchResults.getAuthor());
         postUrl.setText(mSearchResults.getUrl());
@@ -112,6 +114,7 @@ public class SearchDetailFragment extends BaseFragment {
         } else {
             mImageList = mSearchResults.getImages();
             mAdapter = new SearchResultImageListAdapter(getContext(), R.layout.layout_searchresult_detail_listitem, mImageList);
+            mAdapter.setImageClickListner(this);
             postImageListView.setAdapter(mAdapter);
             setListViewHeightBasedOnChildren(postImageListView);
             Log.d(TAG,"initContent() : size >= 1");
@@ -161,6 +164,39 @@ public class SearchDetailFragment extends BaseFragment {
         } else {
             return "ic_hashtag";
         }
+    }
+
+    @Override
+    public void onImageClickListener(String url) {
+        final Dialog dialog = new Dialog(getContext());
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.layout_image_dialog);
+
+        ViewGroup.LayoutParams params = dialog.getWindow().getAttributes();
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        dialog.getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
+
+        final PhotoView photoView = (PhotoView) dialog.findViewById(R.id.photoView_searchresult);
+        final ProgressBar progressBar = (ProgressBar) dialog.findViewById(R.id.progressbar_photoView);
+        progressBar.setVisibility(View.VISIBLE);
+        Picasso.with(getContext())
+                .load(url)
+                .into(photoView, new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        progressBar.setVisibility(View.GONE);
+                        photoView.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        progressBar.setVisibility(View.GONE);
+                        dialog.dismiss();
+                    }
+                });
+
+        dialog.show();
     }
 }
 
