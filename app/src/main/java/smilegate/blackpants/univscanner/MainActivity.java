@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.FragNavSwitchController;
@@ -273,6 +274,8 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     }
 
     public void getFromServer(final String uid) {
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        Log.d(TAG,"refreshToken : "+refreshedToken);
         mUserApiService.getLoginInfo(uid).enqueue(new Callback<LoginInfo>() {
             @Override
             public void onResponse(Call<LoginInfo> call, Response<LoginInfo> response) {

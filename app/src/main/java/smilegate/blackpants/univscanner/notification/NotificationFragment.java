@@ -118,8 +118,8 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
                     Log.d(TAG, "알림 히스토리 서버통신 성공");
                     List<NotificationMessage> notificationList = new ArrayList<>();
                     notificationList = response.body().getMessages();
-                    notificationList.add(0,new NotificationMessage("평창","facebook-449006815233880","ㅌㅌ","2018-02-19T23:35:52"));
-                    notificationList.add(0,new NotificationMessage("수강신청","facebook-482012061908784","ㅌㅌ","2018-02-19T08:40:52"));
+                    notificationList.add(0,new NotificationMessage("평창","facebook-449006815233880","ㅌㅌ","2018-02-20T11:12:52"));
+                    notificationList.add(0,new NotificationMessage("수강신청","facebook-482012061908784","ㅌㅌ","2018-02-20T08:40:52"));
                     notificationList.add(0,new NotificationMessage("헬스","facebook-449006815233880","ㅌㅌ","2018-02-19T20:20:52"));
                     notificationList.add(0,new NotificationMessage("동아리","facebook-482012061908784","ㅌㅌ","2018-02-19T23:00:52"));
                     notificationList.add(0,new NotificationMessage("개강","everytime","ㅌㅌ","2018-02-14T14:50:52"));
@@ -170,7 +170,11 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
 
         for (int i = notificationMessages.size() - 1; i >= 0; i--) {
             keyword = notificationMessages.get(i).getKeyword();
-            createdDate = transformCreatedTime(notificationMessages.get(i).getCreatedDate());
+            createdDate = notificationMessages.get(i).getCreatedDate();
+            if(createdDate==null){
+                continue;
+            }
+            createdDate = transformCreatedTime(createdDate);
             communityId = notificationMessages.get(i).getCommunity();
             communityName = transformCommunity(notificationMessages.get(i).getCommunity());
             boardAddr = notificationMessages.get(i).getBoardAddr();
@@ -183,6 +187,7 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
     }
 
     public String transformCreatedTime(String time) {
+        Log.d(TAG, "getTime : "+time);
         String result;
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date convertedDate = new Date();
@@ -347,11 +352,13 @@ public class NotificationFragment extends BaseFragment implements SwipeRefreshLa
            public int compare(NotificationMessage obj1, NotificationMessage obj2)
            {
                // TODO Auto-generated method stub
-               long time1 = timeTransform(obj1.getCreatedDate());
-               long time2 = timeTransform(obj2.getCreatedDate());
-
-
-               return (time1 > time2) ? -1: (time1 > time2) ? 1:0;
+               if(obj1.getCreatedDate()!=null&&obj2.getCreatedDate()!=null) {
+                   long time1 = timeTransform(obj1.getCreatedDate());
+                   long time2 = timeTransform(obj2.getCreatedDate());
+                   return (time1 > time2) ? -1: (time1 > time2) ? 1:0;
+               } else {
+                   return 1;
+               }
            }
        });
 
